@@ -1510,8 +1510,6 @@ static ssize_t proc_fault_inject_write(struct file * file,
 	int make_it_fail;
 	int rv;
 
-	if (!capable(CAP_SYS_RESOURCE))
-		return -EPERM;
 	memset(buffer, 0, sizeof(buffer));
 	if (count > sizeof(buffer) - 1)
 		count = sizeof(buffer) - 1;
@@ -1527,6 +1525,11 @@ static ssize_t proc_fault_inject_write(struct file * file,
 	if (!task)
 		return -ESRCH;
 	task->make_it_fail = make_it_fail;
+	if (oom_adjust < task->oomkilladj && !capable(CAP_SYS_RESOURCE)) {
+		put_task_struct(task);
+		return -EACCES;
+	}
+	task->oomkilladj = oom_adjust;
 	put_task_struct(task);
 
 	return count;
