@@ -102,6 +102,8 @@
 	(((sector_t)blk_addr) << F2FS_LOG_SECTORS_PER_BLOCK)
 #define SECTOR_TO_BLOCK(sectors)					\
 	(sectors >> F2FS_LOG_SECTORS_PER_BLOCK)
+#define MAX_BIO_BLOCKS(sbi)						\
+	((int)min((int)max_hw_blocks(sbi), BIO_MAX_PAGES))
 
 /*
  * indicate a block allocation direction: RIGHT and LEFT.

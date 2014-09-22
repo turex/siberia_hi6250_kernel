@@ -107,7 +107,17 @@ out:
 
 struct page *get_meta_page(struct f2fs_sb_info *sbi, pgoff_t index)
 {
-	return __get_meta_page(sbi, index, true);
+	bool readahead = false;
+	struct page *page;
+
+	page = find_get_page(META_MAPPING(sbi), index);
+	if (!page || (page && !PageUptodate(page)))
+		readahead = true;
+	f2fs_put_page(page, 0);
+
+	if (readahead)
+		ra_meta_pages(sbi, index, MAX_BIO_BLOCKS(sbi), META_POR);
+	return get_meta_page(sbi, index);
 }
 
 /* for POR only */
