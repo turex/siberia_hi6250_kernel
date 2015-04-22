@@ -526,11 +526,15 @@ fail:
 
 static const char *f2fs_follow_link(struct dentry *dentry, void **cookie)
 {
-	const char *link = page_follow_link_light(dentry, cookie);
-	if (!IS_ERR(link) && !*link) {
-		/* this is broken symlink case */
-		page_put_link(NULL, *cookie);
-		link = ERR_PTR(-ENOENT);
+	struct page *page = page_follow_link_light(dentry, nd);
+
+	if (IS_ERR_OR_NULL(page))
+		return page;
+
+	/* this is broken symlink case */
+	if (*nd_get_link(nd) == 0) {
+		page_put_link(dentry, nd, page);
+		return ERR_PTR(-ENOENT);
 	}
 	return link;
 }
