@@ -63,7 +63,7 @@ static void f2fs_read_end_io(struct bio *bio)
 #endif
 
 	if (f2fs_bio_encrypted(bio)) {
-		if (bio->bi_error) {
+		if (err) {
 			fscrypt_release_ctx(bio->bi_private);
 		} else {
 			fscrypt_decrypt_bio_pages(bio->bi_private, bio);
@@ -107,11 +107,7 @@ static void f2fs_write_end_io(struct bio *bio)
 		struct page *page = bvec->bv_page;
 		enum count_type type = WB_DATA_TYPE(page);
 
-		if (IS_DUMMY_WRITTEN_PAGE(page)) {
-			set_page_private(page, (unsigned long)NULL);
-			ClearPagePrivate(page);
-			unlock_page(page);
-			mempool_free(page, sbi->write_io_dummy);
+		fscrypt_pullback_bio_page(&page, true);
 
 			if (unlikely(bio->bi_error))
 				f2fs_stop_checkpoint(sbi, true);
@@ -292,9 +288,6 @@ static bool __has_merged_page(struct f2fs_bio_info *io,
 			target = bvec->bv_page;
 		else
 			target = fscrypt_control_page(bvec->bv_page);
-
-		if (idx != target->index)
-			continue;
 
 		if (inode && inode == target->mapping->host)
 			return true;
@@ -1323,9 +1316,25 @@ submit_and_realloc:
 			bio = NULL;
 		}
 		if (bio == NULL) {
-			bio = f2fs_grab_bio(inode, block_nr, nr_pages, page);
-			if (IS_ERR(bio)) {
-				bio = NULL;
+			struct fscrypt_ctx *ctx = NULL;
+
+			if (f2fs_encrypted_inode(inode) &&
+					S_ISREG(inode->i_mode)) {
+
+				ctx = fscrypt_get_ctx(inode);
+				if (IS_ERR(ctx))
+					goto set_error_page;
+
+				/* wait the page to be moved by cleaning */
+				f2fs_wait_on_encrypted_page_writeback(
+						F2FS_I_SB(inode), block_nr);
+			}
+
+			bio = bio_alloc(GFP_KERNEL,
+				min_t(int, nr_pages, BIO_MAX_PAGES));
+			if (!bio) {
+				if (ctx)
+					fscrypt_release_ctx(ctx);
 				goto set_error_page;
 			}
 			bio_set_op_attrs(bio, REQ_OP_READ, 0);
@@ -1425,31 +1434,10 @@ int do_write_data_page(struct f2fs_io_info *fio)
 		f2fs_wait_on_encrypted_page_writeback(F2FS_I_SB(inode),
 							fio->old_blkaddr);
 
-		if (!f2fs_inline_encrypted_inode(inode)) {
-retry_encrypt:
-			fio->encrypted_page = fscrypt_encrypt_page(inode,
-							fio->page, gfp_flags);
-			if (IS_ERR(fio->encrypted_page)) {
-				err = PTR_ERR(fio->encrypted_page);
-				if (err == -ENOMEM) {
-					/* flush pending ios and wait for a while */
-					f2fs_flush_merged_bios(F2FS_I_SB(inode));
-					congestion_wait(BLK_RW_ASYNC, HZ/50);
-					gfp_flags |= __GFP_NOFAIL;
-					err = 0;
-					goto retry_encrypt;
-				}
-				goto out_writepage;
-			}
-		} else {
-			if (!fscrypt_has_encryption_key(inode)) {
-				err = -ENOKEY;
-				goto out_writepage;
-			}
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-			fio->ci_key = fscrypt_ci_key(inode);
-			fio->ci_key_len = fscrypt_ci_key_len(inode);
-#endif
+		fio->encrypted_page = fscrypt_encrypt_page(inode, fio->page);
+		if (IS_ERR(fio->encrypted_page)) {
+			err = PTR_ERR(fio->encrypted_page);
+			goto out_writepage;
 		}
 	}
 
@@ -2050,9 +2038,12 @@ repeat:
 			f2fs_put_page(page, 1);
 			goto repeat;
 		}
-		if (unlikely(!PageUptodate(page))) {
-			err = -EIO;
-			goto fail;
+
+		/* avoid symlink page */
+		if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode)) {
+			err = fscrypt_decrypt_page(page);
+			if (err)
+				goto fail;
 		}
 	}
 	return 0;

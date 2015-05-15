@@ -486,7 +486,7 @@ no_delete:
 		!exist_written_data(sbi, inode->i_ino, ORPHAN_INO));
 out_clear:
 	fscrypt_put_encryption_info(inode, NULL);
-	clear_inode(inode);
+	end_writeback(inode);
 }
 
 /* caller should call f2fs_lock_op() */

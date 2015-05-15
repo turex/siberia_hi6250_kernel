@@ -617,8 +617,8 @@ bool f2fs_empty_inline_dir(struct inode *dir)
 	return true;
 }
 
-int f2fs_read_inline_dir(struct file *file, struct dir_context *ctx,
-				struct fscrypt_str *fstr)
+int f2fs_read_inline_dir(struct file *file, void *dirent, filldir_t filldir,
+						struct fscrypt_str *fstr)
 {
 	struct inode *inode = file_inode(file);
 	struct f2fs_inline_dentry *inline_dentry = NULL;

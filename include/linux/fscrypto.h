@@ -15,14 +15,9 @@
 #include <linux/mm.h>
 #include <linux/bio.h>
 #include <linux/dcache.h>
-#include <crypto/aead.h>
-#include <uapi/linux/fs.h>
 
-#define FS_KEY_DERIVATION_NONCE_SIZE		64
-#define FS_KEY_DERIVATION_IV_SIZE		16
-#define FS_KEY_DERIVATION_TAG_SIZE		16
-#define FS_KEY_DERIVATION_CIPHER_SIZE		(64 + 16) /* nonce + tag */
-#define FS_ENCRYPTION_CONTEXT_FORMAT_V2		2
+#define FS_KEY_DERIVATION_NONCE_SIZE		16
+#define FS_ENCRYPTION_CONTEXT_FORMAT_V1		1
 
 #define FS_POLICY_FLAGS_PAD_4		0x00
 #define FS_POLICY_FLAGS_PAD_8		0x01
@@ -42,13 +37,12 @@
  * Encryption context for inode
  *
  * Protector format:
- *  1 byte: Protector format (2 = this version)
+ *  1 byte: Protector format (1 = this version)
  *  1 byte: File contents encryption mode
  *  1 byte: File names encryption mode
  *  1 byte: Flags
  *  8 bytes: Master Key descriptor
- *  80 bytes: Encryption Key derivation nonce (encrypted)
- *  12 bytes: IV
+ *  16 bytes: Encryption Key derivation nonce
  */
 struct fscrypt_context {
 	u8 format;
@@ -56,8 +50,7 @@ struct fscrypt_context {
 	u8 filenames_encryption_mode;
 	u8 flags;
 	u8 master_key_descriptor[FS_KEY_DESCRIPTOR_SIZE];
-	u8 nonce[FS_KEY_DERIVATION_CIPHER_SIZE];
-	u8 iv[FS_KEY_DERIVATION_IV_SIZE];
+	u8 nonce[FS_KEY_DERIVATION_NONCE_SIZE];
 } __packed;
 
 /* Encryption parameters */
@@ -83,30 +76,10 @@ struct fscrypt_info {
 	u8 ci_data_mode;
 	u8 ci_filename_mode;
 	u8 ci_flags;
-	struct crypto_skcipher *ci_ctfm;
-	struct crypto_aead *ci_gtfm;
+	struct crypto_ablkcipher *ci_ctfm;
+	struct key *ci_keyring_key;
 	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
-	void *ci_key;
-	int ci_key_len;
 };
-
-static inline void *fscrypt_ci_key(struct inode *inode)
-{
-#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	return inode->i_crypt_info->ci_key;
-#else
-	return NULL;
-#endif
-}
-
-static inline int fscrypt_ci_key_len(struct inode *inode)
-{
-#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	return inode->i_crypt_info->ci_key_len;
-#else
-	return 0;
-#endif
-}
 
 #define FS_CTX_REQUIRES_FREE_ENCRYPT_FL		0x00000001
 #define FS_WRITE_PATH_FL			0x00000002
@@ -135,6 +108,23 @@ struct fscrypt_completion_result {
 #define DECLARE_FS_COMPLETION_RESULT(ecr) \
 	struct fscrypt_completion_result ecr = { \
 		COMPLETION_INITIALIZER((ecr).completion), 0 }
+
+static inline int fscrypt_key_size(int mode)
+{
+	switch (mode) {
+	case FS_ENCRYPTION_MODE_AES_256_XTS:
+		return FS_AES_256_XTS_KEY_SIZE;
+	case FS_ENCRYPTION_MODE_AES_256_GCM:
+		return FS_AES_256_GCM_KEY_SIZE;
+	case FS_ENCRYPTION_MODE_AES_256_CBC:
+		return FS_AES_256_CBC_KEY_SIZE;
+	case FS_ENCRYPTION_MODE_AES_256_CTS:
+		return FS_AES_256_CTS_KEY_SIZE;
+	default:
+		BUG();
+	}
+	return 0;
+}
 
 #define FS_FNAME_NUM_SCATTER_ENTRIES	4
 #define FS_CRYPTO_BLOCK_SIZE		16
@@ -173,6 +163,7 @@ struct fscrypt_name {
 	struct fscrypt_str crypto_buf;
 };
 
+#define QSTR_INIT(n, l)		{ .name = n, .len = l }
 #define FSTR_INIT(n, l)		{ .name = n, .len = l }
 #define FSTR_TO_QSTR(f)		QSTR_INIT((f)->name, (f)->len)
 #define fname_name(p)		((p)->disk_name.name)
@@ -182,18 +173,11 @@ struct fscrypt_name {
  * crypto opertions for filesystems
  */
 struct fscrypt_operations {
-	int (*get_context)(struct inode *, void *, size_t, int *);
-	int (*get_verify_context)(struct inode *, void *, size_t);
-	int (*key_prefix)(struct inode *, u8 **);
+	int (*get_context)(struct inode *, void *, size_t);
 	int (*prepare_context)(struct inode *);
 	int (*set_context)(struct inode *, const void *, size_t, void *);
-	int (*set_verify_context)(struct inode *, const void *, size_t,
-				  void *, int);
 	int (*dummy_context)(struct inode *);
 	bool (*is_encrypted)(struct inode *);
-	bool (*is_inline_encrypted)(struct inode *);
-	void (*set_encrypted_corrupt)(struct inode *);
-	bool (*is_encrypted_fixed)(struct inode *);
 	bool (*empty_dir)(struct inode *);
 	unsigned (*max_namelen)(struct inode *);
 };
@@ -214,6 +198,13 @@ static inline bool fscrypt_valid_contents_enc_mode(u32 mode)
 static inline bool fscrypt_valid_filenames_enc_mode(u32 mode)
 {
 	return (mode == FS_ENCRYPTION_MODE_AES_256_CTS);
+}
+
+static inline u32 fscrypt_validate_encryption_key_size(u32 mode, u32 size)
+{
+	if (size == fscrypt_key_size(mode))
+		return size;
+	return 0;
 }
 
 static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
@@ -271,34 +262,24 @@ static inline void fscrypt_set_d_op(struct dentry *dentry)
 extern struct kmem_cache *fscrypt_info_cachep;
 int fscrypt_initialize(void);
 
-extern struct fscrypt_ctx *fscrypt_get_ctx(struct inode *, gfp_t);
+extern struct fscrypt_ctx *fscrypt_get_ctx(struct inode *);
 extern void fscrypt_release_ctx(struct fscrypt_ctx *);
-extern struct page *fscrypt_encrypt_page(struct inode *, struct page *, gfp_t);
-extern struct page *fscrypt_encrypt_dio_page(struct inode *, struct page *,
-					     pgoff_t, gfp_t);
+extern struct page *fscrypt_encrypt_page(struct inode *, struct page *);
 extern int fscrypt_decrypt_page(struct page *);
-extern int fscrypt_decrypt_dio_page(struct inode *, struct page *, pgoff_t);
 extern void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *, struct bio *);
-extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
-					  work_func_t func);
 extern void fscrypt_pullback_bio_page(struct page **, bool);
 extern void fscrypt_restore_control_page(struct page *);
 extern int fscrypt_zeroout_range(struct inode *, pgoff_t, sector_t,
 						unsigned int);
 /* policy.c */
-extern int fscrypt_ioctl_set_policy(struct file *, const void __user *);
-extern int fscrypt_ioctl_get_policy(struct file *, void __user *);
+extern int fscrypt_process_policy(struct inode *,
+					const struct fscrypt_policy *);
+extern int fscrypt_get_policy(struct inode *, struct fscrypt_policy *);
 extern int fscrypt_has_permitted_context(struct inode *, struct inode *);
 extern int fscrypt_inherit_context(struct inode *, struct inode *,
 					void *, bool);
 /* keyinfo.c */
-extern int fscrypt_set_gcm_key(struct crypto_aead *, u8 *);
-extern int fscrypt_derive_gcm_key(struct crypto_aead *,
-				u8 *, u8 *, u8 *, int);
-extern struct key *fscrypt_request_key(u8 *, u8 *, int);
-extern int fscrypt_get_verify_context(struct inode *, void *, size_t);
-extern int fscrypt_set_verify_context(struct inode *, const void *,
-			size_t, void *, int);
+extern int get_crypt_info(struct inode *);
 extern int fscrypt_get_encryption_info(struct inode *);
 extern void fscrypt_put_encryption_info(struct inode *, struct fscrypt_info *);
 
@@ -317,8 +298,7 @@ extern int fscrypt_fname_usr_to_disk(struct inode *, const struct qstr *,
 #endif
 
 /* crypto.c */
-static inline struct fscrypt_ctx *fscrypt_notsupp_get_ctx(struct inode *i,
-							gfp_t f)
+static inline struct fscrypt_ctx *fscrypt_notsupp_get_ctx(struct inode *i)
 {
 	return ERR_PTR(-EOPNOTSUPP);
 }
@@ -329,7 +309,7 @@ static inline void fscrypt_notsupp_release_ctx(struct fscrypt_ctx *c)
 }
 
 static inline struct page *fscrypt_notsupp_encrypt_page(struct inode *i,
-						struct page *p, gfp_t f)
+						struct page *p)
 {
 	return ERR_PTR(-EOPNOTSUPP);
 }
@@ -362,14 +342,14 @@ static inline int fscrypt_notsupp_zeroout_range(struct inode *i, pgoff_t p,
 }
 
 /* policy.c */
-static inline int fscrypt_notsupp_ioctl_set_policy(struct file *f,
-				const void __user *arg)
+static inline int fscrypt_notsupp_process_policy(struct inode *i,
+				const struct fscrypt_policy *p)
 {
 	return -EOPNOTSUPP;
 }
 
-static inline int fscrypt_notsupp_ioctl_get_policy(struct file *f,
-				void __user *arg)
+static inline int fscrypt_notsupp_get_policy(struct inode *i,
+				struct fscrypt_policy *p)
 {
 	return -EOPNOTSUPP;
 }

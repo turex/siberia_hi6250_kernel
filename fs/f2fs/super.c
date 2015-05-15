@@ -1312,6 +1312,7 @@ static int f2fs_drop_inode(struct inode *inode)
 			if (!f2fs_inline_encrypted_inode(inode))
 				fscrypt_put_encryption_info(inode, NULL);
 
+			fscrypt_put_encryption_info(inode, NULL);
 			spin_lock(&inode->i_lock);
 			atomic_dec(&inode->i_count);
 		}
@@ -1962,25 +1963,11 @@ static struct super_operations f2fs_sops = {
 };
 
 #ifdef CONFIG_F2FS_FS_ENCRYPTION
-static int f2fs_get_context(struct inode *inode, void *ctx, size_t len,
-			    int *has_crc)
+static int f2fs_get_context(struct inode *inode, void *ctx, size_t len)
 {
-	int ret = f2fs_getxattr(inode, F2FS_XATTR_INDEX_ENCRYPTION,
+	return f2fs_getxattr(inode, F2FS_XATTR_INDEX_ENCRYPTION,
 				F2FS_XATTR_NAME_ENCRYPTION_CONTEXT,
-				ctx, len, NULL, has_crc);
-	if (ret == -ENODATA) {
-		bd_mutex_lock(&F2FS_I_SB(inode)->bd_mutex);
-		set_bd_val(F2FS_I_SB(inode),
-			   encrypt.encrypt_struct.ctx_nonexist, 1);
-		bd_mutex_unlock(&F2FS_I_SB(inode)->bd_mutex);
-	}
-	return ret;
-}
-
-static int f2fs_key_prefix(struct inode *inode, u8 **key)
-{
-	*key = F2FS_I_SB(inode)->key_prefix;
-	return F2FS_I_SB(inode)->key_prefix_size;
+				ctx, len, NULL);
 }
 
 static int f2fs_set_context(struct inode *inode, const void *ctx, size_t len,
@@ -1991,83 +1978,21 @@ static int f2fs_set_context(struct inode *inode, const void *ctx, size_t len,
 				ctx, len, fs_data, XATTR_CREATE);
 }
 
-static int f2fs_get_verify_context(struct inode *inode, void *ctx, size_t len)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct f2fs_xattr_header *hdr;
-	struct page *xpage;
-	u32 ctx_crc;
-	int err;
-
-	if (!test_opt(sbi, VERIFY_ENCRYPT))
-		return 0;
-
-	ctx_crc = f2fs_crc32(sbi, ctx, (unsigned int)len);
-
-	hdr = get_xattr_header(inode, NULL, &xpage);
-	if (IS_ERR_OR_NULL(hdr)) {
-		return (int)PTR_ERR(hdr);
-	} else if (hdr->h_ctx_crc == 0) {
-		err = 0;
-		goto out;
-	}
-
-	if (ctx_crc == le32_to_cpu(hdr->h_ctx_crc)) {
-		err = 0;
-	} else {
-		bd_mutex_lock(&sbi->bd_mutex);
-		set_bd_val(sbi, encrypt.encrypt_struct.ctx_corrupt, 1);
-		bd_mutex_unlock(&sbi->bd_mutex);
-		err = -EINVAL;
-		f2fs_msg(sbi->sb, KERN_ALERT, "inode %lu ctx_crc [%#x : %#x]",
-			 inode->i_ino, le32_to_cpu(hdr->h_ctx_crc), ctx_crc);
-	}
-
-out:
-	put_xattr_header(xpage);
-	return err;
-}
-
-static int f2fs_set_verify_context(struct inode *inode, const void *ctx,
-			size_t len, void *fs_data, int create_crc)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct page *ipage = (struct page *)fs_data;
-	u32 crc32;
-	int err;
-
-	if (!test_opt(sbi, VERIFY_ENCRYPT))
-		return 0;
-
-	if (!create_crc)
-		return 0;
-
-	crc32 = f2fs_crc32(sbi, ctx, (unsigned int)len);
-	err = set_fscrypt_crc(inode, ipage, crc32);
-	return err;
-}
-
 static unsigned f2fs_max_namelen(struct inode *inode)
 {
 	return S_ISLNK(inode->i_mode) ?
 			inode->i_sb->s_blocksize : F2FS_NAME_LEN;
 }
 
-static const struct fscrypt_operations f2fs_cryptops = {
-	.get_context		= f2fs_get_context,
-	.get_verify_context	= f2fs_get_verify_context,
-	.key_prefix		= f2fs_key_prefix,
-	.set_context		= f2fs_set_context,
-	.set_verify_context	= f2fs_set_verify_context,
-	.is_encrypted		= f2fs_encrypted_inode,
-	.is_inline_encrypted	= f2fs_inline_encrypted_inode,
-	.set_encrypted_corrupt	= f2fs_set_encrypted_corrupt_inode,
-	.is_encrypted_fixed	= f2fs_encrypted_fixed_inode,
-	.empty_dir		= f2fs_empty_dir,
-	.max_namelen		= f2fs_max_namelen,
+static struct fscrypt_operations f2fs_cryptops = {
+	.get_context	= f2fs_get_context,
+	.set_context	= f2fs_set_context,
+	.is_encrypted	= f2fs_encrypted_inode,
+	.empty_dir	= f2fs_empty_dir,
+	.max_namelen	= f2fs_max_namelen,
 };
 #else
-static const struct fscrypt_operations f2fs_cryptops = {
+static struct fscrypt_operations f2fs_cryptops = {
 	.is_encrypted	= f2fs_encrypted_inode,
 };
 #endif
@@ -3260,9 +3185,7 @@ static int __init init_f2fs_fs(void)
 		err = -ENOMEM;
 		goto free_extent_cache;
 	}
-	err = register_shrinker(&f2fs_shrinker_info);
-	if (err)
-		goto free_kset;
+	register_shrinker(&f2fs_shrinker_info);
 
 	err = register_filesystem(&f2fs_fs_type);
 	if (err)
@@ -3285,7 +3208,6 @@ free_filesystem:
 	unregister_filesystem(&f2fs_fs_type);
 free_shrinker:
 	unregister_shrinker(&f2fs_shrinker_info);
-free_kset:
 	kset_unregister(f2fs_kset);
 free_extent_cache:
 	destroy_extent_cache();
@@ -3306,8 +3228,6 @@ static void __exit exit_f2fs_fs(void)
 	remove_proc_entry("fs/f2fs", NULL);
 	f2fs_destroy_root_stats();
 	unregister_filesystem(&f2fs_fs_type);
-	unregister_shrinker(&f2fs_shrinker_info);
-	kset_unregister(f2fs_kset);
 	destroy_extent_cache();
 	destroy_checkpoint_caches();
 	destroy_segment_manager_caches();
