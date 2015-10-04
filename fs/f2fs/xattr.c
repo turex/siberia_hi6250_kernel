@@ -117,9 +117,6 @@ static size_t f2fs_xattr_advise_list(const struct xattr_handler *handler,
 	const char *xname = F2FS_SYSTEM_ADVISE_PREFIX;
 	size_t size;
 
-	if (handler->flags != F2FS_XATTR_INDEX_ADVISE)
-		return 0;
-
 	size = strlen(xname) + 1;
 	if (list && size <= list_size)
 		memcpy(list, xname, size);
