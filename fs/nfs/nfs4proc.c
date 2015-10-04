@@ -6337,8 +6337,10 @@ static int nfs4_xattr_get_nfs4_label(const struct xattr_handler *handler,
 	return -EOPNOTSUPP;
 }
 
-static ssize_t
-nfs4_listxattr_nfs4_label(struct inode *inode, char *list, size_t list_len)
+static size_t nfs4_xattr_list_nfs4_label(const struct xattr_handler *handler,
+					 struct dentry *dentry, char *list,
+					 size_t list_len, const char *name,
+					 size_t name_len)
 {
 	int len = 0;
 

@@ -80,7 +80,7 @@ static int f2fs_xattr_generic_get(const struct xattr_handler *handler,
 	if (strcmp(name, "") == 0)
 		return -EINVAL;
 	return f2fs_getxattr(d_inode(dentry), handler->flags, name,
-			     buffer, size, NULL, NULL);
+			     buffer, size, NULL);
 }
 
 static int f2fs_xattr_generic_set(const struct xattr_handler *handler,
@@ -116,6 +116,9 @@ static size_t f2fs_xattr_advise_list(const struct xattr_handler *handler,
 {
 	const char *xname = F2FS_SYSTEM_ADVISE_PREFIX;
 	size_t size;
+
+	if (handler->flags != F2FS_XATTR_INDEX_ADVISE)
+		return 0;
 
 	size = strlen(xname) + 1;
 	if (list && size <= list_size)

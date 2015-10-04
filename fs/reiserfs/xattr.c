@@ -777,6 +777,60 @@ find_xattr_handler_prefix(const struct xattr_handler **handlers,
 	return xah;
 }
 
+
+/*
+ * Inode operation getxattr()
+ */
+ssize_t
+reiserfs_getxattr(struct dentry * dentry, const char *name, void *buffer,
+		  size_t size)
+{
+	const struct xattr_handler *handler;
+
+	handler = find_xattr_handler_prefix(dentry->d_sb->s_xattr, name);
+
+	if (!handler || get_inode_sd_version(d_inode(dentry)) == STAT_DATA_V1)
+		return -EOPNOTSUPP;
+
+	return handler->get(handler, dentry, name, buffer, size);
+}
+
+/*
+ * Inode operation setxattr()
+ *
+ * d_inode(dentry)->i_mutex down
+ */
+int
+reiserfs_setxattr(struct dentry *dentry, const char *name, const void *value,
+		  size_t size, int flags)
+{
+	const struct xattr_handler *handler;
+
+	handler = find_xattr_handler_prefix(dentry->d_sb->s_xattr, name);
+
+	if (!handler || get_inode_sd_version(d_inode(dentry)) == STAT_DATA_V1)
+		return -EOPNOTSUPP;
+
+	return handler->set(handler, dentry, name, value, size, flags);
+}
+
+/*
+ * Inode operation removexattr()
+ *
+ * d_inode(dentry)->i_mutex down
+ */
+int reiserfs_removexattr(struct dentry *dentry, const char *name)
+{
+	const struct xattr_handler *handler;
+
+	handler = find_xattr_handler_prefix(dentry->d_sb->s_xattr, name);
+
+	if (!handler || get_inode_sd_version(d_inode(dentry)) == STAT_DATA_V1)
+		return -EOPNOTSUPP;
+
+	return handler->set(handler, dentry, name, NULL, 0, XATTR_REPLACE);
+}
+
 struct listxattr_buf {
 	struct dir_context ctx;
 	size_t size;
@@ -805,8 +859,7 @@ static int listxattr_filler(struct dir_context *ctx, const char *name,
 			size = handler->list(handler, b->dentry,
 					     b->buf + b->pos, b->size, name,
 					     namelen);
-			if (b->pos + size > b->size) {
-				b->pos = -ERANGE;
+			if (size > b->size)
 				return -ERANGE;
 			}
 		} else {

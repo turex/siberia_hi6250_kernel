@@ -212,12 +212,31 @@ int v9fs_acl_mode(struct inode *dir, umode_t *modep,
 	return 0;
 }
 
+static int v9fs_remote_get_acl(struct dentry *dentry, const char *name,
+			       void *buffer, size_t size, int type)
+{
+	char *full_name;
+
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		full_name =  POSIX_ACL_XATTR_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		full_name = POSIX_ACL_XATTR_DEFAULT;
+		break;
+	default:
+		BUG();
+	}
+	return v9fs_xattr_get(dentry, full_name, buffer, size);
+}
+
 static int v9fs_xattr_get_acl(const struct xattr_handler *handler,
 			      struct dentry *dentry, const char *name,
 			      void *buffer, size_t size)
 {
 	struct v9fs_session_info *v9ses;
 	struct posix_acl *acl;
+	int type = handler->flags;
 	int error;
 
 	if (strcmp(name, "") != 0)
@@ -241,6 +260,26 @@ static int v9fs_xattr_get_acl(const struct xattr_handler *handler,
 	return error;
 }
 
+static int v9fs_remote_set_acl(struct dentry *dentry, const char *name,
+			      const void *value, size_t size,
+			      int flags, int type)
+{
+	char *full_name;
+
+	switch (type) {
+	case ACL_TYPE_ACCESS:
+		full_name =  POSIX_ACL_XATTR_ACCESS;
+		break;
+	case ACL_TYPE_DEFAULT:
+		full_name = POSIX_ACL_XATTR_DEFAULT;
+		break;
+	default:
+		BUG();
+	}
+	return v9fs_xattr_set(dentry, full_name, value, size, flags);
+}
+
+
 static int v9fs_xattr_set_acl(const struct xattr_handler *handler,
 			      struct dentry *dentry, const char *name,
 			      const void *value, size_t size, int flags)
@@ -259,8 +298,8 @@ static int v9fs_xattr_set_acl(const struct xattr_handler *handler,
 	 * xattr value. We leave it to the server to validate
 	 */
 	if ((v9ses->flags & V9FS_ACCESS_MASK) != V9FS_ACCESS_CLIENT)
-		return v9fs_xattr_set(dentry, handler->prefix, value, size,
-				      flags);
+		return v9fs_remote_set_acl(dentry, name,
+					   value, size, flags, handler->flags);
 
 	if (S_ISLNK(inode->i_mode))
 		return -EOPNOTSUPP;
