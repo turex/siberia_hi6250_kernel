@@ -295,10 +295,6 @@ int fscrypt_fname_disk_to_usr(struct inode *inode,
 	if (iname->len < FS_CRYPTO_BLOCK_SIZE)
 		return -EUCLEAN;
 
-	if (inode->i_crypt_info &&
-			!inode->i_sb->s_cop->is_encrypted_fixed(inode))
-		return fname_decrypt(inode, iname, oname);
-
 	if (iname->len <= FS_FNAME_CRYPTO_DIGEST_SIZE) {
 		oname->len = digest_encode(iname->name, iname->len,
 					   oname->name);
@@ -364,7 +360,7 @@ int fscrypt_setup_filename(struct inode *dir, const struct qstr *iname,
 	if (ret && ret != -EOPNOTSUPP)
 		return ret;
 
-	if (dir->i_crypt_info && !dir->i_sb->s_cop->is_encrypted_fixed(dir)) {
+	if (dir->i_crypt_info) {
 		ret = fscrypt_fname_alloc_buffer(dir, iname->len,
 							&fname->crypto_buf);
 		if (ret)

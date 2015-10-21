@@ -566,8 +566,9 @@ static int keyring_search_iterator(const void *object, void *iterator_data)
 
 	if (ctx->flags & KEYRING_SEARCH_DO_STATE_CHECK) {
 		/* we set a different error code if we pass a negative key */
-		if (state < 0) {
-			ctx->result = ERR_PTR(state);
+		if (kflags & (1 << KEY_FLAG_NEGATIVE)) {
+			smp_rmb();
+			ctx->result = ERR_PTR(key->reject_error);
 			kleave(" = %d [neg]", ctx->skipped_ret);
 			goto skipped;
 		}
