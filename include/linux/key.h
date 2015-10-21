@@ -207,6 +207,7 @@ struct key {
 			struct list_head name_link;
 			struct assoc_array keys;
 		};
+		int reject_error;
 	};
 };
 

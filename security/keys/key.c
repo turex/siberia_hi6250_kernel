@@ -568,7 +568,10 @@ int key_reject_and_link(struct key *key,
 	if (key->state == KEY_IS_UNINSTANTIATED) {
 		/* mark the key as being negatively instantiated */
 		atomic_inc(&key->user->nikeys);
-		mark_key_instantiated(key, -error);
+		key->reject_error = -error;
+		smp_wmb();
+		set_bit(KEY_FLAG_NEGATIVE, &key->flags);
+		set_bit(KEY_FLAG_INSTANTIATED, &key->flags);
 		now = current_kernel_time();
 		key->expiry = now.tv_sec + timeout;
 		key_schedule_gc(key->expiry + key_gc_delay);
