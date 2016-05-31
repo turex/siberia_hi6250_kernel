@@ -270,12 +270,20 @@ static void cmd_free_suppl(struct tee_context *ctx, struct tee_shm *shm)
 	param.u.value.b = tee_shm_get_id(shm);
 	param.u.value.c = 0;
 
-	optee_supp_thrd_req(ctx, OPTEE_MSG_RPC_CMD_SHM_FREE, 1, &param);
 	/*
 	 * Match the tee_shm_get_from_id() in cmd_alloc_suppl() as secure
 	 * world has released its reference.
+	 *
+	 * It's better to do this before sending the request to supplicant
+	 * as we'd like to let the process doing the initial allocation to
+	 * do release the last reference too in order to avoid stacking
+	 * many pending fput() on the client process. This could otherwise
+	 * happen if secure world does many allocate and free in a single
+	 * invoke.
 	 */
 	tee_shm_put(shm);
+
+	optee_supp_thrd_req(ctx, OPTEE_MSG_RPC_CMD_SHM_FREE, 1, &param);
 }
 
 static void handle_rpc_func_cmd_shm_free(struct tee_context *ctx,
