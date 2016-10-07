@@ -338,7 +338,8 @@ struct f2fs_sb_info *sbi = fio->sbi;
 	verify_block_addr(sbi, fio->new_blkaddr);
 	down_write(&io->io_rwsem);
 	if (io->bio && (io->last_block_in_bio != fio->new_blkaddr - 1 ||
-						io->fio.op != fio->op))
+			(io->fio.rw != fio->rw) ||
+			!__same_bdev(sbi, fio->new_blkaddr, io->bio)))
 		__submit_merged_bio(io);
 alloc_new:
 	if (io->bio == NULL) {
@@ -1032,7 +1033,6 @@ static struct bio *f2fs_grab_bio(struct inode *inode, block_t blkaddr,
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct fscrypt_ctx *ctx = NULL;
-	struct block_device *bdev = sbi->sb->s_bdev;
 	struct bio *bio;
 
 	if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode)) {
@@ -1050,8 +1050,7 @@ static struct bio *f2fs_grab_bio(struct inode *inode, block_t blkaddr,
 			fscrypt_release_ctx(ctx);
 		return ERR_PTR(-ENOMEM);
 	}
-	bio->bi_bdev = bdev;
-	bio->bi_iter.bi_sector = SECTOR_FROM_BLOCK(blkaddr);
+	f2fs_target_device(sbi, blkaddr, bio);
 	bio->bi_end_io = f2fs_read_end_io;
 	bio->bi_private = ctx;
 
@@ -1155,10 +1154,7 @@ got_it:
 		 * BIO off first?
 		 */
 		if (bio && (last_block_in_bio != block_nr - 1 ||
-			!__same_bdev(F2FS_I_SB(inode), block_nr, bio) ||
-			(f2fs_encrypted_inode(inode) &&
-				f2fs_inline_encrypted_inode(inode) &&
-				last_index_in_bio != block_in_file - 1))) {
+			!__same_bdev(F2FS_I_SB(inode), block_nr, bio))) {
 submit_and_realloc:
 			__submit_bio(F2FS_I_SB(inode), READ, bio, DATA);
 			bio = NULL;
@@ -2096,6 +2092,8 @@ static ssize_t f2fs_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
 	if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode))
 		return 0;
 	if (rw == WRITE && test_opt(F2FS_I_SB(inode), LFS))
+		return 0;
+	if (F2FS_I_SB(inode)->s_ndevs)
 		return 0;
 
 	trace_f2fs_direct_IO_enter(inode, offset, count, rw);

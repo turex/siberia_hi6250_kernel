@@ -63,7 +63,6 @@ struct f2fs_device {
 	__le32 total_segments;
 } __packed;
 
-
 struct f2fs_super_block {
 	__le32 magic;			/* Magic Number */
 	__le16 major_ver;		/* Major Version */
@@ -102,9 +101,8 @@ struct f2fs_super_block {
 	__le32 feature;			/* defined features */
 	__u8 encryption_level;		/* versioning level for encryption */
 	__u8 encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
-    struct f2fs_device devs[MAX_DEVICES];	/* device list */
-	__u8 reserved[323];		/* valid reserved region */
-	__le32 crc;			/* checksum of superblock */
+	struct f2fs_device devs[MAX_DEVICES];	/* device list */
+	__u8 reserved[327];		/* valid reserved region */
 } __packed;
 
 /*
