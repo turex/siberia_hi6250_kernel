@@ -2058,41 +2058,6 @@ static int add_free_nid(struct f2fs_sb_info *sbi, nid_t nid, bool build)
 	struct nat_entry *ne;
 	int err;
 
-	if (new) {
-		int err = radix_tree_insert(&nm_i->free_nid_root, i->nid, i);
-		if (err)
-			return err;
-	}
-
-	f2fs_bug_on_atomic(sbi, list == FREE_NID_LIST ? i->state != NID_NEW :
-						i->state != NID_ALLOC);
-	nm_i->nid_cnt[list]++;
-	list_add_tail(&i->list, &nm_i->nid_list[list]);
-	return 0;
-}
-
-static void __remove_nid_from_list(struct f2fs_sb_info *sbi,
-			struct free_nid *i, enum nid_list list, bool reuse)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-
-	f2fs_bug_on_atomic(sbi, list == FREE_NID_LIST ? i->state != NID_NEW :
-						i->state != NID_ALLOC);
-	nm_i->nid_cnt[list]--;
-	list_del(&i->list);
-	if (!reuse)
-		radix_tree_delete(&nm_i->free_nid_root, i->nid);
-}
-
-/* return if the nid is recognized as free */
-static bool add_free_nid(struct f2fs_sb_info *sbi, nid_t nid, bool build)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-	struct free_nid *i, *e;
-	struct nat_entry *ne;
-	int err = -EINVAL;
-	bool ret = false;
-
 	/* 0 nid should not be used */
 	if (unlikely(nid == 0))
 		return 0;
@@ -2178,12 +2143,11 @@ static void scan_nat_page(struct f2fs_sb_info *sbi,
 		blk_addr = le32_to_cpu(nat_blk->entries[i].block_addr);
 		f2fs_bug_on(sbi, blk_addr == NEW_ADDR);
 		if (blk_addr == NULL_ADDR)
-			freed = add_free_nid(sbi, start_nid, true);
-		update_free_nid_bitmap(sbi, start_nid, freed);
+			add_free_nid(sbi, start_nid, true);
 	}
 }
 
-void __build_free_nids(struct f2fs_sb_info *sbi)
+void __build_free_nids(struct f2fs_sb_info *sbi, bool sync)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_HOT_DATA);
@@ -2200,31 +2164,6 @@ void __build_free_nids(struct f2fs_sb_info *sbi)
 
 	if (!sync && !available_free_memory(sbi, FREE_NIDS))
 		return;
-
-	if (!mount) {
-		/* try to find free nids in free_nid_bitmap */
-		scan_free_nid_bits(sbi);
-
-		if (nm_i->nid_cnt[FREE_NID_LIST])
-			return;
-
-		/* try to find free nids with nat_bits */
-		if (!scan_nat_bits(sbi) && nm_i->nid_cnt[FREE_NID_LIST])
-			return;
-	}
-
-	/* find next valid candidate */
-	if (enabled_nat_bits(sbi, NULL)) {
-		int idx = find_next_zero_bit_le(nm_i->full_nat_bits,
-					nm_i->nat_blocks, 0);
-
-		/*lint -save -e574*/
-		if (idx >= nm_i->nat_blocks)
-			set_sbi_flag(sbi, SBI_NEED_FSCK);
-		else
-			nid = idx * NAT_ENTRY_PER_BLOCK;
-		/*lint -restore*/
-	}
 
 	/* readahead nat pages to be scanned */
 	ra_meta_pages(sbi, NAT_BLOCK_OFFSET(nid), FREE_NID_PAGES,
@@ -2268,10 +2207,10 @@ void __build_free_nids(struct f2fs_sb_info *sbi)
 					nm_i->ra_nid_pages, META_NAT, false);
 }
 
-void build_free_nids(struct f2fs_sb_info *sbi)
+void build_free_nids(struct f2fs_sb_info *sbi, bool sync)
 {
 	mutex_lock(&NM_I(sbi)->build_lock);
-	__build_free_nids(sbi);
+	__build_free_nids(sbi, sync);
 	mutex_unlock(&NM_I(sbi)->build_lock);
 }
 
@@ -2313,7 +2252,7 @@ retry:
 	spin_unlock(&nm_i->nid_list_lock);
 
 	/* Let's scan nat pages and its caches to get free nids */
-	build_free_nids(sbi);
+	build_free_nids(sbi, true);
 	goto retry;
 }
 
@@ -2886,11 +2825,7 @@ int build_node_manager(struct f2fs_sb_info *sbi)
 	if (err)
 		return err;
 
-	err = init_free_nid_cache(sbi);
-	if (err)
-		return err;
-
-	build_free_nids(sbi, true, true);
+	build_free_nids(sbi, true);
 	return 0;
 }
 
