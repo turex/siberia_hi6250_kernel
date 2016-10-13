@@ -13,7 +13,6 @@
 
 #include "f2fs.h"
 #include "node.h"
-#include <trace/events/android_fs.h>
 
 bool f2fs_may_inline_data(struct inode *inode)
 {
@@ -83,22 +82,14 @@ int f2fs_read_inline_data(struct inode *inode, struct page *page)
 {
 	struct page *ipage;
 
-	trace_android_fs_dataread_start(inode, page_offset(page),
-					PAGE_SIZE, current->pid,
-					current->comm);
-
 	ipage = get_node_page(F2FS_I_SB(inode), inode->i_ino);
 	if (IS_ERR(ipage)) {
-		trace_android_fs_dataread_end(inode, page_offset(page),
-					      PAGE_SIZE);
 		unlock_page(page);
 		return PTR_ERR(ipage);
 	}
 
 	if (!f2fs_has_inline_data(inode)) {
 		f2fs_put_page(ipage, 1);
-		trace_android_fs_dataread_end(inode, page_offset(page),
-					      PAGE_SIZE);
 		return -EAGAIN;
 	}
 
@@ -110,8 +101,6 @@ int f2fs_read_inline_data(struct inode *inode, struct page *page)
 	if (!PageUptodate(page))
 		SetPageUptodate(page);
 	f2fs_put_page(ipage, 1);
-	trace_android_fs_dataread_end(inode, page_offset(page),
-				      PAGE_SIZE);
 	unlock_page(page);
 	return 0;
 }
@@ -121,8 +110,7 @@ int f2fs_convert_inline_page(struct dnode_of_data *dn, struct page *page)
 	struct f2fs_io_info fio = {
 		.sbi = F2FS_I_SB(dn->inode),
 		.type = DATA,
-		.op = REQ_OP_WRITE,
-		.op_flags = REQ_SYNC | REQ_NOIDLE | REQ_PRIO,
+		.rw = WRITE_SYNC | REQ_PRIO,
 		.page = page,
 		.encrypted_page = NULL,
 	};
@@ -148,10 +136,8 @@ int f2fs_convert_inline_page(struct dnode_of_data *dn, struct page *page)
 	fio.old_blkaddr = dn->data_blkaddr;
 	write_data_page(dn, &fio);
 	f2fs_wait_on_page_writeback(page, DATA, true);
-	if (dirty) {
+	if (dirty)
 		inode_dec_dirty_pages(dn->inode);
-		remove_dirty_inode(dn->inode);
-	}
 
 	/* this converted inline_data should be recovered. */
 	set_inode_flag(dn->inode, FI_APPEND_WRITE);
@@ -432,7 +418,7 @@ static int f2fs_add_inline_entries(struct inode *dir,
 		}
 
 		new_name.name = d.filename[bit_pos];
-		new_name.len = le16_to_cpu(de->name_len);
+		new_name.len = de->name_len;
 
 		ino = le32_to_cpu(de->ino);
 		fake_mode = get_de_type(de) << S_SHIFT;
@@ -527,7 +513,6 @@ int f2fs_add_inline_entry(struct inode *dir, const struct qstr *new_name,
 		if (err)
 			return err;
 		err = -EAGAIN;
-		set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 		goto out;
 	}
 
@@ -586,8 +571,8 @@ void f2fs_delete_inline_entry(struct f2fs_dir_entry *dentry, struct page *page,
 	set_page_dirty(page);
 	f2fs_put_page(page, 1);
 
-	dir->i_ctime = dir->i_mtime = current_time(dir);
-	f2fs_mark_inode_dirty_sync(dir, false);
+	dir->i_ctime = dir->i_mtime = CURRENT_TIME;
+	f2fs_mark_inode_dirty_sync(dir);
 
 	if (inode)
 		f2fs_drop_nlink(dir, inode);
@@ -624,7 +609,6 @@ int f2fs_read_inline_dir(struct file *file, struct dir_context *ctx,
 	struct f2fs_inline_dentry *inline_dentry = NULL;
 	struct page *ipage = NULL;
 	struct f2fs_dentry_ptr d;
-	int err;
 
 	if (ctx->pos == NR_INLINE_DENTRY)
 		return 0;
@@ -637,12 +621,11 @@ int f2fs_read_inline_dir(struct file *file, struct dir_context *ctx,
 
 	make_dentry_ptr(inode, &d, (void *)inline_dentry, 2);
 
-	err = f2fs_fill_dentries(ctx, &d, 0, fstr);
-	if (!err)
+	if (!f2fs_fill_dentries(ctx, &d, 0, fstr))
 		ctx->pos = NR_INLINE_DENTRY;
 
 	f2fs_put_page(ipage, 1);
-	return err < 0 ? err : 0;
+	return 0;
 }
 
 int f2fs_inline_data_fiemap(struct inode *inode,
@@ -678,47 +661,4 @@ int f2fs_inline_data_fiemap(struct inode *inode,
 out:
 	f2fs_put_page(ipage, 1);
 	return err;
-}
-
-bool recover_inline_dentry(struct inode *inode, struct page *npage)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct f2fs_inode *ri = NULL;
-	void *src_addr, *dst_addr;
-	struct page *ipage;
-
-	if (IS_INODE(npage))
-		ri = F2FS_INODE(npage);
-
-	if (f2fs_has_inline_dentry(inode) &&
-			ri && (ri->i_inline & F2FS_INLINE_DENTRY)) {
-process_inline:
-		ipage = get_node_page(sbi, inode->i_ino);
-		f2fs_bug_on(sbi, IS_ERR(ipage));
-
-		f2fs_wait_on_page_writeback(ipage, NODE, true);
-
-		src_addr = inline_data_addr(npage);
-		dst_addr = inline_data_addr(ipage);
-		memcpy(dst_addr, src_addr, MAX_INLINE_DATA);
-
-		set_inode_flag(inode, FI_INLINE_DENTRY);
-
-		set_page_dirty(ipage);
-		f2fs_put_page(ipage, 1);
-		return true;
-	}
-
-	if (f2fs_has_inline_dentry(inode)) {
-		/*
-		 * No support for recovering from inline to non-inline
-		 * dentry for now.
-		 */
-		f2fs_bug_on(sbi, 1);
-	} else if (ri && (ri->i_inline & F2FS_INLINE_DENTRY)) {
-		if (truncate_blocks(inode, 0, false))
-			return false;
-		goto process_inline;
-	}
-	return false;
 }
