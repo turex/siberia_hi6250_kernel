@@ -219,6 +219,8 @@ static int __f2fs_set_acl(struct inode *inode, int type,
 			if (error)
 				return error;
 			set_acl_inode(inode, inode->i_mode);
+			if (error == 0)
+				acl = NULL;
 		}
 		break;
 
@@ -389,7 +391,7 @@ int f2fs_init_acl(struct inode *inode, struct inode *dir, struct page *ipage,
 	if (error)
 		return error;
 
-	f2fs_mark_inode_dirty_sync(inode, true);
+	f2fs_mark_inode_dirty_sync(inode);
 
 	if (default_acl) {
 		error = __f2fs_set_acl(inode, ACL_TYPE_DEFAULT, default_acl,

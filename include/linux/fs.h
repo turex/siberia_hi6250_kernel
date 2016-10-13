@@ -696,7 +696,6 @@ struct inode {
 #if IS_ENABLED(CONFIG_FS_ENCRYPTION)
 	struct fscrypt_info	*i_crypt_info;
 #endif
-
 	void			*i_private; /* fs or device private pointer */
 #ifdef CONFIG_TASK_PROTECT_LRU
 	int			i_protect;

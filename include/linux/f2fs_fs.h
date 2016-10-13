@@ -58,14 +58,11 @@
 
 #define VERSION_LEN	256
 #define MAX_VOLUME_NAME		512
-#define MAX_PATH_LEN		64
-#define MAX_DEVICES		8
 
 /*
  * For superblock
  */
 struct f2fs_device {
-	__u8 path[MAX_PATH_LEN];
 	__le32 total_segments;
 } __packed;
 
@@ -115,9 +112,6 @@ struct f2fs_super_block {
 /*
  * For checkpoint
  */
-#define CP_CRC_RECOVERY_FLAG_XOR	0x80000000
-#define CP_TRIMMED_FLAG		0x00000100
-#define CP_NAT_BITS_FLAG	0x00000080
 #define CP_CRC_RECOVERY_FLAG	0x00000040
 #define CP_FASTBOOT_FLAG	0x00000020
 #define CP_FSCK_FLAG		0x00000010
@@ -282,7 +276,6 @@ struct f2fs_node {
  * For NAT entries
  */
 #define NAT_ENTRY_PER_BLOCK (PAGE_SIZE / sizeof(struct f2fs_nat_entry))
-#define NAT_ENTRY_BITMAP_SIZE	((NAT_ENTRY_PER_BLOCK + 7) / 8)
 
 struct f2fs_nat_entry {
 	__u8 version;		/* latest version of cached nat entry */
@@ -303,18 +296,6 @@ struct f2fs_nat_block {
  */
 #define SIT_VBLOCK_MAP_SIZE 64
 #define SIT_ENTRY_PER_BLOCK (PAGE_SIZE / sizeof(struct f2fs_sit_entry))
-
-/*
- * F2FS uses 4 bytes to represent block address. As a result, supported size of
- * disk is 16 TB and it equals to 16 * 1024 * 1024 / 2 segments.
- */
-#define F2FS_MAX_SEGMENT       ((16 * 1024 * 1024) / 2)
-
-/*
- * F2FS uses 4 bytes to represent block address. As a result, supported size of
- * disk is 16 TB and it equals to 16 * 1024 * 1024 / 2 segments.
- */
-#define F2FS_MAX_SEGMENT       ((16 * 1024 * 1024) / 2)
 
 /*
  * Note that f2fs_sit_entry->vblocks has the following bit-field information.

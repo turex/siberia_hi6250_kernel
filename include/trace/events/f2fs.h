@@ -54,7 +54,6 @@ TRACE_DEFINE_ENUM(CP_TRIMMED);
 		{ META_FLUSH,	"META_FLUSH" },				\
 		{ INMEM,	"INMEM" },				\
 		{ INMEM_DROP,	"INMEM_DROP" },				\
-		{ INMEM_INVALIDATE,	"INMEM_INVALIDATE" },		\
 		{ INMEM_REVOKE,	"INMEM_REVOKE" },			\
 		{ IPU,		"IN-PLACE" },				\
 		{ OPU,		"OUT-OF-PLACE" })
@@ -728,7 +727,7 @@ TRACE_EVENT(f2fs_reserve_new_blocks,
 	),
 
 	TP_printk("dev = (%d,%d), nid = %u, ofs_in_node = %u, count = %llu",
-		show_dev(__entry->dev),
+		show_dev(__entry),
 		(unsigned int)__entry->nid,
 		__entry->ofs_in_node,
 		(unsigned long long)__entry->count)
@@ -746,8 +745,7 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__field(pgoff_t, index)
 		__field(block_t, old_blkaddr)
 		__field(block_t, new_blkaddr)
-		__field(int, op)
-		__field(int, op_flags)
+		__field(int, rw)
 		__field(int, type)
 	),
 
@@ -757,8 +755,7 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__entry->index		= page->index;
 		__entry->old_blkaddr	= fio->old_blkaddr;
 		__entry->new_blkaddr	= fio->new_blkaddr;
-		__entry->op		= fio->op;
-		__entry->op_flags	= fio->op_flags;
+		__entry->rw		= fio->rw;
 		__entry->type		= fio->type;
 	),
 
@@ -768,7 +765,7 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->old_blkaddr,
 		(unsigned long long)__entry->new_blkaddr,
-		show_bio_type(__entry->op, __entry->op_flags),
+		show_bio_type(__entry->rw),
 		show_block_type(__entry->type))
 );
 
@@ -1361,7 +1358,7 @@ DECLARE_EVENT_CLASS(f2fs_sync_dirty_inodes,
 	),
 
 	TP_printk("dev = (%d,%d), %s, dirty count = %lld",
-		show_dev(__entry->dev),
+		show_dev(__entry),
 		show_file_type(__entry->type),
 		__entry->count)
 );

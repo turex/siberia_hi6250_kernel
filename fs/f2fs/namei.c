@@ -108,20 +108,8 @@ static int is_multimedia_file(const unsigned char *s, const char *sub)
 	for (i = 1; i < slen - sublen; i++) {
 		if (s[i] != '.')
 			continue;
-		if (!strncasecmp((const char *)s + i + 1, sub, sublen)) {
-#ifdef CONFIG_ACM
-			/*
-			 * ".*.hwbk" is the renaming rule in the framework,
-			 * we should not treate the renaming file as a multimedia_file.
-			 */
-			if (!strncasecmp((const char *)s + slen - 4, "hwbk", 4))
-				return 0;
-			else
-				return 1;
-#else
+		if (!strncasecmp(s + i + 1, sub, sublen))
 			return 1;
-#endif
-		}
 	}
 
 	return 0;
@@ -206,9 +194,6 @@ static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 	nid_t ino = 0;
 	int err;
 
-	if (f2fs_encrypted_inode(dir) && f2fs_encrypted_fixed_inode(dir))
-		return -EPERM;
-
 	inode = f2fs_new_inode(dir, mode);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);
@@ -220,6 +205,8 @@ static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 	inode->i_fop = &f2fs_file_operations;
 	inode->i_mapping->a_ops = &f2fs_dblock_aops;
 	ino = inode->i_ino;
+
+	f2fs_balance_fs(sbi, true);
 
 	f2fs_lock_op(sbi);
 	err = f2fs_add_link(dentry, inode);
@@ -252,8 +239,7 @@ static int f2fs_link(struct dentry *old_dentry, struct inode *dir,
 			!fscrypt_has_permitted_context(dir, inode))
 		return -EPERM;
 
-	if (f2fs_encrypted_inode(dir) && f2fs_encrypted_fixed_inode(dir))
-		return -EPERM;
+	f2fs_balance_fs(sbi, true);
 
 	f2fs_balance_fs(sbi, true);
 
@@ -397,9 +383,9 @@ static struct dentry *f2fs_lookup(struct inode *dir, struct dentry *dentry,
 		if (err)
 			goto err_out;
 	}
-	if (f2fs_encrypted_inode(dir) &&
-	    (S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)) &&
-	    !fscrypt_has_permitted_context(dir, inode)) {
+	if (!IS_ERR(inode) && f2fs_encrypted_inode(dir) &&
+			(S_ISDIR(inode->i_mode) || S_ISLNK(inode->i_mode)) &&
+			!fscrypt_has_permitted_context(dir, inode)) {
 		bool nokey = f2fs_encrypted_inode(inode) &&
 			!fscrypt_has_encryption_key(inode);
 		err = nokey ? -ENOKEY : -EPERM;
@@ -421,79 +407,6 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
 	int err = -ENOENT;
 
 	trace_f2fs_unlink_enter(dir, dentry);
-
-#ifdef CONFIG_ACM
-	int logusertype = get_logusertype_flag();
-	/* oversea users do not need monitor*/
-	if (logusertype != OVERSEA_USER && logusertype != OVERSEA_COMMERCIAL_USER) {
-		struct task_struct *tsk, *p_tsk, *pp_tsk;
-		struct dentry *dent;
-		char *pkg;
-		uid_t uid;
-		int is_dir = S_ISDIR(inode->i_mode);
-		char *event;
-		char *envp[2];
-
-		if (should_monitor_file(dentry)) {
-			tsk = current->group_leader;
-			if (!tsk && tsk->parent == NULL)
-				goto acm_monitor;
-			p_tsk = tsk->parent->group_leader;
-			if (!p_tsk && p_tsk->parent == NULL)
-				goto acm_monitor;
-			pp_tsk = p_tsk->parent->group_leader;
-			if (!pp_tsk)
-				goto acm_monitor;
-
-			if (is_dir)
-				dent = dentry;
-			else
-				dent = dentry->d_parent;
-			event = kmalloc(300UL, GFP_NOFS);
-			if (event) {
-				scnprintf(event, 299UL, "UNLINK=%s@%s@%s@%s@%d",
-						tsk->comm, p_tsk->comm, pp_tsk->comm,
-						dent->d_name.name, is_dir);
-				envp[0] = event;
-				envp[1] = NULL;
-				kobject_uevent_env(&sbi->s_kobj, KOBJ_CHANGE, envp);
-				kfree(event);
-			}
-
-acm_monitor:
-			pkg = (char *)kzalloc(100, GFP_NOFS);
-			if(!pkg) {
-				err = -ENOMEM;
-				goto fail;
-			}
-
-			/* When the task's uid is not more than 10000,get pakege name and uid directly.
-				Otherwise,find it's parent until the uid of it's parent is less than 10000 */
-			if (__kuid_val(task_uid(tsk)) > 10000) {
-				p_tsk = tsk;
-				while ( __kuid_val(task_uid(p_tsk)) > 10000) {
-					if ((p_tsk->real_parent) != NULL) {
-						tsk = p_tsk;
-						p_tsk = p_tsk->real_parent->group_leader;
-					} else {
-						break;
-					}
-				}
-			}
-			get_cmdline(tsk, pkg, 100);
-			uid = __kuid_val(task_uid(tsk));
-
-			pr_err("F2FS-fs: %s: dentry %pd PID %d cmdline %s uid %d\n",
-				__func__, dentry, task_pid_nr(tsk), pkg, uid);
-			if (acm_search(pkg, dentry, uid) != 0) {
-				err = -EOWNERDEAD;
-				kfree(pkg);
-				goto fail;
-			}
-			kfree(pkg);
-		}
-	}
-#endif
 
 	de = f2fs_find_entry(dir, &dentry->d_name, &page);
 	if (!de) {
@@ -546,10 +459,6 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 	int err;
 
 	if (f2fs_encrypted_inode(dir)) {
-
-		if (f2fs_encrypted_fixed_inode(dir))
-			return -EPERM;
-
 		err = fscrypt_get_encryption_info(dir);
 		if (err)
 			return err;
@@ -574,6 +483,8 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 		inode->i_op = &f2fs_symlink_inode_operations;
 	inode_nohighmem(inode);
 	inode->i_mapping->a_ops = &f2fs_dblock_aops;
+
+	f2fs_balance_fs(sbi, true);
 
 	f2fs_lock_op(sbi);
 	err = f2fs_add_link(dentry, inode);
@@ -604,7 +515,7 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 		ostr.name = sd->encrypted_path;
 		ostr.len = disk_link.len;
 		err = fscrypt_fname_usr_to_disk(inode, &istr, &ostr);
-		if (err)
+		if (err < 0)
 			goto err_out;
 
 		sd->len = cpu_to_le16(ostr.len);
@@ -636,8 +547,6 @@ err_out:
 	}
 
 	kfree(sd);
-
-	f2fs_balance_fs(sbi, true);
 	return err;
 out:
 	handle_failed_inode(inode);
@@ -650,9 +559,6 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	struct inode *inode;
 	int err;
 
-	if (f2fs_encrypted_inode(dir) && f2fs_encrypted_fixed_inode(dir))
-		return -EPERM;
-
 	inode = f2fs_new_inode(dir, S_IFDIR | mode);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);
@@ -662,10 +568,9 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	inode->i_mapping->a_ops = &f2fs_dblock_aops;
 	mapping_set_gfp_mask(inode->i_mapping, GFP_F2FS_HIGH_ZERO);
 
-#ifdef CONFIG_ACM
-	inherit_parent_flag(dir, inode);
-#endif
+	f2fs_balance_fs(sbi, true);
 
+	set_inode_flag(inode, FI_INC_LINK);
 	f2fs_lock_op(sbi);
 	err = f2fs_add_link(dentry, inode);
 	if (err)
@@ -684,6 +589,7 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	return 0;
 
 out_fail:
+	clear_inode_flag(inode, FI_INC_LINK);
 	handle_failed_inode(inode);
 	return err;
 }
@@ -703,15 +609,14 @@ static int f2fs_mknod(struct inode *dir, struct dentry *dentry,
 	struct inode *inode;
 	int err = 0;
 
-	if (f2fs_encrypted_inode(dir) && f2fs_encrypted_fixed_inode(dir))
-		return -EPERM;
-
 	inode = f2fs_new_inode(dir, mode);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);
 
 	init_special_inode(inode, inode->i_mode, rdev);
 	inode->i_op = &f2fs_special_inode_operations;
+
+	f2fs_balance_fs(sbi, true);
 
 	f2fs_lock_op(sbi);
 	err = f2fs_add_link(dentry, inode);
@@ -753,6 +658,8 @@ static int __f2fs_tmpfile(struct inode *dir, struct dentry *dentry,
 		inode->i_mapping->a_ops = &f2fs_dblock_aops;
 	}
 
+	f2fs_balance_fs(sbi, true);
+
 	f2fs_lock_op(sbi);
 	err = acquire_orphan_inode(sbi);
 	if (err)
@@ -792,12 +699,7 @@ out:
 static int f2fs_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
 {
 	if (f2fs_encrypted_inode(dir)) {
-		int err;
-
-		if (f2fs_encrypted_fixed_inode(dir))
-			return -EPERM;
-
-		err = fscrypt_get_encryption_info(dir);
+		int err = fscrypt_get_encryption_info(dir);
 		if (err)
 			return err;
 	}
@@ -946,8 +848,8 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		file_set_enc_name(old_inode);
 	up_write(&F2FS_I(old_inode)->i_sem);
 
-	old_inode->i_ctime = current_time(old_inode);
-	f2fs_mark_inode_dirty_sync(old_inode, false);
+	old_inode->i_ctime = CURRENT_TIME;
+	f2fs_mark_inode_dirty_sync(old_inode);
 
 	f2fs_delete_entry(old_entry, old_page, old_dir, NULL);
 
@@ -1114,7 +1016,7 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 		f2fs_i_links_write(old_dir, old_nlink > 0);
 		up_write(&F2FS_I(old_dir)->i_sem);
 	}
-	f2fs_mark_inode_dirty_sync(old_dir, false);
+	f2fs_mark_inode_dirty_sync(old_dir);
 
 	/* update directory entry info of new dir inode */
 	f2fs_set_link(new_dir, new_entry, new_page, old_inode);
@@ -1129,7 +1031,7 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 		f2fs_i_links_write(new_dir, new_nlink > 0);
 		up_write(&F2FS_I(new_dir)->i_sem);
 	}
-	f2fs_mark_inode_dirty_sync(new_dir, false);
+	f2fs_mark_inode_dirty_sync(new_dir);
 
 	set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
@@ -1198,6 +1100,9 @@ static const char *f2fs_encrypted_follow_link(struct dentry *dentry, void **cook
 	u32 max_size = inode->i_sb->s_blocksize;
 	int res;
 
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+
 	res = fscrypt_get_encryption_info(inode);
 	if (res)
 		return ERR_PTR(res);
@@ -1228,7 +1133,7 @@ static const char *f2fs_encrypted_follow_link(struct dentry *dentry, void **cook
 		goto errout;
 
 	res = fscrypt_fname_disk_to_usr(inode, 0, 0, &cstr, &pstr);
-	if (res)
+	if (res < 0)
 		goto errout;
 
 	/* this is broken symlink case */
@@ -1252,8 +1157,8 @@ errout:
 
 const struct inode_operations f2fs_encrypted_symlink_inode_operations = {
 	.readlink       = generic_readlink,
-	.follow_link    = f2fs_encrypted_follow_link,
-	.put_link       = kfree_put_link,
+	.follow_link	= f2fs_encrypted_follow_link,
+	.put_link	= kfree_put_link,
 	.getattr	= f2fs_getattr,
 	.setattr	= f2fs_setattr,
 #ifdef CONFIG_F2FS_FS_XATTR
