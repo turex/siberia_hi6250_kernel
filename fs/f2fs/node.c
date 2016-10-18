@@ -2451,9 +2451,7 @@ int restore_node_summary(struct f2fs_sb_info *sbi,
 	struct f2fs_node *rn;
 	struct f2fs_summary *sum_entry;
 	block_t addr;
-	int bio_blocks = MAX_BIO_BLOCKS(sbi);
-	struct page *pages[bio_blocks];
-	int i, idx, last_offset, nrpages, err = 0;
+	int i, idx, last_offset, nrpages;
 
 	/* scan the node segment */
 	last_offset = sbi->blocks_per_seg;
