@@ -1142,25 +1142,11 @@ DECLARE_EVENT_CLASS(f2fs_discard,
 		(unsigned long long)__entry->blklen)
 );
 
-DEFINE_EVENT(f2fs_discard, f2fs_queue_discard,
-
-	TP_PROTO(struct block_device *dev, block_t blkstart, block_t blklen),
-
-	TP_ARGS(dev, blkstart, blklen)
-);
-
-DEFINE_EVENT(f2fs_discard, f2fs_issue_discard,
-
-	TP_PROTO(struct block_device *dev, block_t blkstart, block_t blklen),
-
-	TP_ARGS(dev, blkstart, blklen)
-);
-
 TRACE_EVENT(f2fs_issue_reset_zone,
 
-	TP_PROTO(struct block_device *dev, block_t blkstart),
+	TP_PROTO(struct super_block *sb, block_t blkstart),
 
-	TP_ARGS(dev, blkstart),
+	TP_ARGS(sb, blkstart),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -1168,12 +1154,12 @@ TRACE_EVENT(f2fs_issue_reset_zone,
 	),
 
 	TP_fast_assign(
-		__entry->dev	= dev->bd_dev;
+		__entry->dev	= sb->s_dev;
 		__entry->blkstart = blkstart;
 	),
 
 	TP_printk("dev = (%d,%d), reset zone at block = 0x%llx",
-		show_dev(__entry->dev),
+		show_dev(__entry),
 		(unsigned long long)__entry->blkstart)
 );
 
