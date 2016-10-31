@@ -835,8 +835,8 @@ out:
 	if (ec_cmd->scsi_status == SAM_STAT_GOOD) {
 		pr_warn_ratelimited("target_xcopy_do_work: Setting X-COPY CHECK_CONDITION ->sending response\n",rc);
 		ec_cmd->scsi_status = SAM_STAT_CHECK_CONDITION;
-	 }
-	target_complete_cmd(ec_cmd, SAM_STAT_CHECK_CONDITION);
+	}
+	target_complete_cmd(ec_cmd, ec_cmd->scsi_status);
 }
 
 sense_reason_t target_do_xcopy(struct se_cmd *se_cmd)
