@@ -1803,7 +1803,16 @@ void allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 		struct f2fs_summary *sum, int type)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
-	struct curseg_info *curseg = CURSEG_I(sbi, type);
+	struct curseg_info *curseg;
+	bool direct_io = (type == CURSEG_DIRECT_IO);
+
+	if (direct_io) {
+		if (sbi->active_logs <= 4)
+			type = CURSEG_HOT_DATA;
+		else
+			type = CURSEG_WARM_DATA;
+	}
+	curseg = CURSEG_I(sbi, type);
 
 	mutex_lock(&curseg->curseg_mutex);
 	mutex_lock(&sit_i->sentry_lock);
