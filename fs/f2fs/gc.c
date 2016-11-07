@@ -719,7 +719,7 @@ static bool is_alive(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
 	return true;
 }
 
-static int move_encrypted_block(struct inode *inode, block_t bidx,
+static void move_encrypted_block(struct inode *inode, block_t bidx,
 							unsigned int segno, int off)
 {
 	struct f2fs_io_info fio = {
@@ -745,6 +745,9 @@ static int move_encrypted_block(struct inode *inode, block_t bidx,
 		goto out;
 
 	if (f2fs_is_atomic_file(inode))
+		goto out;
+
+	if (!check_valid_map(F2FS_I_SB(inode), segno, off))
 		goto out;
 
 	set_new_dnode(&dn, inode, NULL, NULL, 0);
@@ -832,7 +835,7 @@ out:
 	return ret;
 }
 
-static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
+static void move_data_page(struct inode *inode, block_t bidx, int gc_type,
 							unsigned int segno, int off)
 {
 	struct page *page;
@@ -846,6 +849,9 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
 		goto out;
 
 	if (f2fs_is_atomic_file(inode))
+		goto out;
+
+	if (!check_valid_map(F2FS_I_SB(inode), segno, off))
 		goto out;
 
 	if (gc_type == BG_GC) {
@@ -994,9 +1000,9 @@ next_step:
 			start_bidx = start_bidx_of_node(nofs, inode)
 								+ ofs_in_node;
 			if (f2fs_encrypted_inode(inode) && S_ISREG(inode->i_mode))
-				ret = move_encrypted_block(inode, start_bidx, segno, off);
+				move_encrypted_block(inode, start_bidx, segno, off);
 			else
-				move_data_page(inode, start_bidx, gc_type);
+				move_data_page(inode, start_bidx, gc_type, segno, off);
 
 			if (locked) {
 				up_write(&fi->dio_rwsem[WRITE]);
