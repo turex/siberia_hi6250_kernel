@@ -1635,7 +1635,7 @@ static void allocate_segment_by_default(struct f2fs_sb_info *sbi,
 	else
 		new_curseg(sbi, type, false);
 
-	stat_inc_seg_type(sbi, CURSEG_I(sbi, type));
+	stat_inc_seg_type(sbi, curseg);
 }
 
 void allocate_new_segments(struct f2fs_sb_info *sbi)
@@ -1647,8 +1647,12 @@ void allocate_new_segments(struct f2fs_sb_info *sbi)
 	if (test_opt(sbi, LFS))
 		return;
 
-	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++)
-		__allocate_new_segments(sbi, i);
+	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++) {
+		curseg = CURSEG_I(sbi, i);
+		old_segno = curseg->segno;
+		SIT_I(sbi)->s_ops->allocate_segment(sbi, i, true);
+		locate_dirty_segment(sbi, old_segno);
+	}
 }
 
 static const struct segment_allocation default_salloc_ops = {
@@ -1803,24 +1807,10 @@ void allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
 		struct f2fs_summary *sum, int type)
 {
 	struct sit_info *sit_i = SIT_I(sbi);
-	struct curseg_info *curseg;
-	bool direct_io = (type == CURSEG_DIRECT_IO);
-
-	if (direct_io) {
-		if (sbi->active_logs <= 4)
-			type = CURSEG_HOT_DATA;
-		else
-			type = CURSEG_WARM_DATA;
-	}
-	curseg = CURSEG_I(sbi, type);
+	struct curseg_info *curseg = CURSEG_I(sbi, type);
 
 	mutex_lock(&curseg->curseg_mutex);
 	mutex_lock(&sit_i->sentry_lock);
-
-	/* direct_io'ed data is aligned to the segment for better performance */
-	if (direct_io && curseg->next_blkoff &&
-				!has_not_enough_free_secs(sbi, 0, 0))
-		__allocate_new_segments(sbi, type);
 
 	*new_blkaddr = NEXT_FREE_BLKADDR(sbi, curseg);
 

@@ -676,9 +676,6 @@ alloc:
 	get_node_info(sbi, dn->nid, &ni);
 	set_summary(&sum, dn->nid, dn->ofs_in_node, ni.version);
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	inc_bd_array_val(sbi, hotcold_cnt, HC_DIRECTIO, 1);
-	bd_mutex_unlock(&sbi->bd_mutex);
 	allocate_data_block(sbi, NULL, dn->data_blkaddr, &dn->data_blkaddr,
 						&sum, CURSEG_WARM_DATA);
 	set_data_blkaddr(dn);
