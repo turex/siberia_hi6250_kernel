@@ -1148,6 +1148,9 @@ gc_more:
 			if (ret)
 				goto stop;
 		}
+	} else if (gc_type == BG_GC && !background) {
+		/* f2fs_balance_fs doesn't need to do BG_GC in critical path. */
+		goto stop;
 	}
 
 	if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0)) {
