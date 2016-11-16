@@ -50,6 +50,26 @@ static bool __is_cp_guaranteed(struct page *page)
 	return false;
 }
 
+static bool __is_cp_guaranteed(struct page *page)
+{
+	struct address_space *mapping = page->mapping;
+	struct inode *inode;
+	struct f2fs_sb_info *sbi;
+
+	if (!mapping)
+		return false;
+
+	inode = mapping->host;
+	sbi = F2FS_I_SB(inode);
+
+	if (inode->i_ino == F2FS_META_INO(sbi) ||
+			inode->i_ino ==  F2FS_NODE_INO(sbi) ||
+			S_ISDIR(inode->i_mode) ||
+			is_cold_data(page))
+		return true;
+	return false;
+}
+
 static void f2fs_read_end_io(struct bio *bio)
 {
 	struct bio_vec *bvec;
@@ -111,14 +131,11 @@ static void f2fs_write_end_io(struct bio *bio)
 			set_bit(AS_EIO, &page->mapping->flags);
 			f2fs_stop_checkpoint(sbi, true);
 		}
-		if (page->mapping == NODE_MAPPING(sbi) &&
-					page->index != nid_of_node(page))
-			f2fs_bug_on(sbi, 1);
 		dec_page_count(sbi, type);
 		clear_cold_data(page);
 		end_page_writeback(page);
 	}
-	if (atomic_dec_and_test(&sbi->nr_wb_bios) &&
+	if (!get_pages(sbi, F2FS_WB_CP_DATA) &&
 				wq_has_sleeper(&sbi->cp_wait))
 		wake_up(&sbi->cp_wait);
 
@@ -190,7 +207,6 @@ static inline void __submit_bio(struct f2fs_sb_info *sbi, int rw,
 			struct bio *bio, enum page_type type)
 {
 	if (!is_read_io(rw)) {
-		atomic_inc(&sbi->nr_wb_bios);
 		if (f2fs_sb_mounted_blkzoned(sbi->sb) &&
 			current->plug && (type == DATA || type == NODE))
 			blk_finish_plug(current->plug);
@@ -336,6 +352,12 @@ struct f2fs_sb_info *sbi = fio->sbi;
 	if (fio->old_blkaddr != NEW_ADDR)
 		verify_block_addr(sbi, fio->old_blkaddr);
 	verify_block_addr(sbi, fio->new_blkaddr);
+
+	bio_page = fio->encrypted_page ? fio->encrypted_page : fio->page;
+
+	if (!is_read)
+		inc_page_count(sbi, WB_DATA_TYPE(bio_page));
+
 	down_write(&io->io_rwsem);
 	if (io->bio && (io->last_block_in_bio != fio->new_blkaddr - 1 ||
 			(io->fio.rw != fio->rw) ||
@@ -347,7 +369,7 @@ alloc_new:
 						BIO_MAX_PAGES, is_read);
 		io->fio = *fio;
 	}
-	bio_page = fio->encrypted_page ? fio->encrypted_page : fio->page;
+
 	if (bio_add_page(io->bio, bio_page, PAGE_SIZE, 0) <
 							PAGE_SIZE) {
 		__submit_merged_bio(io);
@@ -1855,7 +1877,6 @@ static int f2fs_write_end(struct file *file,
 		goto unlock_out;
 
 	set_page_dirty(page);
-	clear_cold_data(page);
 
 	if (pos + copied > i_size_read(inode))
 		f2fs_i_size_write(inode, pos + copied);
