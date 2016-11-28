@@ -189,10 +189,6 @@ static void recover_inode(struct inode *inode, struct page *page)
 
 	F2FS_I(inode)->i_advise = raw->i_advise;
 
-	/* For directory inode only */
-	F2FS_I(inode)->i_current_depth = le32_to_cpu(raw->i_current_depth);
-	F2FS_I(inode)->i_dir_level = raw->i_dir_level;
-
 	if (file_enc_name(inode))
 		name = "<encrypted>";
 	else
@@ -447,7 +443,8 @@ retry_dn:
 			continue;
 		}
 
-		if (i_size_read(inode) <= (start << PAGE_SHIFT))
+		if (!file_keep_isize(inode) &&
+				(i_size_read(inode) <= (start << PAGE_SHIFT)))
 			f2fs_i_size_write(inode, (start + 1) << PAGE_SHIFT);
 
 		/*
