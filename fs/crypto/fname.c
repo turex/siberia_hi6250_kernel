@@ -10,15 +10,6 @@
  * This has not yet undergone a rigorous security audit.
  */
 
-#include <crypto/skcipher.h>
-#include <keys/encrypted-type.h>
-#include <keys/user-type.h>
-#include <linux/gfp.h>
-#include <linux/kernel.h>
-#include <linux/key.h>
-#include <linux/list.h>
-#include <linux/mempool.h>
-#include <linux/random.h>
 #include <linux/scatterlist.h>
 #include <linux/ratelimit.h>
 #include <linux/fscrypto.h>

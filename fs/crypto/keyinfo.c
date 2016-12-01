@@ -10,9 +10,6 @@
 
 #include <keys/user-type.h>
 #include <linux/scatterlist.h>
-#include <uapi/linux/keyctl.h>
-#include <crypto/skcipher.h>
-#include <crypto/hash.h>
 #include <linux/fscrypto.h>
 
 static void derive_crypt_complete(struct crypto_async_request *req, int rc)
@@ -382,8 +379,8 @@ int fscrypt_get_encryption_info(struct inode *inode)
 			if (verify < 0)
 				inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 			return res;
-		}
-		ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V2;
+        }
+		ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V1;
 		ctx.contents_encryption_mode = FS_ENCRYPTION_MODE_AES_256_XTS;
 		ctx.filenames_encryption_mode = FS_ENCRYPTION_MODE_AES_256_CTS;
 		ctx.flags = 0;
@@ -400,6 +397,12 @@ int fscrypt_get_encryption_info(struct inode *inode)
 		inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 		return -EINVAL;
 	}
+
+	if (ctx.format != FS_ENCRYPTION_CONTEXT_FORMAT_V1)
+		return -EINVAL;
+
+	if (ctx.flags & ~FS_POLICY_FLAGS_VALID)
+		return -EINVAL;
 
 	crypt_info = kmem_cache_alloc(fscrypt_info_cachep, GFP_NOFS);
 	if (!crypt_info)
@@ -473,18 +476,11 @@ got_key:
 	if (res)
 		goto out;
 
-	if (S_ISREG(inode->i_mode) &&
-			inode->i_sb->s_cop->is_inline_encrypted &&
-			inode->i_sb->s_cop->is_inline_encrypted(inode)) {
-		crypt_info->ci_key = kzalloc((size_t)FS_MAX_KEY_SIZE, GFP_NOFS);
-		if (!crypt_info->ci_key) {
-			res = -ENOMEM;
-			goto out;
-		}
-		crypt_info->ci_key_len = keysize;
-		/*lint -save -e732 -e747*/
-		memcpy(crypt_info->ci_key, raw_key, crypt_info->ci_key_len);
-		/*lint -restore*/
+	kzfree(raw_key);
+	raw_key = NULL;
+	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) != NULL) {
+		put_crypt_info(crypt_info);
+		goto retry;
 	}
 
 	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
