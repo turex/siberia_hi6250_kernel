@@ -1139,6 +1139,7 @@ static int f2fs_remount(struct super_block *sb, int *flags, char *data)
 	 */
 	if ((*flags & MS_RDONLY) || !test_opt(sbi, FLUSH_MERGE)) {
 		clear_opt(sbi, FLUSH_MERGE);
+		destroy_flush_cmd_control(sbi, false);
 	} else {
 		err = create_flush_cmd_control(sbi);
 		if (err)

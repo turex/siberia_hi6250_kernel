@@ -621,8 +621,13 @@ int f2fs_issue_flush(struct f2fs_sb_info *sbi)
 	if (!fcc->dispatch_list)
 		wake_up(&fcc->flush_wait_queue);
 
-	wait_for_completion(&cmd.wait);
-	atomic_dec(&fcc->submit_flush);
+	if (fcc->f2fs_issue_flush) {
+		wait_for_completion(&cmd.wait);
+		atomic_dec(&fcc->submit_flush);
+	} else {
+		llist_del_all(&fcc->issue_list);
+		atomic_set(&fcc->submit_flush, 0);
+	}
 
 	return cmd.ret;
 }
@@ -633,8 +638,8 @@ int create_flush_cmd_control(struct f2fs_sb_info *sbi)
 	struct flush_cmd_control *fcc;
 	int err = 0;
 
-	if (SM_I(sbi)->fcc_info) {
-		fcc = SM_I(sbi)->fcc_info;
+	if (SM_I(sbi)->cmd_control_info) {
+		fcc = SM_I(sbi)->cmd_control_info;
 		goto init_thread;
 	}
 
@@ -644,10 +649,7 @@ int create_flush_cmd_control(struct f2fs_sb_info *sbi)
 	atomic_set(&fcc->submit_flush, 0);
 	init_waitqueue_head(&fcc->flush_wait_queue);
 	init_llist_head(&fcc->issue_list);
-	SM_I(sbi)->fcc_info = fcc;
-	if (!test_opt(sbi, FLUSH_MERGE))
-		return err;
-
+	SM_I(sbi)->cmd_control_info = fcc;
 init_thread:
 	fcc->f2fs_issue_flush = kthread_run(issue_flush_thread, sbi,
 				"f2fs_flush-%u:%u", MAJOR(dev), MINOR(dev));
@@ -673,7 +675,7 @@ void destroy_flush_cmd_control(struct f2fs_sb_info *sbi, bool free)
 	}
 	if (free) {
 		kfree(fcc);
-		SM_I(sbi)->fcc_info = NULL;
+		SM_I(sbi)->cmd_control_info = NULL;
 	}
 }
 
@@ -3083,7 +3085,6 @@ void destroy_segment_manager(struct f2fs_sb_info *sbi)
 	if (!sm_info)
 		return;
 	destroy_flush_cmd_control(sbi, true);
-	destroy_discard_cmd_control(sbi);
 	destroy_dirty_segmap(sbi);
 	destroy_curseg(sbi);
 	destroy_free_segmap(sbi);
