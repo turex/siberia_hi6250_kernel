@@ -708,8 +708,8 @@ int f2fs_setattr(struct dentry *dentry, struct iattr *attr)
 		}
 	}
 
-	/* update attributes only */
-	f2fs_mark_inode_dirty_sync(inode, false);
+	/* file size may changed here */
+	f2fs_mark_inode_dirty_sync(inode, size_changed);
 
 	/* inode change will produce dirty node pages flushed by checkpoint */
 	f2fs_balance_fs(F2FS_I_SB(inode), true);
