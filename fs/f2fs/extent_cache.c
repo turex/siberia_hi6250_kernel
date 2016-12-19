@@ -497,8 +497,6 @@ static struct extent_node *__try_merge_extent_node(struct inode *inode,
 	}
 
 	if (next_ex && __is_front_mergeable(ei, &next_ex->ei)) {
-		if (en)
-			__release_extent_node(sbi, et, prev_ex);
 		next_ex->ei.fofs = ei->fofs;
 		next_ex->ei.blk = ei->blk;
 		next_ex->ei.len += ei->len;
