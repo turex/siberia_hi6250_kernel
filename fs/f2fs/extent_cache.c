@@ -456,28 +456,24 @@ static struct extent_node *__lookup_extent_tree_ret(struct extent_tree *et,
 	tmp_node = parent;
 	if (parent && fofs > en->ei.fofs)
 		tmp_node = rb_next(parent);
-	*next_ex = tmp_node ?
-		rb_entry(tmp_node, struct extent_node, rb_node) : NULL;
+	*next_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
 
 	tmp_node = parent;
 	if (parent && fofs < en->ei.fofs)
 		tmp_node = rb_prev(parent);
-	*prev_ex = tmp_node ?
-		rb_entry(tmp_node, struct extent_node, rb_node) : NULL;
+	*prev_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
 	return NULL;
 
 lookup_neighbors:
 	if (fofs == en->ei.fofs) {
 		/* lookup prev node for merging backward later */
 		tmp_node = rb_prev(&en->rb_node);
-		*prev_ex = tmp_node ?
-			rb_entry(tmp_node, struct extent_node, rb_node) : NULL;
+		*prev_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
 	}
 	if (fofs == en->ei.fofs + en->ei.len - 1) {
 		/* lookup next node for merging frontward later */
 		tmp_node = rb_next(&en->rb_node);
-		*next_ex = tmp_node ?
-			rb_entry(tmp_node, struct extent_node, rb_node) : NULL;
+		*next_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
 	}
 	return en;
 }
