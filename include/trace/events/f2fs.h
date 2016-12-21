@@ -805,9 +805,9 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
-		__entry->op		= fio->op;
-		__entry->op_flags	= fio->op_flags;
-		__entry->type		= fio->type;
+		__entry->op		= bio_op(bio);
+		__entry->op_flags	= bio->bi_rw;
+		__entry->type		= type;
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->size		= bio->bi_iter.bi_size;
 	),
