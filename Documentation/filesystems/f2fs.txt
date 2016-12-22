@@ -159,10 +159,15 @@ mode=%s                Control block allocation mode which supports "adaptive"
                        and "lfs". In "lfs" mode, there should be no random
                        writes towards main area.
 <<<<<<< HEAD
+<<<<<<< HEAD
 io_bits=%u             Set the bit size of write IO requests. It should be set
                        with "mode=lfs".
 =======
 >>>>>>> 8da9e3f74761 (f2fs: backport from (4c1fad64 - Merge tag 'for-f2fs-4.9' of git://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs))
+=======
+io_bits=%u             Set the bit size of write IO requests. It should be set
+                       with "mode=lfs".
+>>>>>>> 168fef245e10 (f2fs: get io size bit from mount option)
 
 ================================================================================
 DEBUGFS ENTRIES
