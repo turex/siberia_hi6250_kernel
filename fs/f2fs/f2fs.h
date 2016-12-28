@@ -2553,6 +2553,7 @@ struct f2fs_stat_info {
 	int total_count, utilization;
 	int bg_gc, nr_wb_cp_data, nr_wb_data;
 	int inline_xattr, inline_inode, inline_dir, orphans;
+	int aw_cnt, max_aw_cnt;
 	unsigned int valid_count, valid_node_count, valid_inode_count, discard_blks;
 	unsigned int bimodal, avg_vblocks;
 	int util_free, util_valid, util_invalid;
@@ -2625,9 +2626,9 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
 #define stat_inc_inplace_blocks(sbi)					\
 		(atomic_inc(&(sbi)->inplace_count))
 #define stat_inc_atomic_write(inode)					\
-		(atomic_inc(&F2FS_I_SB(inode)->aw_cnt))
+		(atomic_inc(&F2FS_I_SB(inode)->aw_cnt));
 #define stat_dec_atomic_write(inode)					\
-		(atomic_dec(&F2FS_I_SB(inode)->aw_cnt))
+		(atomic_dec(&F2FS_I_SB(inode)->aw_cnt));
 #define stat_update_max_atomic_write(inode)				\
 	do {								\
 		int cur = atomic_read(&F2FS_I_SB(inode)->aw_cnt);	\
