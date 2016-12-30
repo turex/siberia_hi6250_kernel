@@ -1071,12 +1071,11 @@ static bool add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc,
 	int i;
 
 	if (se->valid_blocks == max_blocks || !f2fs_discard_en(sbi))
-		return;
+		return false;
 
 	if (!force) {
 		if (!test_opt(sbi, DISCARD) || !se->valid_blocks ||
-			SM_I(sbi)->dcc_info->nr_discards >=
-				SM_I(sbi)->dcc_info->max_discards)
+		    SM_I(sbi)->nr_discards >= SM_I(sbi)->max_discards)
 			return false;
 	}
 
@@ -1095,6 +1094,9 @@ static bool add_discard_addrs(struct f2fs_sb_info *sbi, struct cp_control *cpc,
 		if (force && start && end != max_blocks
 					&& (end - start) < cpc->trim_minlen)
 			continue;
+
+		if (check_only)
+			return true;
 
 		__add_discard_entry(sbi, cpc, se, start, end);
 	}
@@ -1775,19 +1777,14 @@ static const struct segment_allocation default_salloc_ops = {
 bool exist_trim_candidates(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 {
 	__u64 trim_start = cpc->trim_start;
-	bool has_candidate = false;
 
 	mutex_lock(&SIT_I(sbi)->sentry_lock);
-	for (; cpc->trim_start <= cpc->trim_end; cpc->trim_start++) {
-		if (add_discard_addrs(sbi, cpc, true)) {
-			has_candidate = true;
+	for (; trim_start <= cpc->trim_end; trim_start++)
+		if (add_discard_addrs(sbi, cpc, true))
 			break;
-		}
-	}
 	mutex_unlock(&SIT_I(sbi)->sentry_lock);
 
-	cpc->trim_start = trim_start;
-	return has_candidate;
+	return trim_start <= cpc->trim_end;
 }
 
 int f2fs_trim_fs(struct f2fs_sb_info *sbi, struct fstrim_range *range)
@@ -2655,7 +2652,7 @@ out:
 		__u64 trim_start = cpc->trim_start;
 
 		for (; cpc->trim_start <= cpc->trim_end; cpc->trim_start++)
-			add_discard_addrs(sbi, cpc);
+			add_discard_addrs(sbi, cpc, false);
 
 		cpc->trim_start = trim_start;
 	}
