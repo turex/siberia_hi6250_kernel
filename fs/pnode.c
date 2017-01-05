@@ -617,14 +617,9 @@ static struct mount *next_descendent(struct mount *root, struct mount *cur)
 	if (!IS_MNT_NEW(cur) && !list_empty(&cur->mnt_slave_list))
 		return first_slave(cur);
 	do {
-		struct mount *master = cur->mnt_master;
-
-		if (!master || cur->mnt_slave.next != &master->mnt_slave_list) {
-			struct mount *next = next_slave(cur);
-
-			return (next == root) ? NULL : next;
-		}
-		cur = master;
+		if (cur->mnt_slave.next != &cur->mnt_master->mnt_slave_list)
+			return next_slave(cur);
+		cur = cur->mnt_master;
 	} while (cur != root);
 	return NULL;
 }
@@ -633,13 +628,12 @@ void propagate_remount(struct mount *mnt)
 {
 	struct mount *m = mnt;
 	struct super_block *sb = mnt->mnt.mnt_sb;
-	int ret = 0;
 
 	if (sb->s_op->copy_mnt_data) {
-		for (m = first_slave(mnt); m->mnt_slave.next != &mnt->mnt_slave_list; m = next_slave(m)) {
+		m = next_descendent(mnt, m);
+		while (m) {
 			sb->s_op->copy_mnt_data(m->mnt.data, mnt->mnt.data);
+			m = next_descendent(mnt, m);
 		}
 	}
-
-	return ret;
 }
