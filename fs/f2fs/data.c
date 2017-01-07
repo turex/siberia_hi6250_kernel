@@ -1186,13 +1186,6 @@ static int f2fs_mpage_readpages(struct address_space *mapping,
 
 		prefetchw(&page->flags);
 		if (pages) {
-			/*
-			 * Get one quota before read pages, when this ends,
-			 * get the rest of quotas according to how many bios
-			 * we submited in this routine.
-			 */
-			blk_throtl_get_quota(inode->i_sb->s_bdev, PAGE_SIZE,
-					     msecs_to_jiffies(100), true);
 			page = list_last_entry(pages, struct page, lru);
 			list_del(&page->lru);
 			if (add_to_page_cache_lru(page, mapping,
