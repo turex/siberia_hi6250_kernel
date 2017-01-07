@@ -1260,14 +1260,6 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 	/* Update valid block bitmap */
 	if (del > 0) {
 		if (f2fs_test_and_set_bit(offset, se->cur_valid_map)) {
-			struct curseg_info *curseg = CURSEG_I(sbi, se->type);
-			f2fs_msg(sbi->sb,KERN_ERR,
-				"%s: alloc blkaddr error: %d, segno: %d (all: %d),\
-				offset: %d, new_vblocks: %ld, type: %d, alloc_type: %s\n",
-				__func__, blkaddr, segno,
-				MAIN_SEGS(sbi), offset, new_vblocks,
-				se->type, curseg->alloc_type ? "SSR": "LFS");
-
 #ifdef CONFIG_F2FS_CHECK_FS
 			if (f2fs_test_and_set_bit(offset,
 						se->cur_valid_map_mir))
@@ -1277,7 +1269,7 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 #else
 			f2fs_bug_on(sbi, 1);
 #endif
-
+		}
 		if (f2fs_discard_en(sbi) &&
 			!f2fs_test_and_set_bit(offset, se->discard_map))
 			sbi->discard_blks--;
@@ -1289,14 +1281,6 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 		}
 	} else {
 		if (!f2fs_test_and_clear_bit(offset, se->cur_valid_map)) {
-			struct curseg_info *curseg = CURSEG_I(sbi, se->type);
-			f2fs_msg(sbi->sb,KERN_ERR,
-				"%s: delete blkaddr error: %d, segno: %d (all: %d),\
-				offset: %d, new_vblocks: %ld, type: %d, alloc_type: %s\n",
-				__func__, blkaddr, segno,
-				MAIN_SEGS(sbi), offset, new_vblocks,
-				se->type, curseg->alloc_type ? "SSR": "LFS");
-
 #ifdef CONFIG_F2FS_CHECK_FS
 			if (!f2fs_test_and_clear_bit(offset,
 						se->cur_valid_map_mir))
@@ -1306,7 +1290,7 @@ static void update_sit_entry(struct f2fs_sb_info *sbi, block_t blkaddr, int del)
 #else
 			f2fs_bug_on(sbi, 1);
 #endif
-
+		}
 		if (f2fs_discard_en(sbi) &&
 			f2fs_test_and_clear_bit(offset, se->discard_map))
 			sbi->discard_blks++;
@@ -2698,6 +2682,13 @@ static int build_sit_info(struct f2fs_sb_info *sbi)
 		if (!sit_i->sentries[start].cur_valid_map ||
 				!sit_i->sentries[start].ckpt_valid_map)
 			return -ENOMEM;
+
+#ifdef CONFIG_F2FS_CHECK_FS
+		sit_i->sentries[start].cur_valid_map_mir
+			= kzalloc(SIT_VBLOCK_MAP_SIZE, GFP_KERNEL);
+		if (!sit_i->sentries[start].cur_valid_map_mir)
+			return -ENOMEM;
+#endif
 
 		if (f2fs_discard_en(sbi)) {
 			sit_i->sentries[start].discard_map
