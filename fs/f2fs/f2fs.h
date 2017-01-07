@@ -750,11 +750,6 @@ struct f2fs_nm_info {
 
 	/* for checkpoint */
 	char *nat_bitmap;		/* NAT bitmap pointer */
-
-	unsigned int nat_bits_blocks;	/* # of nat bits blocks */
-	unsigned char *nat_bits;	/* NAT bits blocks */
-	unsigned char *full_nat_bits;	/* full NAT pages */
-	unsigned char *empty_nat_bits;	/* empty NAT pages */
 #ifdef CONFIG_F2FS_CHECK_FS
 	char *nat_bitmap_mir;		/* NAT bitmap mirror */
 #endif
