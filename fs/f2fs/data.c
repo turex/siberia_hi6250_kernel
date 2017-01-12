@@ -203,15 +203,15 @@ static struct bio *__bio_alloc(struct f2fs_sb_info *sbi, block_t blk_addr,
 	return bio;
 }
 
-static inline void __submit_bio(struct f2fs_sb_info *sbi, int rw,
-			struct bio *bio, enum page_type type)
+static inline void __submit_bio(struct f2fs_sb_info *sbi,
+				struct bio *bio, enum page_type type)
 {
-	if (!is_read_io(rw)) {
+	if (!is_read_io(bio_op(bio))) {
 		if (f2fs_sb_mounted_blkzoned(sbi->sb) &&
 			current->plug && (type == DATA || type == NODE))
 			blk_finish_plug(current->plug);
 	}
-	submit_bio(rw, bio);
+	submit_bio(0, bio);
 }
 
 static void __submit_merged_bio(struct f2fs_bio_info *io)
@@ -219,11 +219,15 @@ static void __submit_merged_bio(struct f2fs_bio_info *io)
 	struct f2fs_io_info *fio = &io->fio;
 	if (!io->bio)
 		return;
+
 	if (is_read_io(fio->op))
 		trace_f2fs_submit_read_bio(io->sbi->sb, fio, io->bio);
 	else
 		trace_f2fs_submit_write_bio(io->sbi->sb, fio, io->bio);
-	__submit_bio(io->sbi, fio->op, io->bio, fio->type);
+
+	bio_set_op_attrs(io->bio, fio->op, fio->op_flags);
+
+	__submit_bio(io->sbi, io->bio, fio->type);
 	io->bio = NULL;
 }
 
@@ -290,9 +294,9 @@ static void __f2fs_submit_merged_bio(struct f2fs_sb_info *sbi,
 	if (type >= META_FLUSH) {
 		io->fio.type = META_FLUSH;
 		io->fio.op = REQ_OP_WRITE;
-		io->fio.op_flags = REQ_META | REQ_PRIO;
+		io->fio.op_flags = WRITE_FLUSH | REQ_META | REQ_PRIO;
 		if (!test_opt(sbi, NOBARRIER))
-			io->fio.op_flags |= WRITE_FLUSH | REQ_FUA;
+			io->fio.op_flags |= REQ_FUA;
 	}
 	__submit_merged_bio(io);
 out:
@@ -333,11 +337,15 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	f2fs_trace_ios(fio, 0);
 	/* Allocate a new bio */
 	bio = __bio_alloc(fio->sbi, fio->new_blkaddr, 1, is_read_io(fio->op));
+
 	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
 		bio_put(bio);
 		return -EFAULT;
 	}
-	__submit_bio(fio->sbi, fio->op, bio, fio->type);
+
+	bio_set_op_attrs(bio, fio->op, fio->op_flags);
+
+	__submit_bio(fio->sbi, bio, fio->type);
 	return 0;
 }
 
@@ -360,7 +368,7 @@ struct f2fs_sb_info *sbi = fio->sbi;
 
 	down_write(&io->io_rwsem);
 	if (io->bio && (io->last_block_in_bio != fio->new_blkaddr - 1 ||
-			(io->fio.rw != fio->rw) ||
+	    (io->fio.op != fio->op || io->fio.op_flags != fio->op_flags) ||
 			!__same_bdev(sbi, fio->new_blkaddr, io->bio)))
 		__submit_merged_bio(io);
 alloc_new:
@@ -1188,7 +1196,7 @@ got_it:
 		if (bio && (last_block_in_bio != block_nr - 1 ||
 			!__same_bdev(F2FS_I_SB(inode), block_nr, bio))) {
 submit_and_realloc:
-			__submit_bio(F2FS_I_SB(inode), READ, bio, DATA);
+			__submit_bio(F2FS_I_SB(inode), bio, DATA);
 			bio = NULL;
 		}
 		if (bio == NULL) {
@@ -1197,6 +1205,7 @@ submit_and_realloc:
 				bio = NULL;
 				goto set_error_page;
 			}
+			bio_set_op_attrs(bio, REQ_OP_READ, 0);
 		}
 
 		if (bio_add_page(bio, page, blocksize, 0) < blocksize)
@@ -1212,7 +1221,7 @@ set_error_page:
 		goto next_page;
 confused:
 		if (bio) {
-			__submit_bio(F2FS_I_SB(inode), READ, bio, DATA);
+			__submit_bio(F2FS_I_SB(inode), bio, DATA);
 			bio = NULL;
 		}
 		unlock_page(page);
@@ -1222,7 +1231,7 @@ next_page:
 	}
 	BUG_ON(pages && !list_empty(pages));
 	if (bio)
-		__submit_bio(F2FS_I_SB(inode), READ, bio, DATA);
+		__submit_bio(F2FS_I_SB(inode), bio, DATA);
 	return 0;
 }
 
@@ -1836,14 +1845,14 @@ repeat:
 			err = PTR_ERR(bio);
 			goto fail;
 		}
-
+		bio->bi_rw = READ_SYNC;
 		if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
 			bio_put(bio);
 			err = -EFAULT;
 			goto fail;
 		}
 
-		__submit_bio(sbi, READ_SYNC, bio, DATA);
+		__submit_bio(sbi, bio, DATA);
 
 		lock_page(page);
 		if (unlikely(page->mapping != mapping)) {

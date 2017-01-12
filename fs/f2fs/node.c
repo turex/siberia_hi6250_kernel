@@ -1091,7 +1091,7 @@ fail:
  * 0: f2fs_put_page(page, 0)
  * LOCKED_PAGE or error: f2fs_put_page(page, 1)
  */
-static int read_node_page(struct page *page, int rw)
+static int read_node_page(struct page *page, int op_flags)
 {
 	struct f2fs_sb_info *sbi = F2FS_P_SB(page);
 	struct node_info ni;
@@ -1158,8 +1158,6 @@ repeat:
 	if (!page)
 		return ERR_PTR(-ENOMEM);
 
-	if (!PageUptodate(page))
-		dev_read = 1;
 	err = read_node_page(page, REQ_SYNC);
 	if (err < 0) {
 		f2fs_put_page(page, 1);

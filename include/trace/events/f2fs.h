@@ -796,7 +796,6 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
-		__field(dev_t,	target)
 		__field(int,	op)
 		__field(int,	op_flags)
 		__field(int,	type)
@@ -806,17 +805,15 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
-		__entry->target		= bio->bi_bdev->bd_dev;
-		__entry->op		= bio_op(bio);
-		__entry->op_flags	= bio->bi_rw;
-		__entry->type		= type;
+		__entry->op		= fio->op;
+		__entry->op_flags	= fio->op_flags;
+		__entry->type		= fio->type;
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->size		= bio->bi_iter.bi_size;
 	),
 
-	TP_printk("dev = (%d,%d)/(%d,%d), rw = %s%s, %s, sector = %lld, size = %u",
-		show_dev(__entry->target),
-		show_dev(__entry->dev),
+	TP_printk("dev = (%d,%d), %s%s, %s, sector = %lld, size = %u",
+		show_dev(__entry),
 		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type),
 		(unsigned long long)__entry->sector,

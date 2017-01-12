@@ -814,7 +814,7 @@ static void move_encrypted_block(struct inode *inode, block_t bidx,
 	f2fs_wait_on_page_writeback(dn.node_page, NODE, true);
 
 	fio.op = REQ_OP_WRITE;
-	fio.op_flags = REQ_SYNC;
+	fio.op_flags = REQ_SYNC | REQ_NOIDLE;
 	fio.new_blkaddr = newaddr;
 	f2fs_submit_page_mbio(&fio);
 

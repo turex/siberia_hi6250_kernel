@@ -24,6 +24,7 @@
 #include <linux/blkdev.h>
 #include <linux/fscrypto.h>
 #include <crypto/hash.h>
+#include <linux/writeback.h>
 
 #ifdef CONFIG_F2FS_CHECK_FS
 #define f2fs_bug_on(sbi, condition)	BUG_ON(condition)
@@ -124,6 +125,24 @@ static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
 	bio->bi_rw = op | op_flags;
 }
 
+
+/* bio stuffs */
+#define REQ_OP_READ	READ
+#define REQ_OP_WRITE	WRITE
+#define bio_op(bio)	((bio)->bi_rw & 1)
+
+static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
+		unsigned op_flags)
+{
+	bio->bi_rw = op | op_flags;
+}
+
+static inline int wbc_to_write_flags(struct writeback_control *wbc)
+{
+	if (wbc->sync_mode == WB_SYNC_ALL)
+		return REQ_SYNC;
+	return 0;
+}
 
 /**
  * wq_has_sleeper - check if there are any waiting processes
