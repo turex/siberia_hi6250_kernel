@@ -2295,7 +2295,7 @@ void f2fs_set_link(struct inode *, struct f2fs_dir_entry *,
 				struct page *, struct inode *);
 int update_dent_inode(struct inode *, struct inode *, const struct qstr *);
 void f2fs_update_dentry(nid_t ino, umode_t mode, struct f2fs_dentry_ptr *,
-			const struct qstr *, f2fs_hash_t , unsigned int);
+			const struct qstr *, f2fs_hash_t, unsigned int);
 int f2fs_add_regular_entry(struct inode *, const struct qstr *,
 			const struct qstr *, struct inode *, nid_t, umode_t);
 int __f2fs_do_add_link(struct inode *, struct fscrypt_name*, struct inode *,
