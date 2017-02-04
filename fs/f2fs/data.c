@@ -1388,8 +1388,8 @@ out_writepage:
 	return err;
 }
 
-static int __write_data_page(struct page *page, bool *submitted,
-				struct writeback_control *wbc)
+static int __write_data_page(struct page *page,
+					struct writeback_control *wbc)
 {
 	struct inode *inode = page->mapping->host;
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -1496,47 +1496,11 @@ redirty_out:
 	return err;
 }
 
-#ifdef CONFIG_WBT
-static void f2fs_wbt_blk_throtl(struct block_device *bdev,
-				struct writeback_control *wbc)
+static int f2fs_write_data_page(struct page *page,
+					struct writeback_control *wbc)
 {
-	struct request_queue *q;
-
-	if (unlikely(!bdev) || unlikely(!bdev->bd_disk))
-		return;
-
-	q = bdev_get_queue(bdev);
-	if (unlikely(!q))
-		return;
-
-	if (!wbt_fs_get_quota(q, wbc))
-		wbt_fs_wait(q, wbc);
+	return __write_data_page(page, wbc);
 }
-#endif
-
-#ifdef CONFIG_BLK_DEV_THROTTLING
-static inline void f2fs_throtl_get_quota(struct block_device *bdev)
-{
-	if (!blk_throtl_get_quota(bdev, PAGE_SIZE,
-				  msecs_to_jiffies(100),
-				  false))
-		blk_throtl_get_quota(bdev, PAGE_SIZE,
-				     msecs_to_jiffies(100),
-				     true);
-}
-
-static inline void f2fs_throtl_write_pages(struct block_device *bdev)
-{
-	if (current->wb_stat.pages > THROTL_WB_SYNC_PAGE_CNT ||
-	    current->wb_stat.bios >= THROTL_WB_SYNC_BIO_CNT) {
-		while (current->wb_stat.bios) {
-			f2fs_throtl_get_quota(bdev);
-			current->wb_stat.bios--;
-		}
-		current->wb_stat.pages = 0;
-	}
-}
-#endif
 
 /*
  * This function was copied from write_cche_pages from mm/page-writeback.c.
@@ -1640,7 +1604,7 @@ continue_unlock:
 			if (!clear_page_dirty_for_io(page))
 				goto continue_unlock;
 
-			ret = mapping->a_ops->writepage(page, wbc);
+			ret = __write_data_page(page, wbc);
 			if (unlikely(ret)) {
 				/*
 				 * keep nr_to_write, since vfs uses this to
