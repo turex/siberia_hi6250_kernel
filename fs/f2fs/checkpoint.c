@@ -1046,6 +1046,10 @@ static void update_ckpt_flags(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 
 	spin_lock(&sbi->cp_lock);
 
+	if (cpc->reason == CP_UMOUNT && ckpt->cp_pack_total_block_count >
+			sbi->blocks_per_seg - NM_I(sbi)->nat_bits_blocks)
+		disable_nat_bits(sbi, false);
+
 	if (cpc->reason == CP_UMOUNT)
 		__set_ckpt_flags(ckpt, CP_UMOUNT_FLAG);
 	else
@@ -1165,9 +1169,7 @@ static int do_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	/* write nat bits */
 	if (enabled_nat_bits(sbi, cpc)) {
 		__u64 cp_ver = cur_cp_version(ckpt);
-		/*lint -save -e578*/
 		unsigned int i;
-		/*lint -restore*/
 		block_t blk;
 
 		cp_ver |= ((__u64)crc32 << 32);
@@ -1348,8 +1350,6 @@ int write_checkpoint(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	/*lint -restore*/
 
 	/* write cached NAT/SIT entries to NAT/SIT area */
-	cp_flush_meta_time = 0;
-	cp_flush_meta_begin = local_clock();
 	flush_nat_entries(sbi, cpc);
 	flush_sit_entries(sbi, cpc);
 	cp_flush_meta_end = local_clock();
