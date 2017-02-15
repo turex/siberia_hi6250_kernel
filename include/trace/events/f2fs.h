@@ -796,6 +796,7 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
+		__field(dev_t,	target)
 		__field(int,	op)
 		__field(int,	op_flags)
 		__field(int,	type)
@@ -805,6 +806,7 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
+		__entry->target		= bio->bi_bdev->bd_dev;
 		__entry->op		= bio_op(bio);
 		__entry->op_flags	= bio->bi_rw;
 		__entry->type		= type;
@@ -812,8 +814,9 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 		__entry->size		= bio->bi_iter.bi_size;
 	),
 
-	TP_printk("dev = (%d,%d), %s%s, %s, sector = %lld, size = %u",
-		show_dev(__entry),
+	TP_printk("dev = (%d,%d)/(%d,%d), rw = %s%s, %s, sector = %lld, size = %u",
+		show_dev(__entry->target),
+		show_dev(__entry->dev),
 		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type),
 		(unsigned long long)__entry->sector,
@@ -1141,9 +1144,9 @@ DECLARE_EVENT_CLASS(f2fs_discard,
 
 TRACE_EVENT(f2fs_issue_reset_zone,
 
-	TP_PROTO(struct super_block *sb, block_t blkstart),
+	TP_PROTO(struct block_device *dev, block_t blkstart),
 
-	TP_ARGS(sb, blkstart),
+	TP_ARGS(dev, blkstart),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -1151,12 +1154,12 @@ TRACE_EVENT(f2fs_issue_reset_zone,
 	),
 
 	TP_fast_assign(
-		__entry->dev	= sb->s_dev;
+		__entry->dev	= dev->bd_dev;
 		__entry->blkstart = blkstart;
 	),
 
 	TP_printk("dev = (%d,%d), reset zone at block = 0x%llx",
-		show_dev(__entry),
+		show_dev(__entry->dev),
 		(unsigned long long)__entry->blkstart)
 );
 
