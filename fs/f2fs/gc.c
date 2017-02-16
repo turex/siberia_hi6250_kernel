@@ -502,6 +502,9 @@ static int get_victim_by_default(struct f2fs_sb_info *sbi,
 			goto next;
 		if (gc_type == BG_GC && test_bit(secno, dirty_i->victim_secmap))
 			goto next;
+		if (gc_type == FG_GC && p.alloc_mode == LFS &&
+					no_fggc_candidate(sbi, secno))
+			goto next;
 
 		cost = get_gc_cost(sbi, segno, &p);
 
@@ -1206,8 +1209,7 @@ void build_gc_manager(struct f2fs_sb_info *sbi)
 	ovp_count = SM_I(sbi)->ovp_segments << sbi->log_blocks_per_seg;
 	blocks_per_sec = sbi->blocks_per_seg * sbi->segs_per_sec;
 
-	sbi->fggc_threshold = div64_u64((main_count - ovp_count) * blocks_per_sec,
+	sbi->fggc_threshold = div_u64((main_count - ovp_count) * blocks_per_sec,
 					(main_count - resv_count));
-	/*lint -restore*/
 }
 
