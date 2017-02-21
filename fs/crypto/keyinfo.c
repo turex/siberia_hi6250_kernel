@@ -108,7 +108,6 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 		res = -ENOKEY;
 		goto out;
 	}
-	down_read(&keyring_key->sem);
 	ukp = user_key_payload_locked(keyring_key);
 	if (ukp->datalen != sizeof(struct fscrypt_key)) {
 		res = -EINVAL;
@@ -126,33 +125,8 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 		res = -ENOKEY;
 		goto out;
 	}
-
-	tfm = (struct crypto_aead *)crypto_alloc_aead("gcm(aes)", 0, 0);
-	if (IS_ERR(tfm)) {
-		up_read(&keyring_key->sem);
-		res = (int)PTR_ERR(tfm);
-		tfm = NULL;
-		pr_err("fscrypt %s : tfm allocation failed!\n", __func__);
-		goto out;
-	}
-
-	/*
-     res = fscrypt_set_gcm_key(tfm, master_key->raw);
-	if (res)
-		goto out;
-	res = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, ctx->iv, 0);
-	if (res)
-		goto out;
-
-	memcpy(raw_key, plain_text, FS_KEY_DERIVATION_NONCE_SIZE);
-*/
-	crypt_info->ci_gtfm = tfm;
-	up_read(&keyring_key->sem);
-	key_put(keyring_key);
-	return 0;
+	res = derive_key_aes(ctx->nonce, master_key->raw, raw_key);
 out:
-	if (tfm)
-		crypto_free_aead(tfm);
 	up_read(&keyring_key->sem);
 	key_put(keyring_key);
 	return res;
@@ -198,24 +172,13 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	if (!ci)
 		return;
 
-	/*lint -save -e529 -e438*/
-	key = ACCESS_ONCE(ci->ci_key);
-	/*lint -restore*/
-	/*lint -save -e1072 -e747 -e50*/
-	prev = cmpxchg(&ci->ci_key, key, NULL);
-	/*lint -restore*/
-	if (prev == key && key) {
-		memzero_explicit(key, (size_t)FS_MAX_KEY_SIZE);
-		kfree(key);
-		ci->ci_key_len = 0;
-	}
 	crypto_free_skcipher(ci->ci_ctfm);
 	if (ci->ci_gtfm)
 		crypto_free_aead(ci->ci_gtfm);
 	kmem_cache_free(fscrypt_info_cachep, ci);
 }
 
-int fscrypt_get_crypt_info(struct inode *inode)
+int fscrypt_get_encryption_info(struct inode *inode)
 {
 	struct fscrypt_info *crypt_info;
 	struct fscrypt_context ctx;
@@ -226,6 +189,9 @@ int fscrypt_get_crypt_info(struct inode *inode)
 	int res;
 	int has_crc = 0;
 	int verify = 0;
+
+	if (inode->i_crypt_info)
+		return 0;
 
 	if (inode->i_crypt_info)
 		return 0;
@@ -268,9 +234,6 @@ int fscrypt_get_crypt_info(struct inode *inode)
 	crypt_info->ci_data_mode = ctx.contents_encryption_mode;
 	crypt_info->ci_filename_mode = ctx.filenames_encryption_mode;
 	crypt_info->ci_ctfm = NULL;
-	crypt_info->ci_gtfm = NULL;
-	crypt_info->ci_key = NULL;
-	crypt_info->ci_key_len = 0;
 	memcpy(crypt_info->ci_master_key, ctx.master_key_descriptor,
 				sizeof(crypt_info->ci_master_key));
 
@@ -314,17 +277,8 @@ int fscrypt_get_crypt_info(struct inode *inode)
 	if (res)
 		goto out;
 
-
-	kzfree(raw_key);
-	raw_key = NULL;
-	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) != NULL) {
-		put_crypt_info(crypt_info);
-		goto out;
-	}
-
 	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
 		crypt_info = NULL;
-
 out:
 	if (res == -ENOKEY)
 		res = 0;
@@ -332,6 +286,7 @@ out:
 	kzfree(raw_key);
 	return res;
 }
+EXPORT_SYMBOL(fscrypt_get_encryption_info);
 
 void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 {
@@ -349,16 +304,3 @@ void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 	put_crypt_info(ci);
 }
 EXPORT_SYMBOL(fscrypt_put_encryption_info);
-
-int fscrypt_get_encryption_info(struct inode *inode)
-{
-	struct fscrypt_info *ci = inode->i_crypt_info;
-	if (!ci ||
-		(ci->ci_keyring_key &&
-		 (ci->ci_keyring_key->flags & ((1 << KEY_FLAG_INVALIDATED) |
-					       (1 << KEY_FLAG_REVOKED) |
-					       (1 << KEY_FLAG_DEAD)))))
-		return fscrypt_get_crypt_info(inode);
-	return 0;
-}
-EXPORT_SYMBOL(fscrypt_get_encryption_info);
