@@ -3419,5 +3419,6 @@ static inline bool f2fs_may_encrypt(struct inode *inode)
 #define fscrypt_fname_free_buffer	fscrypt_notsupp_fname_free_buffer
 #define fscrypt_fname_disk_to_usr	fscrypt_notsupp_fname_disk_to_usr
 #define fscrypt_fname_usr_to_disk	fscrypt_notsupp_fname_usr_to_disk
+
 #endif
 #endif
