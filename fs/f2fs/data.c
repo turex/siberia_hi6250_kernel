@@ -844,7 +844,7 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
 	int err = 0, ofs = 1;
 	unsigned int ofs_in_node, last_ofs_in_node;
 	blkcnt_t prealloc;
-	struct extent_info ei;
+	struct extent_info ei = {0,0,0};
 	block_t blkaddr;
 
 	if (!maxblocks)
@@ -1728,7 +1728,7 @@ static int prepare_write_begin(struct f2fs_sb_info *sbi,
 	struct dnode_of_data dn;
 	struct page *ipage;
 	bool locked = false;
-	struct extent_info ei;
+	struct extent_info ei = {0,0,0};
 	int err = 0;
 
 	/*
