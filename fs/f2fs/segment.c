@@ -1768,33 +1768,17 @@ static int get_ssr_segment(struct f2fs_sb_info *sbi, int type)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, type);
 	const struct victim_selection *v_ops = DIRTY_I(sbi)->v_ops;
-	int i, cnt;
-	bool reversed = false;
+	int i;
+
+	/* need_SSR() already forces to do this */
+	if (v_ops->get_victim(sbi, &(curseg)->next_segno, BG_GC, type, SSR))
+		return 1;
 
 	if (IS_NODESEG(type))
-		return v_ops->get_victim(sbi,
-				&(curseg)->next_segno, BG_GC, type, SSR);
+		return 0;
 
-	/* For node segments, let's do SSR more intensively */
-	if (IS_NODESEG(type)) {
-		if (type >= CURSEG_WARM_NODE) {
-			reversed = true;
-			i = CURSEG_COLD_NODE;
-		} else {
-			i = CURSEG_HOT_NODE;
-		}
-		cnt = NR_CURSEG_NODE_TYPE;
-	} else {
-		if (type >= CURSEG_WARM_DATA) {
-			reversed = true;
-			i = CURSEG_COLD_DATA;
-		} else {
-			i = CURSEG_HOT_DATA;
-		}
-		cnt = NR_CURSEG_DATA_TYPE;
-	}
-
-	for (; cnt-- > 0; reversed ? i-- : i++) {
+	/* For data segments, let's do SSR more intensively */
+	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++) {
 		if (i == type)
 			continue;
 		if (v_ops->get_victim(sbi, &(curseg)->next_segno,
