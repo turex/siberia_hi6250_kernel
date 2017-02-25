@@ -669,9 +669,6 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 		__free_extent_tree(sbi, et);
 
 	write_unlock(&et->lock);
-
-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-		set_extra_flag(sbi, EXTRA_NEED_FSCK_FLAG);
 }
 
 unsigned int f2fs_shrink_extent_tree(struct f2fs_sb_info *sbi, int nr_shrink)

@@ -655,24 +655,6 @@ static inline void set_extent_info(struct extent_info *ei, unsigned int fofs,
 	ei->len = len;
 }
 
-static inline bool __is_discard_mergeable(struct discard_info *back,
-						struct discard_info *front)
-{
-	return back->lstart + back->len == front->lstart;
-}
-
-static inline bool __is_discard_back_mergeable(struct discard_info *cur,
-						struct discard_info *back)
-{
-	return __is_discard_mergeable(back, cur);
-}
-
-static inline bool __is_discard_front_mergeable(struct discard_info *cur,
-						struct discard_info *front)
-{
-	return __is_discard_mergeable(cur, front);
-}
-
 static inline bool __is_extent_mergeable(struct extent_info *back,
 						struct extent_info *front)
 {
