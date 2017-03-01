@@ -1502,6 +1502,129 @@ static int crypt_setkey_allcpus(struct crypt_config *cc)
 	return err;
 }
 
+#ifdef CONFIG_KEYS
+
+static bool contains_whitespace(const char *str)
+{
+	while (*str)
+		if (isspace(*str++))
+			return true;
+	return false;
+}
+
+static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string)
+{
+	char *new_key_string, *key_desc;
+	int ret;
+	struct key *key;
+	const struct user_key_payload *ukp;
+
+	/*
+	 * Reject key_string with whitespace. dm core currently lacks code for
+	 * proper whitespace escaping in arguments on DM_TABLE_STATUS path.
+	 */
+	if (contains_whitespace(key_string)) {
+		DMERR("whitespace chars not allowed in key string");
+		return -EINVAL;
+	}
+
+	/* look for next ':' separating key_type from key_description */
+	key_desc = strpbrk(key_string, ":");
+	if (!key_desc || key_desc == key_string || !strlen(key_desc + 1))
+		return -EINVAL;
+
+	if (strncmp(key_string, "logon:", key_desc - key_string + 1) &&
+	    strncmp(key_string, "user:", key_desc - key_string + 1))
+		return -EINVAL;
+
+	new_key_string = kstrdup(key_string, GFP_KERNEL);
+	if (!new_key_string)
+		return -ENOMEM;
+
+	key = request_key(key_string[0] == 'l' ? &key_type_logon : &key_type_user,
+			  key_desc + 1, NULL);
+	if (IS_ERR(key)) {
+		kzfree(new_key_string);
+		return PTR_ERR(key);
+	}
+
+	down_read(&key->sem);
+
+	ukp = user_key_payload_locked(key);
+	if (!ukp) {
+		up_read(&key->sem);
+		key_put(key);
+		kzfree(new_key_string);
+		return -EKEYREVOKED;
+	}
+
+	if (cc->key_size != ukp->datalen) {
+		up_read(&key->sem);
+		key_put(key);
+		kzfree(new_key_string);
+		return -EINVAL;
+	}
+
+	memcpy(cc->key, ukp->data, cc->key_size);
+
+	up_read(&key->sem);
+	key_put(key);
+
+	/* clear the flag since following operations may invalidate previously valid key */
+	clear_bit(DM_CRYPT_KEY_VALID, &cc->flags);
+
+	ret = crypt_setkey(cc);
+
+	/* wipe the kernel key payload copy in each case */
+	memset(cc->key, 0, cc->key_size * sizeof(u8));
+
+	if (!ret) {
+		set_bit(DM_CRYPT_KEY_VALID, &cc->flags);
+		kzfree(cc->key_string);
+		cc->key_string = new_key_string;
+	} else
+		kzfree(new_key_string);
+
+	return ret;
+}
+
+static int get_key_size(char **key_string)
+{
+	char *colon, dummy;
+	int ret;
+
+	if (*key_string[0] != ':')
+		return strlen(*key_string) >> 1;
+
+	/* look for next ':' in key string */
+	colon = strpbrk(*key_string + 1, ":");
+	if (!colon)
+		return -EINVAL;
+
+	if (sscanf(*key_string + 1, "%u%c", &ret, &dummy) != 2 || dummy != ':')
+		return -EINVAL;
+
+	*key_string = colon;
+
+	/* remaining key string should be :<logon|user>:<key_desc> */
+
+	return ret;
+}
+
+#else
+
+static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string)
+{
+	return -EINVAL;
+}
+
+static int get_key_size(char **key_string)
+{
+	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
+}
+
+#endif
+
 static int crypt_set_key(struct crypt_config *cc, char *key)
 {
 	int r = -EINVAL;
