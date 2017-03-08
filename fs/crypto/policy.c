@@ -12,7 +12,6 @@
 #include <linux/string.h>
 #include <keys/user-type.h>
 #include <uapi/linux/keyctl.h>
-#include <linux/fscrypto.h>
 #include <linux/mount.h>
 
 static int inode_has_encryption_context(struct inode *inode)
@@ -21,24 +20,16 @@ static int inode_has_encryption_context(struct inode *inode)
 		return 0;
 	return (inode->i_sb->s_cop->get_context(inode, NULL, 0L, NULL) > 0);
 }
+#include <linux/mount.h>
+#include "fscrypt_private.h"
 
 /*
- * check whether the policy is consistent with the encryption context
- * for the inode
+ * check whether an encryption policy is consistent with an encryption context
  */
-static int is_encryption_context_consistent_with_policy(struct inode *inode,
+static bool is_encryption_context_consistent_with_policy(
+				const struct fscrypt_context *ctx,
 				const struct fscrypt_policy *policy)
 {
-	struct fscrypt_context ctx;
-	int res;
-
-	if (!inode->i_sb->s_cop->get_context)
-		return 0;
-
-	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), NULL);
-	if (res != sizeof(ctx))
-		return 0;
-
 	return (memcmp(ctx.master_key_descriptor, policy->master_key_descriptor,
 			FS_KEY_DESCRIPTOR_SIZE) == 0 &&
 			(ctx.flags == policy->flags) &&
@@ -74,20 +65,12 @@ static int create_encryption_context_from_policy(struct inode *inode,
 					FS_KEY_DESCRIPTOR_SIZE);
 
 	if (!fscrypt_valid_contents_enc_mode(
-				policy->contents_encryption_mode)) {
-		printk(KERN_WARNING
-		       "%s: Invalid contents encryption mode %d\n", __func__,
-			policy->contents_encryption_mode);
+				policy->contents_encryption_mode))
 		return -EINVAL;
-	}
 
 	if (!fscrypt_valid_filenames_enc_mode(
-				policy->filenames_encryption_mode)) {
-		printk(KERN_WARNING
-			"%s: Invalid filenames encryption mode %d\n", __func__,
-			policy->filenames_encryption_mode);
+				policy->filenames_encryption_mode))
 		return -EINVAL;
-	}
 
 	if (policy->flags & ~FS_POLICY_FLAGS_VALID)
 		return -EINVAL;
@@ -186,6 +169,7 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
 	struct fscrypt_policy policy;
 	struct inode *inode = file_inode(filp);
 	int ret;
+	struct fscrypt_context ctx;
 
 	if (copy_from_user(&policy, arg, sizeof(policy)))
 		return -EFAULT;
@@ -202,9 +186,10 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
 
 	inode_lock(inode);
 
-	if (!inode_has_encryption_context(inode)) {
+	ret = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
+	if (ret == -ENODATA) {
 		if (!S_ISDIR(inode->i_mode))
-			ret = -EINVAL;
+			ret = -ENOTDIR;
 		else if (!inode->i_sb->s_cop->empty_dir)
 			ret = -EOPNOTSUPP;
 		else if (!inode->i_sb->s_cop->empty_dir(inode))
@@ -212,12 +197,14 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
 		else
 			ret = create_encryption_context_from_policy(inode,
 								    &policy);
-	} else if (!is_encryption_context_consistent_with_policy(inode,
-								 &policy)) {
-		printk(KERN_WARNING
-		       "%s: Policy inconsistent with encryption context\n",
-		       __func__);
-		ret = -EINVAL;
+	} else if (ret == sizeof(ctx) &&
+		   is_encryption_context_consistent_with_policy(&ctx,
+								&policy)) {
+		/* The file already uses the same encryption policy. */
+		ret = 0;
+	} else if (ret >= 0 || ret == -ERANGE) {
+		/* The file already uses a different encryption policy. */
+		ret = -EEXIST;
 	}
 
 	inode_unlock(inode);
@@ -238,9 +225,11 @@ int fscrypt_ioctl_get_policy(struct file *filp, void __user *arg)
 			!inode->i_sb->s_cop->is_encrypted(inode))
 		return -ENODATA;
 
-	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), NULL);
+	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
+	if (res < 0 && res != -ERANGE)
+		return res;
 	if (res != sizeof(ctx))
-		return -ENODATA;
+		return -EINVAL;
 	if (ctx.format != FS_ENCRYPTION_CONTEXT_FORMAT_V2)
 		return -EINVAL;
 
@@ -363,9 +352,9 @@ EXPORT_SYMBOL(fscrypt_has_permitted_context);
  * @parent: Parent inode from which the context is inherited.
  * @child:  Child inode that inherits the context from @parent.
  * @fs_data:  private data given by FS.
- * @preload:  preload child i_crypt_info
+ * @preload:  preload child i_crypt_info if true
  *
- * Return: Zero on success, non-zero otherwise
+ * Return: 0 on success, -errno on failure
  */
 int fscrypt_inherit_context(struct inode *parent, struct inode *child,
 						void *fs_data, bool preload)

@@ -13,7 +13,7 @@
 #include <uapi/linux/keyctl.h>
 #include <crypto/skcipher.h>
 #include <crypto/hash.h>
-#include <linux/fscrypto.h>
+#include "fscrypt_private.h"
 
 static void derive_crypt_complete(struct crypto_async_request *req, int rc)
 {
@@ -78,6 +78,7 @@ out:
 	return res;
 }
 
+<<<<<<< HEAD
 int fscrypt_set_gcm_key(struct crypto_aead *tfm,
 			u8 deriving_key[FS_AES_256_GCM_KEY_SIZE])
 {
@@ -163,9 +164,15 @@ out:
 
 struct key *fscrypt_request_key(u8 *descriptor, u8 *prefix,
 				int prefix_size)
+=======
+static int validate_user_key(struct fscrypt_info *crypt_info,
+			struct fscrypt_context *ctx, u8 *raw_key,
+			const char *prefix)
+>>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 {
-	u8 *full_key_descriptor;
+	char *description;
 	struct key *keyring_key;
+<<<<<<< HEAD
 	int full_key_len = prefix_size + (FS_KEY_DESCRIPTOR_SIZE * 2) + 1;
 
 	full_key_descriptor = kmalloc(full_key_len, GFP_NOFS);
@@ -196,6 +203,20 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 
 	keyring_key = fscrypt_request_key(ctx->master_key_descriptor,
 				prefix, prefix_size);
+=======
+	struct fscrypt_key *master_key;
+	const struct user_key_payload *ukp;
+	int res;
+
+	description = kasprintf(GFP_NOFS, "%s%*phN", prefix,
+				FS_KEY_DESCRIPTOR_SIZE,
+				ctx->master_key_descriptor);
+	if (!description)
+		return -ENOMEM;
+
+	keyring_key = request_key(&key_type_logon, description, NULL);
+	kfree(description);
+>>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 	if (IS_ERR(keyring_key))
 		return PTR_ERR(keyring_key);
 	down_read(&keyring_key->sem);
@@ -311,6 +332,7 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	kmem_cache_free(fscrypt_info_cachep, ci);
 }
 
+<<<<<<< HEAD
 static int fscrypt_verify_ctx(struct fscrypt_context *ctx)
 {
 	if ((u32)(ctx->format) != FS_ENCRYPTION_CONTEXT_FORMAT_V2)
@@ -353,6 +375,9 @@ int fscrypt_set_verify_context(struct inode *inode, const void *ctx,
 }
 
 int fscrypt_get_encryption_info(struct inode *inode)
+=======
+int fscrypt_get_crypt_info(struct inode *inode)
+>>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 {
 	struct fscrypt_info *crypt_info;
 	struct fscrypt_context ctx;
@@ -367,7 +392,7 @@ int fscrypt_get_encryption_info(struct inode *inode)
 	if (inode->i_crypt_info)
 		return 0;
 
-	res = fscrypt_initialize();
+	res = fscrypt_initialize(inode->i_sb->s_cop->flags);
 	if (res)
 		return res;
 
@@ -376,17 +401,14 @@ int fscrypt_get_encryption_info(struct inode *inode)
 
 	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), &has_crc);
 	if (res < 0) {
-		if (!fscrypt_dummy_context_enabled(inode)) {
-			verify = fscrypt_get_verify_context(inode, &ctx,
-							    sizeof(ctx));
-			if (verify < 0)
-				inode->i_sb->s_cop->set_encrypted_corrupt(inode);
+		if (!fscrypt_dummy_context_enabled(inode)
 			return res;
-		}
+		/* Fake up a context for an unencrypted directory */
+		memset(&ctx, 0, sizeof(ctx));
 		ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V2;
 		ctx.contents_encryption_mode = FS_ENCRYPTION_MODE_AES_256_XTS;
 		ctx.filenames_encryption_mode = FS_ENCRYPTION_MODE_AES_256_CTS;
-		ctx.flags = 0;
+		memset(ctx.master_key_descriptor, 0x42, FS_KEY_DESCRIPTOR_SIZE);
 	} else if (res != sizeof(ctx)) {
 		pr_err("%s: inode %lu incorrect ctx size [%u : %lu]\n",
 			inode->i_sb->s_type->name, inode->i_ino, res, sizeof(ctx));
@@ -434,20 +456,10 @@ int fscrypt_get_encryption_info(struct inode *inode)
 	if (!raw_key)
 		goto out;
 
-	if (fscrypt_dummy_context_enabled(inode)) {
-		memset(raw_key, 0x42, FS_AES_256_XTS_KEY_SIZE);
-		goto got_key;
-	}
-
-	res = validate_user_key(crypt_info, &ctx, raw_key,
-			FS_KEY_DESC_PREFIX, FS_KEY_DESC_PREFIX_SIZE);
+	res = validate_user_key(crypt_info, &ctx, raw_key, FS_KEY_DESC_PREFIX);
 	if (res && inode->i_sb->s_cop->key_prefix) {
-		u8 *prefix = NULL;
-		int prefix_size, res2;
-
-		prefix_size = inode->i_sb->s_cop->key_prefix(inode, &prefix);
-		res2 = validate_user_key(crypt_info, &ctx, raw_key,
-							prefix, prefix_size);
+		int res2 = validate_user_key(crypt_info, &ctx, raw_key,
+					     inode->i_sb->s_cop->key_prefix);
 		if (res2) {
 			verify = fscrypt_get_verify_context(inode, &ctx,
 							    sizeof(ctx));
@@ -463,7 +475,6 @@ int fscrypt_get_encryption_info(struct inode *inode)
 			inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 		goto out;
 	}
-got_key:
 	ctfm = crypto_alloc_skcipher(cipher_str, 0, 0);
 	if (!ctfm || IS_ERR(ctfm)) {
 		res = ctfm ? PTR_ERR(ctfm) : -ENOMEM;
@@ -516,3 +527,17 @@ void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 	put_crypt_info(ci);
 }
 EXPORT_SYMBOL(fscrypt_put_encryption_info);
+
+int fscrypt_get_encryption_info(struct inode *inode)
+{
+	struct fscrypt_info *ci = inode->i_crypt_info;
+
+	if (!ci ||
+		(ci->ci_keyring_key &&
+		 (ci->ci_keyring_key->flags & ((1 << KEY_FLAG_INVALIDATED) |
+					       (1 << KEY_FLAG_REVOKED) |
+					       (1 << KEY_FLAG_DEAD)))))
+		return fscrypt_get_crypt_info(inode);
+	return 0;
+}
+EXPORT_SYMBOL(fscrypt_get_encryption_info);
