@@ -542,7 +542,8 @@ static inline int utilization(struct f2fs_sb_info *sbi)
  * F2FS_IPUT_DISABLE - disable IPU. (=default option)
  */
 #define DEF_MIN_IPU_UTIL	70
-#define DEF_MIN_FSYNC_BLOCKS	20
+#define DEF_MIN_FSYNC_BLOCKS	8
+#define DEF_MIN_HOT_BLOCKS	16
 
 enum {
 	F2FS_IPU_FORCE,
