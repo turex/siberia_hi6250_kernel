@@ -2212,14 +2212,12 @@ void write_data_page(struct dnode_of_data *dn, struct f2fs_io_info *fio)
 	f2fs_update_data_blkaddr(dn, fio->new_blkaddr);
 }
 
-void rewrite_data_page(struct f2fs_io_info *fio)
+int rewrite_data_page(struct f2fs_io_info *fio)
 {
 	fio->new_blkaddr = fio->old_blkaddr;
 	stat_inc_inplace_blocks(fio->sbi);
-	bd_mutex_lock(&sbi->bd_mutex);
-	inc_bd_val(sbi, data_ipu_cnt, 1);
-	bd_mutex_unlock(&sbi->bd_mutex);
-	f2fs_submit_page_mbio(fio);
+
+	return f2fs_submit_page_bio(fio);
 }
 
 void __f2fs_replace_block(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
