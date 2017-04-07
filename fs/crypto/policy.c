@@ -165,18 +165,9 @@ int fscrypt_has_permitted_context(struct inode *parent, struct inode *child)
 	struct fscrypt_context parent_ctx, child_ctx;
 	int res;
 
-	if ((parent == NULL) || (child == NULL)) {
-		printk(KERN_ERR	"parent %p child %p\n", parent, child);
-		BUG_ON(1);
-	}
-
 	/* No restrictions on file types which are never encrypted */
 	if (!S_ISREG(child->i_mode) && !S_ISDIR(child->i_mode) &&
 	    !S_ISLNK(child->i_mode))
-		return 1;
-
-	/* no restrictions if the parent directory is not encrypted */
-	if (!parent->i_sb->s_cop->is_encrypted(parent))
 		return 1;
 
 	/* No restrictions if the parent directory is unencrypted */
