@@ -464,9 +464,10 @@ struct extent_node {
 			unsigned int len;
 			u32 blk;
 		};
+		struct extent_info ei;	/* extent info */
+
 	};
 	struct list_head list;		/* node in global extent list of sbi */
-	struct extent_info ei;		/* extent info */
 	struct extent_tree *et;		/* extent tree pointer */
 };
 

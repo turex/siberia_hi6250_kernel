@@ -49,7 +49,7 @@ static struct rb_entry *__lookup_rb_tree_slow(struct rb_root *root,
 	return NULL;
 }
 
-struct rb_entry *__lookup_rb_tree(struct rb_root *root,
+static struct rb_entry *__lookup_rb_tree(struct rb_root *root,
 				struct rb_entry *cached_re, unsigned int ofs)
 {
 	struct rb_entry *re;
@@ -61,7 +61,7 @@ struct rb_entry *__lookup_rb_tree(struct rb_root *root,
 	return re;
 }
 
-struct rb_node **__lookup_rb_tree_for_insert(struct f2fs_sb_info *sbi,
+static struct rb_node **__lookup_rb_tree_for_insert(struct f2fs_sb_info *sbi,
 				struct rb_root *root, struct rb_node **parent,
 				unsigned int ofs)
 {
@@ -77,7 +77,7 @@ struct rb_node **__lookup_rb_tree_for_insert(struct f2fs_sb_info *sbi,
 		else if (ofs >= re->ofs + re->len)
 			p = &(*p)->rb_right;
 		else
-			f2fs_bug_on_atomic(sbi, 1);
+			f2fs_bug_on(sbi, 1);
 	}
 
 	return p;
@@ -92,14 +92,13 @@ struct rb_node **__lookup_rb_tree_for_insert(struct f2fs_sb_info *sbi,
  * in order to simpfy the insertion after.
  * tree must stay unchanged between lookup and insertion.
  */
-struct rb_entry *__lookup_rb_tree_ret(struct rb_root *root,
+static struct rb_entry *__lookup_rb_tree_ret(struct rb_root *root,
 				struct rb_entry *cached_re,
 				unsigned int ofs,
 				struct rb_entry **prev_entry,
 				struct rb_entry **next_entry,
 				struct rb_node ***insert_p,
-				struct rb_node **insert_parent,
-				bool force)
+				struct rb_node **insert_parent)
 {
 	struct rb_node **pnode = &root->rb_node;
 	struct rb_node *parent = NULL, *tmp_node;
@@ -146,49 +145,17 @@ struct rb_entry *__lookup_rb_tree_ret(struct rb_root *root,
 	return NULL;
 
 lookup_neighbors:
-	if (ofs == re->ofs || force) {
+	if (ofs == re->ofs) {
 		/* lookup prev node for merging backward later */
 		tmp_node = rb_prev(&re->rb_node);
 		*prev_entry = rb_entry_safe(tmp_node, struct rb_entry, rb_node);
 	}
-	if (ofs == re->ofs + re->len - 1 || force) {
+	if (ofs == re->ofs + re->len - 1) {
 		/* lookup next node for merging frontward later */
 		tmp_node = rb_next(&re->rb_node);
 		*next_entry = rb_entry_safe(tmp_node, struct rb_entry, rb_node);
 	}
 	return re;
-}
-
-bool __check_rb_tree_consistence(struct f2fs_sb_info *sbi,
-						struct rb_root *root)
-{
-#ifdef CONFIG_F2FS_CHECK_FS
-	struct rb_node *cur = rb_first(root), *next;
-	struct rb_entry *cur_re, *next_re;
-
-	if (!cur)
-		return true;
-
-	while (cur) {
-		next = rb_next(cur);
-		if (!next)
-			return true;
-
-		cur_re = rb_entry(cur, struct rb_entry, rb_node);
-		next_re = rb_entry(next, struct rb_entry, rb_node);
-
-		if (cur_re->ofs + cur_re->len > next_re->ofs) {
-			f2fs_msg(sbi->sb, KERN_INFO, "inconsistent rbtree, "
-				"cur(%u, %u) next(%u, %u)",
-				cur_re->ofs, cur_re->len,
-				next_re->ofs, next_re->len);
-			return false;
-		}
-
-		cur = next;
-	}
-#endif
-	return true;
 }
 
 static struct kmem_cache *extent_tree_slab;
@@ -380,16 +347,21 @@ static bool f2fs_lookup_extent_tree(struct inode *inode, pgoff_t pgofs,
 		goto out;
 	}
 
-	en = __lookup_extent_tree(sbi, et, pgofs);
-	if (en) {
-		*ei = en->ei;
-		spin_lock(&sbi->extent_lock);
-		if (!list_empty(&en->list)) {
-			list_move_tail(&en->list, &sbi->extent_list);
-			et->cached_en = en;
-		}
-		spin_unlock(&sbi->extent_lock);
-		ret = true;
+	en = (struct extent_node *)__lookup_rb_tree(&et->root,
+				(struct rb_entry *)et->cached_en, pgofs);
+	if (!en)
+		goto out;
+
+	if (en == et->cached_en)
+		stat_inc_cached_node_hit(sbi);
+	else
+		stat_inc_rbtree_node_hit(sbi);
+
+	*ei = en->ei;
+	spin_lock(&sbi->extent_lock);
+	if (!list_empty(&en->list)) {
+		list_move_tail(&en->list, &sbi->extent_list);
+		et->cached_en = en;
 	}
 	spin_unlock(&sbi->extent_lock);
 	ret = true;
@@ -399,83 +371,6 @@ out:
 
 	trace_f2fs_lookup_extent_tree_end(inode, pgofs, ei);
 	return ret;
-}
-
-
-/*
- * lookup extent at @fofs, if hit, return the extent
- * if not, return NULL and
- * @prev_ex: extent before fofs
- * @next_ex: extent after fofs
- * @insert_p: insert point for new extent at fofs
- * in order to simpfy the insertion after.
- * tree must stay unchanged between lookup and insertion.
- */
-static struct extent_node *__lookup_extent_tree_ret(struct extent_tree *et,
-				unsigned int fofs,
-				struct extent_node **prev_ex,
-				struct extent_node **next_ex,
-				struct rb_node ***insert_p,
-				struct rb_node **insert_parent)
-{
-	struct rb_node **pnode = &et->root.rb_node;
-	struct rb_node *parent = NULL, *tmp_node;
-	struct extent_node *en = et->cached_en;
-
-	*insert_p = NULL;
-	*insert_parent = NULL;
-	*prev_ex = NULL;
-	*next_ex = NULL;
-
-	if (RB_EMPTY_ROOT(&et->root))
-		return NULL;
-
-	if (en) {
-		struct extent_info *cei = &en->ei;
-
-		if (cei->fofs <= fofs && cei->fofs + cei->len > fofs)
-			goto lookup_neighbors;
-	}
-
-	while (*pnode) {
-		parent = *pnode;
-		en = rb_entry(*pnode, struct extent_node, rb_node);
-
-		if (fofs < en->ei.fofs)
-			pnode = &(*pnode)->rb_left;
-		else if (fofs >= en->ei.fofs + en->ei.len)
-			pnode = &(*pnode)->rb_right;
-		else
-			goto lookup_neighbors;
-	}
-
-	*insert_p = pnode;
-	*insert_parent = parent;
-
-	en = rb_entry(parent, struct extent_node, rb_node);
-	tmp_node = parent;
-	if (parent && fofs > en->ei.fofs)
-		tmp_node = rb_next(parent);
-	*next_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
-
-	tmp_node = parent;
-	if (parent && fofs < en->ei.fofs)
-		tmp_node = rb_prev(parent);
-	*prev_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
-	return NULL;
-
-lookup_neighbors:
-	if (fofs == en->ei.fofs) {
-		/* lookup prev node for merging backward later */
-		tmp_node = rb_prev(&en->rb_node);
-		*prev_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
-	}
-	if (fofs == en->ei.fofs + en->ei.len - 1) {
-		/* lookup next node for merging frontward later */
-		tmp_node = rb_next(&en->rb_node);
-		*next_ex = rb_entry_safe(tmp_node, struct extent_node, rb_node);
-	}
-	return en;
 }
 
 static struct extent_node *__try_merge_extent_node(struct inode *inode,
@@ -586,7 +481,7 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 					(struct rb_entry *)et->cached_en, fofs,
 					(struct rb_entry **)&prev_en,
 					(struct rb_entry **)&next_en,
-					&insert_p, &insert_parent, false);
+					&insert_p, &insert_parent);
 	if (!en)
 		en = next_en;
 
