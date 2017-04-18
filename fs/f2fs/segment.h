@@ -562,8 +562,8 @@ enum {
 	F2FS_IPU_ASYNC,
 };
 
-//static inline bool need_inplace_update(struct inode *inode, struct f2fs_io_info *fio) TODO TUREX
-static inline bool need_inplace_update(struct inode *inode)
+static inline bool need_inplace_update(struct inode *inode,
+				struct f2fs_io_info *fio)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	unsigned int policy = SM_I(sbi)->ipu_policy;
@@ -587,10 +587,11 @@ static inline bool need_inplace_update(struct inode *inode)
 		return true;
 
 	/*
-	 * IPU for rewrite async pages.
+	 * IPU for rewrite async pages
 	 */
 	if (policy & (0x1 << F2FS_IPU_ASYNC) &&
-			!f2fs_encrypted_inode(inode))
+			fio && fio->op == REQ_OP_WRITE &&
+			!(fio->op_flags & REQ_SYNC))
 		return true;
 
 	/* this is only set during fdatasync */
