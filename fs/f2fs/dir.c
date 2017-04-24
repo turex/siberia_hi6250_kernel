@@ -113,7 +113,6 @@ struct f2fs_dir_entry *find_target_dentry(struct fscrypt_name *fname,
 	int max_len = 0;
 	struct fscrypt_str de_name = FSTR_INIT(NULL, 0);
 	struct fscrypt_str *name = &fname->disk_name;
-
 	if (max_slots)
 		*max_slots = 0;
 	while (bit_pos < d->max) {
@@ -122,34 +121,37 @@ struct f2fs_dir_entry *find_target_dentry(struct fscrypt_name *fname,
 			max_len++;
 			continue;
 		}
-
 		de = &d->dentry[bit_pos];
-
 		if (unlikely(!de->name_len)) {
 			bit_pos++;
 			continue;
 		}
-
-		/* encrypted case */
+		if (de->hash_code != namehash)
+			goto not_match;
 		de_name.name = d->filename[bit_pos];
 		de_name.len = le16_to_cpu(de->name_len);
-
-		/* show encrypted name */
-		if (fname->hash) {
-			if (de->hash_code == cpu_to_le32(fname->hash))
-				goto found;
-		} else if (de_name.len == name->len &&
-			de->hash_code == namehash &&
-			!memcmp(de_name.name, name->name, name->len))
+#ifdef CONFIG_F2FS_FS_ENCRYPTION
+		if (unlikely(!name->name)) {
+			if (fname->usr_fname->name[0] == '_') {
+				if (de_name.len > 32 &&
+					!memcmp(de_name.name + ((de_name.len - 17) & ~15),
+						fname->crypto_buf.name + 8, 16))
+					goto found;
+				goto not_match;
+			}
+			name->name = fname->crypto_buf.name;
+			name->len = fname->crypto_buf.len;
+		}
+#endif
+		if (de_name.len == name->len &&
+				!memcmp(de_name.name, name->name, name->len))
 			goto found;
-
+not_match:
 		if (max_slots && max_len > *max_slots)
 			*max_slots = max_len;
 		max_len = 0;
-
 		bit_pos += GET_DENTRY_SLOTS(le16_to_cpu(de->name_len));
 	}
-
 	de = NULL;
 found:
 	if (max_slots && max_len > *max_slots)
