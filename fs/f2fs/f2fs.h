@@ -198,7 +198,6 @@ enum {
 #define	CP_SYNC		0x00000004
 #define	CP_RECOVERY	0x00000008
 #define	CP_DISCARD	0x00000010
-#define CP_TRIMMED	0x00000020
 
 #define DEF_BATCHED_TRIM_SECTIONS	2048
 #define BATCHED_TRIM_SEGMENTS(sbi)	\
@@ -1373,7 +1372,7 @@ static inline bool enabled_nat_bits(struct f2fs_sb_info *sbi,
 {
 	bool set = is_set_ckpt_flags(sbi, CP_NAT_BITS_FLAG);
 
-	return (cpc) ? (cpc->reason == CP_UMOUNT) && set : set;
+	return (cpc) ? (cpc->reason & CP_UMOUNT) && set : set;
 }
 
 static inline void f2fs_lock_op(struct f2fs_sb_info *sbi)
