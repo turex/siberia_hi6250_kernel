@@ -850,7 +850,8 @@ static void f2fs_put_super(struct super_block *sb)
 	f2fs_leave_shrinker(sbi);
 	mutex_unlock(&sbi->umount_mutex);
 	/* our cp_error case, we can wait for any writeback page */
-	f2fs_flush_merged_bios(sbi);
+	f2fs_flush_merged_writes(sbi);
+
 	iput(sbi->node_inode);
 	iput(sbi->meta_inode);
 	/* destroy f2fs internal modules */
@@ -1978,9 +1979,7 @@ try_onemore:
 	/* disallow all the data/node/meta page writes */
 	set_sbi_flag(sbi, SBI_POR_DOING);
 	spin_lock_init(&sbi->stat_lock);
-	init_rwsem(&sbi->read_io.io_rwsem);
-	sbi->read_io.sbi = sbi;
-	sbi->read_io.bio = NULL;
+
 	for (i = 0; i < NR_PAGE_TYPE; i++) {
 		init_rwsem(&sbi->write_io[i].io_rwsem);
 		sbi->write_io[i].sbi = sbi;
