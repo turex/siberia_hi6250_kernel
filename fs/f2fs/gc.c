@@ -57,31 +57,16 @@ static int gc_thread_func(void *data)
 
 	wait_ms = gc_th->min_sleep_time;
 
-	current->flags |= PF_MUTEX_GC;
-
+	set_freezable();
 	do {
-		/*lint -save -e574 -e666 */
-		int ret;
-
-		if (100 * written_block_count(sbi) / sbi->user_block_count > 90)
-			gc_th->gc_preference = GC_LIFETIME;
-		else if (gc_perf_ratio(sbi) < 10 && free_segments(sbi) <
-						3 * overprovision_segments(sbi))
-			gc_th->gc_preference = GC_PERF;
-		else
-			gc_th->gc_preference = GC_BALANCE;
-
-		if (gc_th->gc_preference == GC_PERF)
-			wait_ms = max(DEF_GC_BALANCE_MIN_SLEEP_TIME *
-					gc_perf_ratio(sbi) / 100, MIN_WT);
-		else if (gc_th->gc_preference == GC_BALANCE)
-			gc_th->min_sleep_time = DEF_GC_BALANCE_MIN_SLEEP_TIME;
-		else
-			gc_th->min_sleep_time = DEF_GC_THREAD_MIN_SLEEP_TIME;
-		/*lint -restore*/
+		wait_event_interruptible_timeout(*wq,
+				kthread_should_stop() || freezing(current),
+				msecs_to_jiffies(wait_ms));
 
 		if (try_to_freeze())
 			continue;
+		if (kthread_should_stop())
+			break;
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
 		if (time_to_inject(sbi, FAULT_CHECKPOINT)) {
