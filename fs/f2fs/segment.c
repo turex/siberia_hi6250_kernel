@@ -701,6 +701,9 @@ int create_flush_cmd_control(struct f2fs_sb_info *sbi)
 	init_waitqueue_head(&fcc->flush_wait_queue);
 	init_llist_head(&fcc->issue_list);
 	SM_I(sbi)->fcc_info = fcc;
+	if (!test_opt(sbi, FLUSH_MERGE))
+		return err;
+
 init_thread:
 	fcc->f2fs_issue_flush = kthread_run(issue_flush_thread, sbi,
 				"f2fs_flush-%u:%u", MAJOR(dev), MINOR(dev));
