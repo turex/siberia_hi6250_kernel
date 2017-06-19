@@ -12,7 +12,7 @@
 #define _FSCRYPT_PRIVATE_H
 
 #include <linux/fscrypt_supp.h>
-
+#include <crypto/hash.h>
 
 #define FS_KEY_DERIVATION_NONCE_SIZE		16
 
@@ -48,5 +48,8 @@ extern int fscrypt_do_page_crypto(const struct inode *inode,
 				  gfp_t gfp_flags);
 extern struct page *fscrypt_alloc_bounce_page(struct fscrypt_ctx *ctx,
 					      gfp_t gfp_flags);
+
+/* keyinfo.c */
+extern void __exit fscrypt_essiv_cleanup(void);
 
 #endif /* _FSCRYPT_PRIVATE_H */

@@ -49,6 +49,11 @@ static int create_encryption_context_from_policy(struct inode *inode,
 	ctx.format = FS_ENCRYPTION_CONTEXT_FORMAT_V1;
 	memcpy(ctx.master_key_descriptor, policy->master_key_descriptor,
 					FS_KEY_DESCRIPTOR_SIZE);
+
+	if (!fscrypt_valid_enc_modes(policy->contents_encryption_mode,
+				     policy->filenames_encryption_mode))
+		return -EINVAL;
+
 	if (policy->flags & ~FS_POLICY_FLAGS_VALID)
 		return -EINVAL;
 	ctx.contents_encryption_mode = policy->contents_encryption_mode;
