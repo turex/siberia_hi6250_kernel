@@ -113,10 +113,26 @@ Contact:	"Shuoran Liu" <liushuoran@huawei.com>
 Description:
 		 Shows total written kbytes issued to disk.
 
+<<<<<<< HEAD
+=======
+What:		/sys/fs/f2fs/<disk>/inject_rate
+Date:		May 2016
+Contact:	"Sheng Yong" <shengyong1@huawei.com>
+Description:
+		 Controls the injection rate.
+
+What:		/sys/fs/f2fs/<disk>/inject_type
+Date:		May 2016
+Contact:	"Sheng Yong" <shengyong1@huawei.com>
+Description:
+		 Controls the injection type.
+
+>>>>>>> ea9b9467fabf (f2fs: introduce reserved_blocks in sysfs)
 What:		/sys/fs/f2fs/<disk>/reserved_blocks
 Date:		June 2017
 Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:
+<<<<<<< HEAD
 		 Controls target reserved blocks in system, the threshold
 		 is soft, it could exceed current available user space.
 
@@ -145,3 +161,6 @@ Description:
 		 smaller than target ovp_reserved_blocks, but will gradually
 		 increase to target ovp_reserved_blocks when more free blocks are
 		 freed by user later.
+=======
+		 Controls current reserved blocks in system.
+>>>>>>> ea9b9467fabf (f2fs: introduce reserved_blocks in sysfs)

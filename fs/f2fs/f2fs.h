@@ -1062,16 +1062,7 @@ struct f2fs_sb_info {
 	block_t discard_blks;			/* discard command candidats */
 	block_t last_valid_block_count;		/* for recovery */
 	block_t reserved_blocks;		/* configurable reserved blocks */
-	block_t current_reserved_blocks;	/* current reserved blocks */
-#ifdef CONFIG_F2FS_OVP_RESERVED
-	block_t ovp_reserved_blocks;		/* configurable ovp_reserved blocks */
-	block_t ovp_current_reserved_blocks; /* current ovp_reserved blocks internal */
-	block_t ovp_rsvd_want_blocks;		/* want ovp_reserved blocks internal */
-	block_t ovp_rsvd_max_blocks;		/* max ovp_reserved blocks internal */
-	block_t ovp_rsvd_start_free;	/* start free blocks to calculate ovp */
-	block_t ovp_rsvd_end_free;		/* end free blocks to calculate ovp */
-	int ovp_rsvd_update_hz;			/*rsvd update every xx times */
-#endif
+
 	u32 s_next_generation;			/* for NFS support */
 
 	/* # of pages, see count_type */
@@ -1482,6 +1473,7 @@ static inline bool inc_valid_block_count(struct f2fs_sb_info *sbi,
 				 struct inode *inode, blkcnt_t *count)
 {
 	blkcnt_t diff;
+	block_t avail_user_block_count;
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
 	if (time_to_inject(sbi, FAULT_BLOCK)) {
@@ -1497,10 +1489,11 @@ static inline bool inc_valid_block_count(struct f2fs_sb_info *sbi,
 
 	spin_lock(&sbi->stat_lock);
 	sbi->total_valid_block_count += (block_t)(*count);
-	if (unlikely(sbi->total_valid_block_count > sbi->user_block_count)) {
-		diff = sbi->total_valid_block_count - sbi->user_block_count;
+	avail_user_block_count = sbi->user_block_count - sbi->reserved_blocks;
+	if (unlikely(sbi->total_valid_block_count > avail_user_block_count)) {
+		diff = sbi->total_valid_block_count - avail_user_block_count;
 		*count -= diff;
-		sbi->total_valid_block_count = sbi->user_block_count;
+		sbi->total_valid_block_count = avail_user_block_count;
 		if (!*count) {
 			spin_unlock(&sbi->stat_lock);
 			percpu_counter_sub(&sbi->alloc_valid_block_count, diff);
@@ -1670,16 +1663,8 @@ static inline bool inc_valid_node_count(struct f2fs_sb_info *sbi,
 	spin_lock(&sbi->stat_lock);
 
 	valid_block_count = sbi->total_valid_block_count + 1;
-#ifdef CONFIG_F2FS_OVP_RESERVED
-	avail_user_block_count = max(sbi->total_valid_block_count,
-					sbi->user_block_count -
-					sbi->current_reserved_blocks -
-					sbi->ovp_rsvd_max_blocks);
-	if (unlikely(valid_block_count > avail_user_block_count)) {
-#else
-	if (unlikely(valid_block_count + sbi->current_reserved_blocks >
+	if (unlikely(valid_block_count + sbi->reserved_blocks >
 						sbi->user_block_count)) {
-#endif
 		spin_unlock(&sbi->stat_lock);
 		return false;
 	}
