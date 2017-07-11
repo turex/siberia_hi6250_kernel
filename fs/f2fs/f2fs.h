@@ -2268,7 +2268,7 @@ static inline void *f2fs_kmalloc(struct f2fs_sb_info *sbi,
 	return kmalloc(size, flags);
 }
 
-static inline void *f2fs_kvmalloc(size_t size, gfp_t flags)
+static inline void *kvmalloc(size_t size, gfp_t flags)
 {
 	void *ret;
 
@@ -2278,7 +2278,7 @@ static inline void *f2fs_kvmalloc(size_t size, gfp_t flags)
 	return ret;
 }
 
-static inline void *f2fs_kvzalloc(size_t size, gfp_t flags)
+static inline void *kvzalloc(size_t size, gfp_t flags)
 {
 	void *ret;
 
@@ -2999,4 +2999,5 @@ static inline bool f2fs_may_encrypt(struct inode *inode)
 	return 0;
 #endif
 }
+
 #endif
