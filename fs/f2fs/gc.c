@@ -121,6 +121,9 @@ static int gc_thread_func(void *data)
 		}
 #endif
 
+		if (!sb_start_write_trylock(sbi->sb))
+			continue;
+
 		/*
 		 * [GC triggering condition]
 		 * 0. GC is not conducted currently.
@@ -134,6 +137,8 @@ static int gc_thread_func(void *data)
 		 * invalidated soon after by user update or deletion.
 		 * So, I'd like to wait some time to collect dirty segments.
 		 */
+		if (!mutex_trylock(&sbi->gc_mutex))
+			goto next;
 
 #ifdef CONFIG_HISI_BLK_CORE
 		if (!gc_th->block_idle) {
@@ -143,8 +148,8 @@ static int gc_thread_func(void *data)
 			increase_sleep_time(gc_th, &wait_ms);
 			/*lint -save -e455*/
 			mutex_unlock(&sbi->gc_mutex);
-			/*lint -restore*/
-			continue;
+
+			goto next;
 		}
 
 
@@ -178,6 +183,8 @@ static int gc_thread_func(void *data)
 
 		/* balancing f2fs's metadata periodically */
 		f2fs_balance_fs_bg(sbi);
+next:
+		sb_end_write(sbi->sb);
 
 		/*lint -restore*/
 	} while (!kthread_should_stop());
