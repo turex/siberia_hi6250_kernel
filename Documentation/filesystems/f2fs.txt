@@ -172,7 +172,11 @@ io_bits=%u             Set the bit size of write IO requests. It should be set
 =======
 usrquota               Enable plain user disk quota accounting.
 grpquota               Enable plain group disk quota accounting.
+<<<<<<< HEAD
 >>>>>>> 9df0a9280fcb (f2fs: support plain user/group quota)
+=======
+prjquota               Enable plain project quota accounting.
+>>>>>>> fbe3ba58535f (f2fs: support project quota)
 
 ================================================================================
 DEBUGFS ENTRIES
