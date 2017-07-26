@@ -641,7 +641,7 @@ static void f2fs_put_super(struct super_block *sb)
 	destroy_segment_manager(sbi);
 	kfree(sbi->ckpt);
 
-	f2fs_exit_sysfs(sbi);
+	f2fs_unregister_sysfs(sbi);
 
 	sb->s_fs_info = NULL;
 	if (sbi->s_chksum_driver)
@@ -2112,7 +2112,7 @@ try_onemore:
 		goto free_root_inode;
 	}
 
-	err = f2fs_init_sysfs(sbi);
+	err = f2fs_register_sysfs(sbi);
 	if (err)
 		goto free_root_inode;
 
@@ -2177,7 +2177,7 @@ skip_recovery:
 
 free_sysfs:
 	f2fs_sync_inode_meta(sbi);
-	f2fs_exit_sysfs(sbi);
+	f2fs_unregister_sysfs(sbi);
 free_root_inode:
 	dput(sb->s_root);
 	sb->s_root = NULL;
@@ -2301,7 +2301,7 @@ static int __init init_f2fs_fs(void)
 	err = create_extent_cache();
 	if (err)
 		goto free_checkpoint_caches;
-	err = f2fs_register_sysfs();
+	err = f2fs_init_sysfs();
 	if (err)
 		goto free_extent_cache;
 	err = register_shrinker(&f2fs_shrinker_info);
@@ -2320,7 +2320,7 @@ free_filesystem:
 free_shrinker:
 	unregister_shrinker(&f2fs_shrinker_info);
 free_sysfs:
-	f2fs_unregister_sysfs();
+	f2fs_exit_sysfs();
 free_extent_cache:
 	destroy_extent_cache();
 free_checkpoint_caches:
@@ -2340,7 +2340,7 @@ static void __exit exit_f2fs_fs(void)
 	f2fs_destroy_root_stats();
 	unregister_filesystem(&f2fs_fs_type);
 	unregister_shrinker(&f2fs_shrinker_info);
-	f2fs_unregister_sysfs();
+	f2fs_exit_sysfs();
 	destroy_extent_cache();
 	destroy_checkpoint_caches();
 	destroy_segment_manager_caches();
