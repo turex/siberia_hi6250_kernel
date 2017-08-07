@@ -60,8 +60,13 @@ static int gc_thread_func(void *data)
 	set_freezable();
 	do {
 		wait_event_interruptible_timeout(*wq,
-				kthread_should_stop() || freezing(current),
+				kthread_should_stop() || freezing(current) ||
+				gc_th->gc_wake,
 				msecs_to_jiffies(wait_ms));
+
+		/* give it a try one time */
+		if (gc_th->gc_wake)
+			gc_th->gc_wake = 0;
 
 		if (try_to_freeze())
 			continue;
@@ -140,11 +145,13 @@ static int gc_thread_func(void *data)
 		if (!mutex_trylock(&sbi->gc_mutex))
 			goto next;
 
-#ifdef CONFIG_HISI_BLK_CORE
-		if (!gc_th->block_idle) {
-#else
+
+		if (gc_th->gc_urgent) {
+			wait_ms = gc_th->urgent_sleep_time;
+			goto do_gc;
+		}
+
 		if (!is_idle(sbi)) {
-#endif
 			increase_sleep_time(gc_th, &wait_ms);
 			/*lint -save -e455*/
 			mutex_unlock(&sbi->gc_mutex);
@@ -157,7 +164,7 @@ static int gc_thread_func(void *data)
 			decrease_sleep_time(gc_th, &wait_ms);
 		else
 			increase_sleep_time(gc_th, &wait_ms);
-
+do_gc:
 		stat_inc_bggc_count(sbi);
 
 #ifdef CONFIG_F2FS_STAT_FS
@@ -238,12 +245,14 @@ int start_gc_thread(struct f2fs_sb_info *sbi)
 		goto out;
 	}
 
-	gc_th->min_sleep_time = DEF_GC_BALANCE_MIN_SLEEP_TIME;
+	gc_th->urgent_sleep_time = DEF_GC_THREAD_URGENT_SLEEP_TIME;
+	gc_th->min_sleep_time = DEF_GC_THREAD_MIN_SLEEP_TIME;
 	gc_th->max_sleep_time = DEF_GC_THREAD_MAX_SLEEP_TIME;
 	gc_th->no_gc_sleep_time = DEF_GC_THREAD_NOGC_SLEEP_TIME;
 
 	gc_th->gc_idle = 0;
-	gc_th->gc_preference = GC_BALANCE;
+	gc_th->gc_urgent = 0;
+	gc_th->gc_wake= 0;
 
 #ifdef CONFIG_HISI_BLK_CORE
 	gc_th->block_idle = false;

@@ -163,4 +163,19 @@ Description:
 		 freed by user later.
 =======
 		 Controls current reserved blocks in system.
+<<<<<<< HEAD
 >>>>>>> ea9b9467fabf (f2fs: introduce reserved_blocks in sysfs)
+=======
+
+What:		/sys/fs/f2fs/<disk>/gc_urgent
+Date:		August 2017
+Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
+Description:
+		 Do background GC agressively
+
+What:		/sys/fs/f2fs/<disk>/gc_urgent_sleep_time
+Date:		August 2017
+Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
+Description:
+		 Controls sleep time of GC urgent mode
+>>>>>>> bdf6e5ea9299 (f2fs: introduce gc_urgent mode for background GC)
