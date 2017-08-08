@@ -176,7 +176,19 @@ grpquota               Enable plain group disk quota accounting.
 >>>>>>> 9df0a9280fcb (f2fs: support plain user/group quota)
 =======
 prjquota               Enable plain project quota accounting.
+<<<<<<< HEAD
 >>>>>>> fbe3ba58535f (f2fs: support project quota)
+=======
+usrjquota=<file>       Appoint specified file and type during mount, so that quota
+grpjquota=<file>       information can be properly updated during recovery flow,
+prjjquota=<file>       <quota file>: must be in root directory;
+jqfmt=<quota type>     <quota type>: [vfsold,vfsv0,vfsv1].
+offusrjquota           Turn off user journelled quota.
+offgrpjquota           Turn off group journelled quota.
+offprjjquota           Turn off project journelled quota.
+quota                  Enable plain user disk quota accounting.
+noquota                Disable all plain disk quota option.
+>>>>>>> 9e6ece8a4112 (f2fs: support journalled quota)
 
 ================================================================================
 DEBUGFS ENTRIES
