@@ -171,17 +171,19 @@ struct key {
 #endif
 
 	unsigned long		flags;		/* status flags (change with bitops) */
-#define KEY_FLAG_DEAD		0	/* set if key type has been deleted */
-#define KEY_FLAG_REVOKED	1	/* set if key had been revoked */
-#define KEY_FLAG_IN_QUOTA	2	/* set if key consumes quota */
-#define KEY_FLAG_USER_CONSTRUCT	3	/* set if key is being constructed in userspace */
-#define KEY_FLAG_ROOT_CAN_CLEAR	4	/* set if key can be cleared by root without permission */
-#define KEY_FLAG_INVALIDATED	5	/* set if key has been invalidated */
-#define KEY_FLAG_TRUSTED	6	/* set if key is trusted */
-#define KEY_FLAG_TRUSTED_ONLY	7	/* set if keyring only accepts links to trusted keys */
-#define KEY_FLAG_BUILTIN	8	/* set if key is builtin */
-#define KEY_FLAG_ROOT_CAN_INVAL	9	/* set if key can be invalidated by root without permission */
-#define KEY_FLAG_UID_KEYRING	10	/* set if key is a user or user session keyring */
+#define KEY_FLAG_INSTANTIATED	0	/* set if key has been instantiated */
+#define KEY_FLAG_DEAD		1	/* set if key type has been deleted */
+#define KEY_FLAG_REVOKED	2	/* set if key had been revoked */
+#define KEY_FLAG_IN_QUOTA	3	/* set if key consumes quota */
+#define KEY_FLAG_USER_CONSTRUCT	4	/* set if key is being constructed in userspace */
+#define KEY_FLAG_NEGATIVE	5	/* set if key is negative */
+#define KEY_FLAG_ROOT_CAN_CLEAR	6	/* set if key can be cleared by root without permission */
+#define KEY_FLAG_INVALIDATED	7	/* set if key has been invalidated */
+#define KEY_FLAG_TRUSTED	8	/* set if key is trusted */
+#define KEY_FLAG_TRUSTED_ONLY	9	/* set if keyring only accepts links to trusted keys */
+#define KEY_FLAG_BUILTIN	10	/* set if key is builtin */
+#define KEY_FLAG_ROOT_CAN_INVAL	11	/* set if key can be invalidated by root without permission */
+#define KEY_FLAG_UID_KEYRING	12	/* set if key is a user or user session keyring */
 
 	/* the key type and key description string
 	 * - the desc is used to match a key against search criteria
