@@ -22,26 +22,12 @@
 #include <linux/vmalloc.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-#include <linux/fscrypt_supp.h>
-#else
-#include <linux/fscrypt_notsupp.h>
-#endif
+#include <linux/quotaops.h>
 #include <crypto/hash.h>
 #include <linux/writeback.h>
 
-#include <linux/reboot.h>
-
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-#define DSM_F2FS_UNLINK_SIGNIF_FILE		(928005000)
-#define DSM_F2FS_NODE_CORRUPT			(928005000)
-#define DSM_F2FS_NEED_FSCK			(928005001)
-#endif
-
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-#include <dsm/dsm_pub.h>
-extern struct dsm_client *f2fs_dclient;
-#endif
+#define __FS_HAS_ENCRYPTION IS_ENABLED(CONFIG_F2FS_FS_ENCRYPTION)
+#include <linux/fscrypt.h>
 
 #ifdef CONFIG_F2FS_CHECK_FS
 
