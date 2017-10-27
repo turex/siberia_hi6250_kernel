@@ -142,6 +142,9 @@ Date:		June 2017
 Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e945474a9c1b (f2fs: support soft block reservation)
 		 Controls target reserved blocks in system, the threshold
 		 is soft, it could exceed current available user space.
 
@@ -154,6 +157,7 @@ Description:
 		 smaller than target_reserved_blocks, but will gradually
 		 increase to target_reserved_blocks when more free blocks are
 		 freed by user later.
+<<<<<<< HEAD
 
 What:		/sys/fs/f2fs/<disk>/ovp_reserved_blocks
 Date:		December 2017
@@ -175,6 +179,8 @@ Description:
 <<<<<<< HEAD
 >>>>>>> ea9b9467fabf (f2fs: introduce reserved_blocks in sysfs)
 =======
+=======
+>>>>>>> e945474a9c1b (f2fs: support soft block reservation)
 
 What:		/sys/fs/f2fs/<disk>/gc_urgent
 Date:		August 2017
