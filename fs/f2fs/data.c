@@ -2003,8 +2003,8 @@ retry:
 	while (!done && (index <= end)) {
 		int i;
 
-		nr_pages = pagevec_lookup_tag(&pvec, mapping, &index, tag,
-			      min(end - index, (pgoff_t)PAGEVEC_SIZE - 1) + 1);
+		nr_pages = pagevec_lookup_range_tag(&pvec, mapping, &index, end,
+				tag, PAGEVEC_SIZE);
 		if (nr_pages == 0)
 			break;
 
@@ -2014,19 +2014,6 @@ retry:
 		for (i = 0; i < nr_pages; i++) {
 			struct page *page = pvec.pages[i];
 			bool submitted = false;
-
-			if (page->index > end) {
-				done = 1;
-				break;
-			}
-
-#ifdef CONFIG_BLK_DEV_THROTTLING
-			if (!(current->flags & PF_MUTEX_GC)) {
-				current->wb_stat.pages++;
-				if (current->wb_stat.bios > 1)
-					f2fs_throtl_write_pages(mapping->host->i_sb->s_bdev);
-			}
-#endif
 
 			done_index = page->index;
 retry_write:
