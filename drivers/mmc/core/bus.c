@@ -199,15 +199,9 @@ static int mmc_bus_suspend(struct device *dev)
 	}
 #endif
 	ret = host->bus_ops->suspend(host);
-	/*if bus_ops->suspend failed, need to pm_generic_resume*/
-#ifdef CONFIG_HISI_MMC
-	if (ret) {
-		pr_err("%s:%d bus_suspend failed ret=%d\n",
-			__func__, __LINE__, ret);
-		(void)pm_generic_resume(dev);
-	}
-#endif
-	printk("%s:%d %d--\n", __func__, __LINE__, ret);
+	if (ret)
+		pm_generic_resume(dev);
+
 	return ret;
 }
 
