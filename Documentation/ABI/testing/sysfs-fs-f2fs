@@ -227,6 +227,13 @@ Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:
 		 Used to control configure extension list:
 		 - Query: cat /sys/fs/f2fs/<disk>/extension_list
+<<<<<<< HEAD
 		 - Add: echo 'extension' > /sys/fs/f2fs/<disk>/extension_list
 		 - Del: echo '!extension' > /sys/fs/f2fs/<disk>/extension_list
 >>>>>>> 766d2321697f (f2fs: expose extension_list sysfs entry)
+=======
+		 - Add: echo '[h/c]extension' > /sys/fs/f2fs/<disk>/extension_list
+		 - Del: echo '[h/c]!extension' > /sys/fs/f2fs/<disk>/extension_list
+		 - [h] means add/del hot file extension
+		 - [c] means add/del cold file extension
+>>>>>>> 076a6f32fe5d (f2fs: support hot file extension)
