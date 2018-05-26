@@ -2980,7 +2980,10 @@ static void do_write_page(struct f2fs_summary *sum, struct f2fs_io_info *fio)
 {
 	int type = __get_segment_type(fio);
 	int err;
+	bool keep_order = (test_opt(fio->sbi, LFS) && type == CURSEG_COLD_DATA);
 
+	if (keep_order)
+		down_read(&fio->sbi->io_order_lock);
 reallocate:
 	allocate_data_block(fio->sbi, fio->page, fio->old_blkaddr,
 			&fio->new_blkaddr, sum, type, fio, true);
@@ -2993,6 +2996,8 @@ reallocate:
 	} else if (!err) {
 		update_device_state(fio);
 	}
+	if (keep_order)
+		up_read(&fio->sbi->io_order_lock);
 }
 /*lint -restore*/
 
