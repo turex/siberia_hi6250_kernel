@@ -907,6 +907,10 @@ static int __allocate_data_block(struct dnode_of_data *dn, int seg_type)
 	if (unlikely(is_inode_flag_set(dn->inode, FI_NO_ALLOC)))
 		return -EPERM;
 
+	err = f2fs_get_node_info(sbi, dn->nid, &ni);
+	if (err)
+		return err;
+
 	dn->data_blkaddr = datablock_addr(dn->inode,
 				dn->node_page, dn->ofs_in_node);
 	if (dn->data_blkaddr == NEW_ADDR)
@@ -916,7 +920,6 @@ static int __allocate_data_block(struct dnode_of_data *dn, int seg_type)
 		return err;
 
 alloc:
-	f2fs_get_node_info(sbi, dn->nid, &ni);
 	set_summary(&sum, dn->nid, dn->ofs_in_node, ni.version);
 
 	f2fs_allocate_data_block(sbi, NULL, dn->data_blkaddr, &dn->data_blkaddr,
@@ -1319,7 +1322,11 @@ static int f2fs_xattr_fiemap(struct inode *inode,
 		if (!page)
 			return -ENOMEM;
 
-		f2fs_get_node_info(sbi, inode->i_ino, &ni);
+		err = f2fs_get_node_info(sbi, inode->i_ino, &ni);
+		if (err) {
+			f2fs_put_page(page, 1);
+			return err;
+		}
 
 		phys = (__u64)blk_to_logical(inode, ni.blk_addr);
 		offset = offsetof(struct f2fs_inode, i_addr) +
@@ -1346,7 +1353,11 @@ static int f2fs_xattr_fiemap(struct inode *inode,
 		if (!page)
 			return -ENOMEM;
 
-		f2fs_get_node_info(sbi, xnid, &ni);
+		err = f2fs_get_node_info(sbi, xnid, &ni);
+		if (err) {
+			f2fs_put_page(page, 1);
+			return err;
+		}
 
 		phys = (__u64)blk_to_logical(inode, ni.blk_addr);
 		len = inode->i_sb->s_blocksize;
@@ -1735,6 +1746,7 @@ int f2fs_do_write_data_page(struct f2fs_io_info *fio)
 	struct inode *inode = page->mapping->host;
 	struct dnode_of_data dn;
 	struct extent_info ei = {0,0,0};
+	struct node_info ni;
 	bool ipu_force = false;
 	int err = 0;
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -1803,6 +1815,12 @@ got_it:
 		}
 		fio->need_lock = LOCK_REQ;
 	}
+
+	err = f2fs_get_node_info(fio->sbi, dn.nid, &ni);
+	if (err)
+		goto out_writepage;
+
+	fio->version = ni.version;
 
 	err = encrypt_one_page(fio);
 	if (err)
