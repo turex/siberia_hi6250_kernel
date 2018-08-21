@@ -554,7 +554,8 @@ skip:
 	if (fio->in_list)
 		goto next;
 out:
-	if (is_sbi_flag_set(sbi, SBI_IS_SHUTDOWN))
+	if (is_sbi_flag_set(sbi, SBI_IS_SHUTDOWN) ||
+				f2fs_is_checkpoint_ready(sbi))
 		__submit_merged_bio(io);
 	up_write(&io->io_rwsem);
 }
@@ -1732,6 +1733,10 @@ static inline bool check_inplace_update_policy(struct inode *inode,
 			is_inode_flag_set(inode, FI_NEED_IPU))
 		return true;
 
+	if (unlikely(fio && is_sbi_flag_set(sbi, SBI_CP_DISABLED) &&
+			!f2fs_is_checkpointed_data(sbi, fio->old_blkaddr)))
+		return true;
+
 	return false;
 }
 
@@ -1761,6 +1766,9 @@ bool f2fs_should_update_outplace(struct inode *inode, struct f2fs_io_info *fio)
 		if (is_cold_data(fio->page))
 			return true;
 		if (IS_ATOMIC_WRITTEN_PAGE(fio->page))
+			return true;
+		if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED) &&
+			f2fs_is_checkpointed_data(sbi, fio->old_blkaddr)))
 			return true;
 	}
 	return false;
@@ -2387,6 +2395,10 @@ static int f2fs_write_begin(struct file *file, struct address_space *mapping,
 	trace_android_fs_datawrite_start(inode, pos, len,
 					 current->pid, current->comm);
 	trace_f2fs_write_begin(inode, pos, len, flags);
+
+	err = f2fs_is_checkpoint_ready(sbi);
+	if (err)
+		goto fail;
 
 	if ((f2fs_is_atomic_file(inode) &&
 			!f2fs_available_free_memory(sbi, INMEM_PAGES)) ||
