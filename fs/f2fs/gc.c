@@ -66,54 +66,16 @@ static int gc_thread_func(void *data)
 		if (gc_th->gc_wake)
 			gc_th->gc_wake = 0;
 
-		if (try_to_freeze())
+		if (try_to_freeze()) {
+			stat_other_skip_bggc_count(sbi);
 			continue;
+		}
 		if (kthread_should_stop())
 			break;
 
-#ifdef CONFIG_F2FS_FAULT_INJECTION
-		if (time_to_inject(sbi, FAULT_CHECKPOINT)) {
-			f2fs_show_injection_info(FAULT_CHECKPOINT);
-			f2fs_stop_checkpoint(sbi, false);
-		}
-#endif
-
-		/*lint -save -e454 -e456 -e666*/
-		if (!(ret = __gc_thread_wait_timeout(sbi, gc_th,
-			msecs_to_jiffies(wait_ms)))) {
-			if (sbi->sb->s_writers.frozen >= SB_FREEZE_WRITE) {
-				increase_sleep_time(gc_th, &wait_ms);
-				continue;
-			}
-
-			if (!mutex_trylock(&sbi->gc_mutex))
-				continue;
-
-			/* time runs out - must be background GC */
-		} else if (kthread_should_stop())
-			break;
-		else if (ret < 0) {
-			pr_err("f2fs-gc: some signals have been received...\n");
-			continue;
-		} else {
-			int ssr_gc_count;
-			ssr_gc_count = atomic_read(&sbi->need_ssr_gc);
-			if (ssr_gc_count) {
-				mutex_lock(&sbi->gc_mutex);
-				f2fs_gc(sbi, true, false);
-				atomic_sub(ssr_gc_count, &sbi->need_ssr_gc);
-			}
-			if (!has_not_enough_free_secs(sbi, 0, 0)) {
-				wake_up_all(&gc_th->fg_gc_wait);
-				continue;
-			}
-
-			/* run into FG_GC
-			   we must wait & take sbi->gc_mutex before FG_GC */
-			mutex_lock(&sbi->gc_mutex);
-
-			f2fs_gc(sbi, false, false);
-			wake_up_all(&gc_th->fg_gc_wait);
+		if (sbi->sb->s_writers.frozen >= SB_FREEZE_WRITE) {
+			increase_sleep_time(gc_th, &wait_ms);
+			stat_other_skip_bggc_count(sbi);
 			continue;
 		}
 
@@ -122,8 +84,10 @@ static int gc_thread_func(void *data)
 			f2fs_stop_checkpoint(sbi, false);
 		}
 
-		if (!sb_start_write_trylock(sbi->sb))
+		if (!sb_start_write_trylock(sbi->sb)) {
+			stat_other_skip_bggc_count(sbi);
 			continue;
+		}
 
 		/*
 		 * [GC triggering condition]
@@ -144,14 +108,16 @@ static int gc_thread_func(void *data)
 			goto do_gc;
 		}
 
-		if (!mutex_trylock(&sbi->gc_mutex))
+		if (!mutex_trylock(&sbi->gc_mutex)) {
+			stat_other_skip_bggc_count(sbi);
 			goto next;
+		}
 
 		if (!is_idle(sbi, GC_TIME)) {
 			increase_sleep_time(gc_th, &wait_ms);
 			/*lint -save -e455*/
 			mutex_unlock(&sbi->gc_mutex);
-
+			stat_io_skip_bggc_count(sbi);
 			goto next;
 		}
 
