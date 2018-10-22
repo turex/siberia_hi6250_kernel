@@ -477,6 +477,9 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 		return -EFAULT;
 	}
 
+	if (fio->io_wbc && !is_read_io(fio->op))
+		wbc_account_io(fio->io_wbc, page, PAGE_SIZE);
+
 	bio_set_op_attrs(bio, fio->op, fio->op_flags);
 
 	if (!is_read_io(fio->op))
