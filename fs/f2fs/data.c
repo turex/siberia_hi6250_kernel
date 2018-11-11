@@ -2583,212 +2583,52 @@ static int check_direct_IO(struct inode *inode, struct iov_iter *iter,
 	return 0;
 }
 
-#ifdef CONFIG_FS_ENCRYPTION
-struct f2fs_crypt_dio {
-	struct inode		*inode;
-	struct fscrypt_ctx	*ctx;
-	void			*private;
-	bio_end_io_t		*orig_end_io;
-	loff_t			foff;
-};
-
-static inline void __f2fs_crypt_end_dio(struct f2fs_crypt_dio *dio,
-					struct bio *bio)
+static void f2fs_dio_end_io(struct bio *bio)
 {
-	bio->bi_private = dio->private;
+	struct f2fs_private_dio *dio = bio->bi_private;
+
+	dec_page_count(F2FS_I_SB(dio->inode),
+			dio->write ? F2FS_DIO_WRITE : F2FS_DIO_READ);
+
+	bio->bi_private = dio->orig_private;
 	bio->bi_end_io = dio->orig_end_io;
 
 	kfree(dio);
 
-#ifdef CONFIG_HISI_BLK_CORE
-	bio->io_in_count |= HISI_IO_IN_COUNT_ALREADY_ENDED;
-#endif
 	bio_endio(bio);
 }
 
-/*
- * Note: We just support the f2fs whose block size is equal to PAGE SIZE now.
- *       This is because current fs/crypt module only can run well
- *       on this case. In the future(Maybe v4.9 or later), we need change
- *       this function to encrypt the data by the block address.
- */
-static void f2fs_complete_dio_read(struct work_struct *work)
+static void f2fs_dio_submit_bio(int rw, struct bio *bio, struct inode *inode,
+							loff_t file_offset)
 {
-	/*lint -save -e826*/
-	struct fscrypt_ctx *ctx =
-		container_of(work, struct fscrypt_ctx, r.work);
-	/*lint -restore*/
-	struct bio *bio = ctx->r.bio;
-	struct f2fs_crypt_dio *dio = bio->bi_private;
-	struct inode *inode = dio->inode;
-	struct bio_vec *bv;
-	struct page *page;
-	pgoff_t index;
-	int i;
-	int ret;
+	struct f2fs_private_dio *dio;
+	bool write = (rw == REQ_OP_WRITE);
+	int err;
 
-	/*lint -save -e704*/
-	index = dio->foff >> PAGE_SHIFT;
-	/*lint -restore*/
-
-	bio_for_each_segment_all(bv, bio, i) {
-		page = bv->bv_page;
-
-		ret = fscrypt_decrypt_dio_page(inode, page, index);
-		if (ret) {
-			bio->bi_error = ret;
-			break;
-		}
-		index++;
-	}
-
-	fscrypt_release_ctx(ctx);
-	__f2fs_crypt_end_dio(dio, bio);
-}
-
-static void f2fs_crypt_direct_read_end_io(struct bio *bio)
-{
-	struct f2fs_crypt_dio *dio = bio->bi_private;
-	struct fscrypt_ctx *ctx = dio->ctx;
-
-	if (unlikely(bio->bi_error)) {
-		fscrypt_release_ctx(ctx);
-		__f2fs_crypt_end_dio(dio, bio);
-		return;
-	}
-
-	fscrypt_decrypt_dio_bio_pages(ctx, bio, f2fs_complete_dio_read);
-}
-
-static void f2fs_crypt_direct_write_end_io(struct bio *bio)
-{
-	struct f2fs_crypt_dio *dio = bio->bi_private;
-	struct bio_vec *bvec;
-	int i;
-
-	bio_for_each_segment_all(bvec, bio, i) {
-		struct page *page = bvec->bv_page;
-
-		fscrypt_pullback_bio_page(&page, true);
-
-		bvec->bv_page = page;
-	}
-
-	/*
-	 * Direct IO is only used for user data, IO errors which occur during
-	 * the user data IO would not break the file system, so we needn't
-	 * check the IO error here to decide if we need stop check point
-	 * process or not.
-	 */
-
-	__f2fs_crypt_end_dio(dio, bio);
-}
-
-/*
- * Note: We just support the f2fs whose block size is equal to PAGE SIZE now.
- *       This is because current fs/crypt module only can run well
- *       on this case. In the future(Maybe v4.9 or later), we need change
- *       this function to encrypt the data by the block address.
- */
-static int f2fs_encrypt_dio_pages(struct inode *inode, struct bio *bio,
-				  loff_t offset)
-{
-	struct page *page;
-	struct page *encrypted_page;
-	struct bio_vec *bvec;
-	pgoff_t index;
-	int max;
-	int i;
-
-	/*lint -save -e704*/
-	index = offset >> PAGE_SHIFT;
-	/*lint -restore*/
-
-	bio_for_each_segment_all(bvec, bio, i) {
-		page = bvec->bv_page;
-
-		encrypted_page = fscrypt_encrypt_dio_page(inode, page, index,
-							  GFP_NOFS);
-		if (IS_ERR(encrypted_page))
-			goto error;
-
-		bvec->bv_page = encrypted_page;
-		index++;
-	}
-
-	return 0;
-
-error:
-	max = i;
-	bio_for_each_segment_all(bvec, bio, i) {
-		if (i >= max)
-			break;
-
-		page = bvec->bv_page;
-
-		fscrypt_pullback_bio_page(&page, true);
-
-		bvec->bv_page = page;
-	}
-	/*lint -save -e712*/
-	return PTR_ERR(encrypted_page);
-	/*lint -restore*/
-}
-
-static void f2fs_submit_direct(int rw, struct bio *bio, struct inode *inode,
-			       loff_t foff)
-{
-	struct f2fs_crypt_dio	*dio;
-	struct fscrypt_ctx	*ctx;
-	/*lint -save -e737*/
-	int			write = rw & REQ_WRITE;
-	/*lint -restore*/
-	int			ret;
-
-	dio = kzalloc(sizeof(struct f2fs_crypt_dio), GFP_NOFS);
+	dio = f2fs_kzalloc(F2FS_I_SB(inode),
+			sizeof(struct f2fs_private_dio), GFP_NOFS);
 	if (!dio) {
-		ret = -ENOMEM;
-		goto dio_err;
+		err = -ENOMEM;
+		goto out;
 	}
 
 	dio->inode = inode;
-	dio->private = bio->bi_private;
-	dio->foff = foff;
 	dio->orig_end_io = bio->bi_end_io;
+	dio->orig_private = bio->bi_private;
+	dio->write = write;
 
-	if (!write) {
-		/*lint -save -e712*/
-		ctx = fscrypt_get_ctx(inode, GFP_NOFS);
-		if (IS_ERR(ctx)) {
-			ret = PTR_ERR(ctx);
-			goto ctx_err;
-		}
-		/*lint -restore*/
-
-		dio->ctx = ctx;
-
-		bio->bi_end_io = f2fs_crypt_direct_read_end_io;
-	} else {
-		ret = f2fs_encrypt_dio_pages(inode, bio, foff);
-		if (ret)
-			goto ctx_err;
-		bio->bi_end_io = f2fs_crypt_direct_write_end_io;
-	}
-
+	bio->bi_end_io = f2fs_dio_end_io;
 	bio->bi_private = dio;
+
+	inc_page_count(F2FS_I_SB(inode),
+			write ? F2FS_DIO_WRITE : F2FS_DIO_READ);
+
 	submit_bio(rw, bio);
 	return;
-
-ctx_err:
-	kfree(dio);
-dio_err:
-	bio->bi_error = ret;
-#ifdef CONFIG_HISI_BLK_CORE
-	bio->io_in_count |= HISI_IO_IN_COUNT_SKIP_ENDIO;
-#endif
+out:
+	bio->bi_error = -EIO;
 	bio_endio(bio);
 }
-#endif
 
 static ssize_t f2fs_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
 				loff_t offset)
@@ -2836,7 +2676,10 @@ static ssize_t f2fs_direct_IO(struct kiocb *iocb, struct iov_iter *iter,
 			down_read(&fi->i_gc_rwsem[READ]);
 	}
 
-	err = blockdev_direct_IO(iocb, inode, iter, offset, get_data_block_dio);
+	err = __blockdev_direct_IO(iocb, inode, inode->i_sb->s_bdev,
+			iter, offset,
+			get_data_block_dio, NULL, f2fs_dio_submit_bio,
+			DIO_LOCKING | DIO_SKIP_HOLES);
 
 	if (do_opu)
 		up_read(&fi->i_gc_rwsem[READ]);
