@@ -180,41 +180,27 @@ int f2fs_start_gc_thread(struct f2fs_sb_info *sbi)
 
 	gc_th->gc_wake= 0;
 
-#ifdef CONFIG_HISI_BLK_CORE
-	gc_th->block_idle = false;
-	gc_th->gc_nb.subscriber_name = "f2fs_gc";
-	gc_th->gc_nb.blk_busy_idle_notifier_callback = gc_io_busy_idle_notify_handler;
-	gc_th->gc_nb.param_data = sbi;
-	err = blk_busy_idle_event_subscriber(sbi->sb->s_bdev, &gc_th->gc_nb);
-	setup_timer(&gc_th->nb_timer, set_block_idle, (unsigned long)sbi);
-#endif
-
-	init_waitqueue_head(&gc_th->gc_wait_queue_head);
-	init_waitqueue_head(&gc_th->fg_gc_wait);
-	f2fs_gc_task = kthread_run(gc_thread_func, sbi,
-		"f2fs_gc-%u:%u", MAJOR(dev), MINOR(dev));
-	if (IS_ERR(f2fs_gc_task))
-		err = PTR_ERR(f2fs_gc_task);
-	else
-		ACCESS_ONCE(gc_th->f2fs_gc_task) = f2fs_gc_task;
+	sbi->gc_thread = gc_th;
+	init_waitqueue_head(&sbi->gc_thread->gc_wait_queue_head);
+	sbi->gc_thread->f2fs_gc_task = kthread_run(gc_thread_func, sbi,
+			"f2fs_gc-%u:%u", MAJOR(dev), MINOR(dev));
+	if (IS_ERR(gc_th->f2fs_gc_task)) {
+		err = PTR_ERR(gc_th->f2fs_gc_task);
+		kvfree(gc_th);
+		sbi->gc_thread = NULL;
+	}
+out:
 	return err;
 }
 
 void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi)
 {
-	struct f2fs_gc_kthread *gc_th = &sbi->gc_thread;
-	if (gc_th->f2fs_gc_task != NULL) {
-		kthread_stop(gc_th->f2fs_gc_task);
-		ACCESS_ONCE(gc_th->f2fs_gc_task) = NULL;
-		wake_up_all(&gc_th->fg_gc_wait);
-#ifdef CONFIG_HISI_BLK_CORE
-		del_timer_sync(&gc_th->nb_timer);
-retry:
-		if (blk_busy_idle_event_unsubscriber(sbi->sb->s_bdev, &gc_th->gc_nb))
-			goto retry;
-#endif
-
-	}
+	struct f2fs_gc_kthread *gc_th = sbi->gc_thread;
+	if (!gc_th)
+		return;
+	kthread_stop(gc_th->f2fs_gc_task);
+	kvfree(gc_th);
+	sbi->gc_thread = NULL;
 }
 
 static int select_gc_type(struct f2fs_sb_info *sbi, int gc_type)
