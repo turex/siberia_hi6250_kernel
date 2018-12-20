@@ -427,7 +427,6 @@ VOS_UINT32 atSetNVFactoryRestore(VOS_UINT8 ucClientId)
 }
 
 
-extern VOS_UINT32 SC_COMM_Backup(VOS_VOID);
 
 VOS_UINT32 atSetNVFactoryBack(VOS_UINT8 ucClientId)
 {
@@ -444,15 +443,6 @@ VOS_UINT32 atSetNVFactoryBack(VOS_UINT8 ucClientId)
     }
 
     /* Added by d00212987 在该AT命令中增加SC的备份。 2015-08-10, begin */
-    ulRst = SC_COMM_Backup();
-    if(ulRst != ERR_MSP_SUCCESS)
-    {
-        printk("atSetNVFactoryBack:SC Backup faile! %d", ulRst);
-
-        CmdErrProc(ucClientId, ulRst, 0, NULL);
-
-        return AT_ERROR;
-    }
     /* Added by d00212987 在该AT命令中增加SC的备份。 2015-08-10, end */
 
     gstAtSendData.usBufLen = (VOS_UINT16)At_sprintf( AT_CMD_MAX_LEN,

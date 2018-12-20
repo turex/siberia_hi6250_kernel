@@ -25,7 +25,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/chap.h 173710 2007-11-17 23:14:06Z jb $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/chap.h 173710 2007-11-17 23:14:06Z jb $
  */
 
 #ifndef __PPP_CHAP_H__

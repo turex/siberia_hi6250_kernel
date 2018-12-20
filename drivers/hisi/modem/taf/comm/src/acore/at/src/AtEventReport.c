@@ -3957,6 +3957,48 @@ VOS_VOID At_ReportClccDisplayName(
 }
 
 /*****************************************************************************
+ 函 数 名  : At_ReportPeerVideoSupport
+ 功能描述  : ^CLCC查询命令terminal video support处理函数
+ 输入参数  : pstCallInfo
+ 输出参数  : pusLength
+ 返 回 值  : VOS_VOID
+ 调用函数  :
+ 被调函数  :
+
+ 修改历史      :
+  1.日    期   : 2017年7月13日
+    作    者   : w00316404
+    修改内容   : 新增函数
+*****************************************************************************/
+VOS_VOID At_ReportPeerVideoSupport(
+    MN_CALL_INFO_PARAM_STRU            *pstCallInfo,
+    VOS_UINT16                         *pusLength
+)
+{
+    if (VOS_TRUE == pstCallInfo->bitOpPeerVideoSupport)
+    {
+        if (0 == pstCallInfo->stDisplayName.ucNumLen)
+        {
+            /* <terminal video support> */
+            (*pusLength) = (*pusLength) + (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
+                                               (VOS_CHAR *)pgucAtSndCodeAddr,
+                                               (VOS_CHAR *)pgucAtSndCodeAddr + (*pusLength),
+                                               ",,%d",pstCallInfo->enPeerVideoSupport);
+        }
+        else
+        {
+            /* <terminal video support> */
+            (*pusLength) = (*pusLength) + (VOS_UINT16)At_sprintf(AT_CMD_MAX_LEN,
+                                               (VOS_CHAR *)pgucAtSndCodeAddr,
+                                               (VOS_CHAR *)pgucAtSndCodeAddr + (*pusLength),
+                                               ",%d",pstCallInfo->enPeerVideoSupport);
+        }
+    }
+
+    return;
+}
+
+/*****************************************************************************
  函 数 名  : At_ProcQryClccResult
  功能描述  : ^CLCC查询命令处理函数
  输入参数  : VOS_UINT8 ucIndex
@@ -4101,6 +4143,8 @@ VOS_VOID At_ProcQryClccResult(
             }
 
             At_ReportClccDisplayName(&(pstCallInfos->astCallInfos[ucTmp].stDisplayName), &usLength);
+
+            At_ReportPeerVideoSupport(&(pstCallInfos->astCallInfos[ucTmp]), &usLength);
         }
     }
 

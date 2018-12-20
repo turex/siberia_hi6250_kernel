@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/async.h 93418 2002-03-30 12:30:09Z brian $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/async.h 93418 2002-03-30 12:30:09Z brian $
  */
 #ifndef __PPP_ASYNC_H__
 #define __PPP_ASYNC_H__

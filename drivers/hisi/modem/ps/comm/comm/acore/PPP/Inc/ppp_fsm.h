@@ -25,7 +25,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/fsm.h 165777 2007-01-05 00:33:00Z ticso $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/fsm.h 165777 2007-01-05 00:33:00Z ticso $
  */
 #ifndef __PPP_FSM_H__
 #define __PPP_FSM_H__

@@ -25,7 +25,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/lcp.h 138799 2004-12-13 12:51:19Z brian $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/lcp.h 138799 2004-12-13 12:51:19Z brian $
  */
 #ifndef __PPP_LCP_H__
 #define __PPP_LCP_H__

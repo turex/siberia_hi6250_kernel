@@ -87,6 +87,7 @@ extern "C" {
 #include "drv_nv_def.h"
 #include "nv_debug.h"
 #include "nv_partition_upgrade.h"
+#include "mdrv_rfile_common.h"
 
 extern struct nv_global_ctrl_info_stru  g_nv_ctrl;
 extern struct nv_global_ctrl_stru * g_flash_emmc_info_ptr;
@@ -170,6 +171,30 @@ enum
     NV_PRODUCT_MBB      = 1,
     NV_PRODUCT_BUTT
 };
+enum
+{
+    NV_IMG,
+    NV_SC_CK_FILE,
+	NV_SC_DK_FILE,
+	NV_SC_AK_FILE,
+	NV_SC_PI_FILE,
+	NV_SC_IMEI_I0_BIN,
+	NV_SC_IMEI_I1_BIN,
+	NV_SC_IMEI_I2_BIN,
+	NV_SC_CK_SIGN,
+	NV_SC_DK_SIGN,
+	NV_SC_AK_SIGN,
+	NV_SC_PI_SIGN,
+	NV_SC_IMEI_I0_HASH,
+	NV_SC_IMEI_I1_HASH,
+	NV_SC_IMEI_I2_HASH,
+    NV_MAX
+};
+typedef struct nv_path_info_stru
+{
+    s8* root_dir;
+    s8  file_path[NV_MAX][100];
+}nv_path_info;
 
 
 typedef struct nv_flush_list_node_stru

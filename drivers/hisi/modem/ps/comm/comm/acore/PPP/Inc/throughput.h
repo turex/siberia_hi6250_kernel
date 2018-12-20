@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/throughput.h 65178 2000-08-28 22:44:54Z brian $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/throughput.h 65178 2000-08-28 22:44:54Z brian $
  */
 #ifndef __PPP_THROUGHPUT_H__
 #define __PPP_THROUGHPUT_H__

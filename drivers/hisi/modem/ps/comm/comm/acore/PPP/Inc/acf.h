@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/acf.h 50479 1999-08-28 01:35:59Z peter $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/acf.h 50479 1999-08-28 01:35:59Z peter $
  */
 #ifndef __PPP_ACF_H__
 #define __PPP_ACF_H__

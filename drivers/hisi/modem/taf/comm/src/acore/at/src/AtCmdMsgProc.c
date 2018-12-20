@@ -8917,7 +8917,7 @@ VOS_UINT32 AT_RcvDrvAgentFacAuthPubkeySetCnf(VOS_VOID *pMsg)
     }
 
     /* 判断当前操作类型是否为AT_CMD_FACAUTHPUBKEY_SET */
-    if (AT_CMD_FACAUTHPUBKEY_SET != gastAtClientTab[ucIndex].CmdCurrentOpt)
+    if (AT_CMD_FACAUTHPUBKEYEX_SET != gastAtClientTab[ucIndex].CmdCurrentOpt)
     {
         return VOS_ERR;
     }

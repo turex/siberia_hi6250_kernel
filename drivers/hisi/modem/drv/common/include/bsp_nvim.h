@@ -250,9 +250,11 @@ enum
 #define NV_CUST_CARD3_PATH                      "/system/cust_card2.xml"
 #define NV_DEFAULT_PATH                         "/system/manufactrue_ver.bin"
 
+#define NV_ROOT_PATH                            "/mnvm2:0"
+#define NV_DATA_ROOT_PATH                       "/mnt/modem/mnvm2:0"
 
 #ifdef BSP_CONFIG_PHONE_TYPE
-#define NV_IMG_PATH                             "/mnvm2:0/modem_nv/nv.bin"
+#define NV_IMG_PATH                             "/modem_nv/nv.bin"
 #define NV_IMG_FLAG_PATH                        "/modem_log/drv/nv/img_flag.bin"
 #define NV_BACK_FLAG_PATH                       "/modem_log/drv/nv/back_flag.bin"
 #define NV_SYS_FLAG_PATH                        "/modem_log/drv/nv/sys_flag.bin"
@@ -260,7 +262,7 @@ enum
 
 #define NV_LOG_MAX_SIZE                         0x80000/*512k*/
 #else
-#define NV_IMG_PATH                             "/mnvm2:0/nv.bin"
+#define NV_IMG_PATH                             "/nv.bin"
 #define NV_IMG_FLAG_PATH                        "/modem_log/drv/nv/img_flag.bin"
 #define NV_BACK_FLAG_PATH                       "/modem_log/drv/nv/back_flag.bin"
 #define NV_SYS_FLAG_PATH                        "/modem_log/drv/nv/sys_flag.bin"

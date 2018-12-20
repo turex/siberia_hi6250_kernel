@@ -90,6 +90,8 @@
 /* LINUX ²»Ö§³Ö */
 
 #include <asm/dma-mapping.h>
+#include <linux/version.h>
+#include <linux/of_device.h>
 
 
 
@@ -2052,6 +2054,10 @@ VOS_VOID *VOS_UnCacheMemAlloc(VOS_UINT32 ulSize, VOS_UINT_PTR *pulRealAddr)
     {
         mdrv_om_system_error(VOS_REBOOT_MEMSET_MEM, 0, (VOS_INT)((THIS_FILE_ID << 16) | __LINE__), 0, 0);
     }
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
+    dma_set_mask_and_coherent(&dev, 0xffffffffffffffff);
+    of_dma_configure(&dev, dev.of_node);
+#endif
     pVirtAdd = dma_alloc_coherent(&dev, ulSize, &ulAddress, GFP_KERNEL);
 
     *pulRealAddr = (VOS_UINT_PTR)ulAddress;

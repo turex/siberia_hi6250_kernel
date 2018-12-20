@@ -341,7 +341,7 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
     const VOS_UINT8                    *pucIpMsgTemp    = pucIpMsg;
     VOS_UINT8                           ucNextHeader    = IP_NULL;
     VOS_UINT8                           ucExtHeaderLen  = IP_NULL;
-    VOS_UINT16                          usDecodeLen     = IP_NULL;
+    VOS_UINT32                          ulDecodeLen     = IP_NULL;
 
     IP_ASSERT_RTN(VOS_NULL_PTR != pucIpMsg, IP_FAIL);
     IP_ASSERT_RTN(VOS_NULL_PTR != pucNextHeader, IP_FAIL);
@@ -353,7 +353,7 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
     pucIpMsgTemp = pucIpMsgTemp + IP_IPV6_HEAD_LEN;
 
     /* 已跳过的数据包长度小于ulIpMsgLen */
-    while (usDecodeLen <= usPayLoad)
+    while (ulDecodeLen <= usPayLoad)
     {
         switch (ucNextHeader)
         {
@@ -361,11 +361,16 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
             case IP_EXTENSION_HEADER_TYPE_AH/* AH头 */:
             case IP_EXTENSION_HEADER_TYPE_ESP/* ESP头 */:
                 *pucNextHeader = ucNextHeader;
-                *pulDecodedLen = usDecodeLen + IP_IPV6_HEAD_LEN;
+                *pulDecodedLen = ulDecodeLen + IP_IPV6_HEAD_LEN;
                 return IP_SUCC;
             case IP_EXTENSION_HEADER_TYPE_HOPBYHOP/* 逐跳选项头 */:
             case IP_EXTENSION_HEADER_TYPE_DESTINATION/* 目的地选项头 */:
             case IP_EXTENSION_HEADER_TYPE_ROUTING/* 选路头 */:
+                if (ulDecodeLen + IP_IPV6_EXT_HEAD_LEN_OFFSET >= usPayLoad)
+                {
+                    IPND_WARNING_LOG(ND_TASK_PID, "IP_GetIpv6UpLayerProtocol: PayLoad Lenth is Error!");
+                    return IP_FAIL;
+                }
 
                 /* 当前扩展头中的下一跳 */
                 ucNextHeader =  *(pucIpMsgTemp + IP_IPV6_EXT_HEAD_NEXT_HEAD_OFFSET);
@@ -374,9 +379,9 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
                 ucExtHeaderLen = *(pucIpMsgTemp + IP_IPV6_EXT_HEAD_LEN_OFFSET);
 
                 pucIpMsgTemp = pucIpMsgTemp + IP_GetExtensionLen(ucExtHeaderLen);
-                usDecodeLen = usDecodeLen + IP_GetExtensionLen(ucExtHeaderLen);
+                ulDecodeLen = ulDecodeLen + IP_GetExtensionLen(ucExtHeaderLen);
 
-                if (usPayLoad < usDecodeLen)
+                if (usPayLoad < ulDecodeLen)
                 {
                     IPND_WARNING_LOG(ND_TASK_PID, "IP_GetIpv6UpLayerProtocol: Lenth Error!");
                     return IP_FAIL;
@@ -385,7 +390,7 @@ IP_ERR_ENUM_UINT32 IP_GetIpv6UpLayerProtocol
                 break;
             default:
                 *pucNextHeader = ucNextHeader;
-                *pulDecodedLen = usDecodeLen + IP_IPV6_HEAD_LEN;
+                *pulDecodedLen = ulDecodeLen + IP_IPV6_HEAD_LEN;
                 return IP_SUCC;
         }
     }
@@ -479,7 +484,7 @@ IP_BOOL_ENUM_UINT8 IP_IsIcmpv6Packet
     IP_GetUint16Data(usPayLoad, pucIpMsg + IP_IPV6_BASIC_HEAD_PAYLOAD_OFFSET);
 
     /* 长度合法检查 */
-    if ((VOS_UINT32)(usPayLoad + IP_IPV6_HEAD_LEN) > ulIpMsgLen)
+    if (((VOS_UINT32)usPayLoad + IP_IPV6_HEAD_LEN) > ulIpMsgLen)
     {
         if(1 == g_ulCnNd)
         {

@@ -317,6 +317,20 @@ enum TAF_CALL_SERVICE_TYPE_ENUM
 };
 typedef VOS_UINT8 TAF_CALL_SERVICE_TYPE_ENUM_UINT8;
 
+/*****************************************************************************
+枚举名     : TAF_CALL_PEER_VIDEO_SUPPORT_ENUM
+结构说明   : 对端视频能力类型枚举
+1.日    期   : 2017年07月03日
+  作    者   : w00316404
+  修改内容   : 创建
+*****************************************************************************/
+enum TAF_CALL_PEER_VIDEO_SUPPORT_ENUM
+{
+    TAF_CALL_PEER_VIDEO_UNSUPPORT           = 0,                                /* 对端视频能力不支持 */
+    TAF_CALL_PEER_VIDEO_SUPPORT             = 1,                                /* 对端视频能力支持 */
+    TAF_CALL_PEER_VIDEO_BUTT
+};
+typedef VOS_UINT8 TAF_CALL_PEER_VIDEO_SUPPORT_ENUM_UINT8;
 
 
 /*****************************************************************************
@@ -2321,6 +2335,9 @@ typedef struct
 *****************************************************************************/
 typedef struct
 {
+    VOS_UINT32                          bitOpPeerVideoSupport       : 1;
+    VOS_UINT32                          bitOpSpare                  : 31;
+
     MN_CALL_ID_T                        callId;                                 /* Call ID */
     MN_CALL_DIR_ENUM_U8                 enCallDir;                              /* Call Direction(MO/MT) */
     MN_CALL_STATE_ENUM_U8               enCallState;                            /* Call State */
@@ -2334,6 +2351,9 @@ typedef struct
     MN_CALL_BCD_NUM_STRU                stConnectNumber;                        /* Connect Number */
 
     MN_CALL_DISPLAY_NAME_STRU           stDisplayName;
+
+    TAF_CALL_PEER_VIDEO_SUPPORT_ENUM_UINT8  enPeerVideoSupport;
+    VOS_UINT8                               aucReserved[3];
 }MN_CALL_INFO_PARAM_STRU;
 
 /*****************************************************************************

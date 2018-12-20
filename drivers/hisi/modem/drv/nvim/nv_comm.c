@@ -86,6 +86,7 @@ u16 g_NvSysList[] = { NV_ID_DRV_IMEI,
                       NV_ID_DRV_SOCP_LOG_CFG,
                       en_NV_Item_RF_ANT_DETECT};
 
+extern struct nv_path_info_stru g_nv_path;
 
 u32 nv_ipc_sem_take(u32 sem, u32 timeout)
 {
@@ -419,7 +420,7 @@ u32 nv_copy_img2backup(void)
         return BSP_ERR_NV_FILE_ERROR;
     }
 
-    ret = bsp_open((const s8 *)NV_IMG_PATH, oflags, 0660);
+    ret = bsp_open((const s8 *)g_nv_path.file_path[NV_IMG], oflags, 0660);
     if(ret < 0)
     {
         return BSP_ERR_NV_NO_FILE;
@@ -476,12 +477,12 @@ u32 nv_upgrade_revert_proc(void)
     u32 ret;
 
     /*检查工作区数据的有效性*/
-    if(true == nv_check_file_validity((s8 *)NV_IMG_PATH, (s8 *)NV_IMG_FLAG_PATH))
+    if(true == nv_check_file_validity((s8 *)g_nv_path.file_path[NV_IMG], (s8 *)NV_IMG_FLAG_PATH))
     {
-        ret = nv_revertEx((s8*)NV_IMG_PATH);
+        ret = nv_revertEx((s8*)g_nv_path.file_path[NV_IMG]);
         if(ret)
         {
-            nv_record("revert from %s fail,goto next err proc ret:0x%x!\n",NV_IMG_PATH,ret);
+            nv_record("revert from %s fail,goto next err proc ret:0x%x!\n",g_nv_path.file_path[NV_IMG],ret);
             goto revert_backup;
         }
 
@@ -1428,13 +1429,13 @@ u32 nv_resume_item(nv_item_info_s *item_info, u32 itemid, u32 modemid)
         item_info = &item_temp;
     }
 
-    nv_record("resume from %s item id 0x%x modem %d!\n",NV_IMG_PATH,item_info->itemid, modemid);
+    nv_record("resume from %s item id 0x%x modem %d!\n", g_nv_path.file_path[NV_IMG],item_info->itemid, modemid);
     ret = nv_img_resume_item(item_info, modemid);
     if(ret)
     {
         nv_debug(NV_FUN_RESUME_ITEM, 2, item_info->itemid, ret, modemid);
         nv_record("resume from %s failed, resume from %s, item id 0x%x modem %d!\n",
-                       NV_IMG_PATH,
+                       g_nv_path.file_path[NV_IMG],
                        NV_BACK_PATH,
                        item_info->itemid,
                        modemid);
@@ -1468,12 +1469,12 @@ u32 nv_resume_ddr_from_img(void)
     nv_debug(NV_CRC32_DDR_RESUME_IMG,0,0,0,0);
     if(!nv_debug_is_resume_img())
     {
-        nv_record("nv resume cfg not %s ...%s %s \n",NV_IMG_PATH,__DATE__,__TIME__);
+        nv_record("nv resume cfg not %s ...%s %s \n",g_nv_path.file_path[NV_IMG],__DATE__,__TIME__);
         return NV_OK;
     }
     else
     {
-        nv_record("nv resume %s ...%s %s \n",NV_IMG_PATH,__DATE__,__TIME__);
+        nv_record("nv resume %s ...%s %s \n",g_nv_path.file_path[NV_IMG],__DATE__,__TIME__);
     }
 
 	/*lock write right*/

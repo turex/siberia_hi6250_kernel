@@ -53,6 +53,8 @@
 #include "RnicDebug.h"
 #include "RnicCtx.h"
 #include "RnicDev.h"
+#include <linux/version.h>
+#include <net/sock.h>
 
 /*****************************************************************************
     协议栈打印打点方式下的.C文件宏定义
@@ -308,6 +310,14 @@ netdev_tx_t RNIC_StartXmit(
         RNIC_DBG_NET_TX_RMNETID_ERR_NUM(1);
         return NETDEV_TX_OK;
     }
+    
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0))
+    /* The value is a bit-shift of 1 second,
+     * so 4 is ~64ms of queued data. Only affects local TCP
+     * sockets.
+     */
+    sk_pacing_shift_update(pstSkb->sk, 4);
+#endif
 
     /* 按MODEM类型分发处理数据 */
     RNIC_ProcessTxDataByModemType(pstNetCntxt, pstSkb);

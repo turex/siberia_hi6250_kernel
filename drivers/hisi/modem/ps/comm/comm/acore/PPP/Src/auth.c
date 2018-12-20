@@ -25,7 +25,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $FreeBSD: stable/9/usr.sbin/ppp/auth.c 174870 2007-12-22 19:29:32Z des $
+ * $FreeBSD: releng/11.1/usr.sbin/ppp/auth.c 231994 2012-02-22 06:27:20Z kevlo $
  */
 
 

@@ -79,7 +79,6 @@ OM_RECORD_BUF_STRU                      g_astAcpuRecordInfo[VOS_EXC_DUMP_MEM_NUM
 
 VOS_UINT32                              g_ulAcpuOmFilterFlag;
 
-extern VOS_UINT32 SC_COMM_Restore(VOS_VOID);
 /*****************************************************************************
  Prototype       : OM_RecordInfoEnd
  Description     : A核保留桩函数
@@ -491,8 +490,6 @@ VOS_UINT32 PAMOM_AcpuInit(VOS_VOID)
 
     PAMOM_QuereyPidInfo();
 
-    /* SC文件有效性自检 */
-    (VOS_VOID)SC_COMM_Restore();
 
     if (NV_OK != NV_ReadEx(MODEM_ID_0,
                            en_NV_Item_Privacy_Log_Filter_Cfg,

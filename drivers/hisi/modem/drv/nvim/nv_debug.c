@@ -102,7 +102,7 @@ debug_table_t g_nv_write_debug_table[NV_DEBUG_BUTT - 1] = {
 
 s8 g_debug_check_file[255] = {0};
 u32 g_debug_check_flag = 0;
-
+extern struct nv_path_info_stru g_nv_path;
 extern unsigned int bbox_check_edition(void);
 void nv_debug_QueueInit(nv_queue_t *Q, u32 elementNum);
 
@@ -315,7 +315,7 @@ u32 nv_debug_store_file(char * src)
     u32 ret;
     u32 len;
 
-    if(0 == strncmp(src, NV_IMG_PATH, sizeof(NV_IMG_PATH)))
+    if(0 == strncmp(src, g_nv_path.file_path[NV_IMG], sizeof(g_nv_path.file_path[NV_IMG])))
     {
         if(!nv_debug_is_save_image())
         {

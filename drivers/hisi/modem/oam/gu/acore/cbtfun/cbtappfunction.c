@@ -546,7 +546,12 @@ VOS_UINT32 CBTAppFidInit(enum VOS_INIT_PHASE_DEFINE ip)
             {
                 return VOS_ERR;
             }
-            (VOS_VOID)CBT_AcpuInit();
+
+            if (VOS_OK != CBT_AcpuInit())
+            {
+                return VOS_ERR;
+            }
+
             /* CBT自处理任务创建 */
             if (VOS_OK != CBTSCM_SoftDecodeReqRcvTaskInit())
             {
