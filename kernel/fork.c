@@ -1737,7 +1737,7 @@ static struct task_struct *copy_process(unsigned long clone_flags,
 	 */
 	retval = cgroup_can_fork(p, cgrp_ss_priv);
 	if (retval)
-		goto bad_fork_put_pidfd;
+		goto bad_fork_cgroup_threadgroup_change_end;
 
 	/*
 	 * From this point on we must avoid any synchronous user-space
@@ -1850,11 +1850,12 @@ bad_fork_cancel_cgroup:
 	spin_unlock(&current->sighand->siglock);
 	write_unlock_irq(&tasklist_lock);
 	cgroup_cancel_fork(p, cgrp_ss_priv);
+bad_fork_cgroup_threadgroup_change_end:
+	threadgroup_change_end(current);
 bad_fork_put_pidfd:
 	if (clone_flags & CLONE_PIDFD)
 		sys_close(pidfd);
 bad_fork_free_pid:
-	threadgroup_change_end(current);
 	if (pid != &init_struct_pid)
 		free_pid(pid);
 bad_fork_cleanup_io:
