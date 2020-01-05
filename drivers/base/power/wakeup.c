@@ -649,6 +649,7 @@ static void wakeup_source_report_event(struct wakeup_source *ws)
 #ifdef CONFIG_BOEFFLA_WL_BLOCKER
 	}
 #endif
+}
 
 /**
  * __pm_stay_awake - Notify the PM core of a wakeup event.
