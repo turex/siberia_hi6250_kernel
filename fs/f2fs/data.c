@@ -124,7 +124,7 @@ static void f2fs_write_end_io(struct bio *bio)
 			set_bit(AS_EIO, &page->mapping->flags);
 			f2fs_stop_checkpoint(sbi, true);
 			f2fs_msg(sbi->sb, KERN_ERR,
-				"f2fs reboot for bio submit error! erro_num = %d\n", bio->bi_error);
+				"f2fs reboot for bio submit error!\n");
 			WARN_ON(1);
 			f2fs_add_restart_wq();
 		}
