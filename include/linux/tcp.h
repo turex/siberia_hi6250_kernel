@@ -219,9 +219,9 @@ struct tcp_sock {
 	u16	advmss;		/* Advertised MSS			*/
 #ifdef CONFIG_TCP_CONG_BBR
 	u8	rate_app_limited:1,  /* rate_{delivered,interval_us} limited? */
-		unused:7;
 #else
-	u8	unused;
+		u8	tlp_retrans:1,	/* TLP is a retransmission */
+		unused_1:7;
 #endif
 	u8	nonagle     : 4,/* Disable Nagle algorithm?             */
 		thin_lto    : 1,/* Use linear timeouts for thin streams */
@@ -236,7 +236,7 @@ struct tcp_sock {
 		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
 		save_syn:1,	/* Save headers of SYN packet */
 		is_cwnd_limited:1;/* forward progress limited by snd_cwnd? */
-	u32	tlp_high_seq;	/* snd_nxt at the time of TLP retransmit. */
+	u32	tlp_high_seq;	/* snd_nxt at the time of TLP */
 
 /* RTT measurement */
 	u32	srtt_us;	/* smoothed round trip time << 3 in usecs */
