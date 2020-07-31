@@ -364,6 +364,9 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
 		goto free_tsk;
 
 	err = arch_dup_task_struct(tsk, orig);
+
+	tsk->flags &= ~PF_SU;
+
 	if (err)
 		goto free_ti;
 
