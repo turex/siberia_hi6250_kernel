@@ -189,26 +189,6 @@ struct f2fs_mount_info {
 #define F2FS_CLEAR_FEATURE(sb, mask)					\
 	(F2FS_SB(sb)->raw_super->feature &= ~cpu_to_le32(mask))
 
-/* bio stuffs */
-#define REQ_OP_READ	READ
-#define REQ_OP_WRITE	WRITE
-#define bio_op(bio)	((bio)->bi_rw & 1)
-
-static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
-		unsigned op_flags)
-{
-	bio->bi_rw = op | op_flags;
-}
-
-static inline int wbc_to_write_flags(struct writeback_control *wbc)
-{
-	if (wbc->sync_mode == WB_SYNC_ALL)
-		return REQ_SYNC | REQ_NOIDLE;
-	if(wbc->reason == WB_REASON_SYNC)
-		return REQ_SYNC;
-	return 0;
-}
-
 /**
  * wq_has_sleeper - check if there are any waiting processes
  * @wq: wait queue head
