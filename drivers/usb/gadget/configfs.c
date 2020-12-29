@@ -1289,12 +1289,8 @@ static void purge_configs_funcs(struct gadget_info *gi)
 
 		cfg = container_of(c, struct config_usb_cfg, c);
 
-		/*
-		 * Access c->functions inversely, otherwise the order of
-		 * functions on cfg->func_list will be changed when failed
-		 * to call usb_add_function in configfs_composite_bind.
-		 */
 		list_for_each_entry_safe_reverse(f, tmp, &c->functions, list) {
+
 			list_move(&f->list, &cfg->func_list);
 			if (f->unbind) {
 				dev_err(&gi->cdev.gadget->dev, "unbind function"
