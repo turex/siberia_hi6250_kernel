@@ -28,6 +28,7 @@ endif
 HOSTCFLAGS_sortextable.o = -I$(srctree)/tools/include
 HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
 ifneq ($(CONFIG_MODULE_SIG_KEY),"huawei_signing_key.pem")
+HOSTCFLAGS_sign-file.o = $(CRYPTO_CFLAGS)
 HOSTLOADLIBES_sign-file = $(CRYPTO_LIBS)
 HOSTCFLAGS_extract-cert.o = $(CRYPTO_CFLAGS)
 HOSTLOADLIBES_extract-cert = $(CRYPTO_LIBS)
