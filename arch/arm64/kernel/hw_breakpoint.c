@@ -636,7 +636,7 @@ static int breakpoint_handler(unsigned long unused, unsigned int esr,
 
 		/* Check if the breakpoint value matches. */
 		val = read_wb_reg(AARCH64_DBG_REG_BVR, i);
-		if (val != (addr & ~0x3))
+		if (val != (untagged_addr(addr) & ~0x3))
 			goto unlock;
 
 		/* Possible match, check the byte address select to confirm. */
