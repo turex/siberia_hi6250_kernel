@@ -713,7 +713,7 @@ static int ashmem_pin_unpin(struct ashmem_area *asma, unsigned long cmd,
 	size_t pgstart, pgend;
 	int ret = -EINVAL;
 
-	mutex_lock(&ashma_mutex);
+	mutex_lock(&asma->lock);
 
 	if (unlikely(!asma->file))
 		goto out_unlock;
@@ -752,7 +752,7 @@ static int ashmem_pin_unpin(struct ashmem_area *asma, unsigned long cmd,
 	}
 
 out_unlock:
-	mutex_unlock(&ashma_mutex);
+	mutex_unlock(&asma->lock);
 
 	return ret;
 }
