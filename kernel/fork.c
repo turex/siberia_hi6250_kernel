@@ -82,6 +82,7 @@
 #endif
 
 #include <linux/blk-cgroup.h>
+#include <linux/cpufreq_times.h>
 #include <linux/simple_lmk.h>
 
 #include <asm/pgtable.h>
