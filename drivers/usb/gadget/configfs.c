@@ -1652,7 +1652,6 @@ static void configfs_composite_resume(struct usb_gadget *gadget)
 
 	composite_resume(gadget);
 	spin_unlock_irqrestore(&gi->spinlock, flags);
->>>>>>> a6af4089638e (usb: gadget: configfs: fix concurrent issue between composite APIs)
 }
 
 #include "../../hwusb/hw_gadget/hw_controlrequest_handle.c"
