@@ -408,8 +408,8 @@ module_param_array_named(adj, lowmem_adj, short, &lowmem_adj_size,
 			 S_IRUGO | S_IWUSR);
 #endif
 /*lint -e665 -esym(665,__module_param_call) */
-module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
-			 S_IRUGO | S_IWUSR);
+//module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
+			// S_IRUGO | S_IWUSR);
 /*lint -e665 +esym(665,__module_param_call) */
 module_param_named(debug_level, lowmem_debug_level, uint, S_IRUGO | S_IWUSR);
 #if defined CONFIG_LOG_JANK
