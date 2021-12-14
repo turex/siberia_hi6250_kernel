@@ -44,7 +44,6 @@ static const char *default_pool_type = ZRAM_ZPOOL_DEFAULT;
 
 /* Module params (documentation at end) */
 static unsigned int num_devices = 1;
-static size_t max_zpage_size = (PAGE_SIZE / 4 )* 3;
 
 
 static inline void deprecated_attr_warn(const char *name)
