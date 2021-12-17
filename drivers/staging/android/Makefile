@@ -1,3 +1,4 @@
+EXTRA_CFLAGS			        += -DDEBUG		  #temp activate debug for lmk
 ccflags-y += -I$(src)			# needed for trace events
 
 obj-y					+= ion/

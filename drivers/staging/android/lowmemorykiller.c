@@ -142,7 +142,6 @@ void handle_lmk_event(struct task_struct *selected, short min_score_adj)
 	int res;
 	long rss_in_pages = -1;
 	struct mm_struct *mm = get_task_mm(selected);
-
 	if (mm) {
 		rss_in_pages = get_mm_rss(mm);
 		mmput(mm);
@@ -187,6 +186,8 @@ void handle_lmk_event(struct task_struct *selected, short min_score_adj)
 	event->rss_in_pages = rss_in_pages;
 	event->min_score_adj = min_score_adj;
 
+    pr_debug("[LMK_DEBUG] handle_event : oom_score_adj value '%hd'\n",event->oom_score_adj);
+
 	event_buffer.head = (head + 1) & (MAX_BUFFERED_EVENTS - 1);
 
 	spin_unlock(&lmk_event_lock);
@@ -218,6 +219,8 @@ static int lmk_event_show(struct seq_file *s, void *unused)
 		(unsigned long) event->group_leader_pid, event->min_flt,
 		event->maj_flt, event->rss_in_pages, event->oom_score_adj,
 		event->min_score_adj, event->start_time, event->taskname);
+
+    pr_debug("[LMK_DEBUG] show_event : oom_score_adj value '%hd'\n",event->oom_score_adj);
 
 	event_buffer.tail = (tail + 1) & (MAX_BUFFERED_EVENTS - 1);
 
@@ -291,6 +294,8 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 						total_swapcache_pages();
 	int ret_tune;
 
+    pr_debug("[LMK_DEBUG] lowmem_scan : min_score_adj value '%hd'\n",min_score_adj);
+
 #ifdef CONFIG_HISI_MULTI_KILL
 	int count = 0;
 #endif
@@ -306,6 +311,8 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 		minfree = lowmem_minfree[i];
 		if (other_free < minfree && other_file < minfree) {
 			min_score_adj = lowmem_adj[i];
+
+            pr_debug("[LMK_DEBUG] lowmem_scan: adjusting : min_score_adj value '%hd'\n",min_score_adj);
 			break;
 		}
 	}
@@ -321,6 +328,8 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 	}
 
 	selected_oom_score_adj = min_score_adj;
+
+    pr_debug("[LMK_DEBUG] lowmem_scan: adjusting : selected_oom_score_adj value '%hd'\n",selected_oom_score_adj_score_adj);
 
 	if (atomic_inc_return(&atomic_lmk) > 1) {
 		atomic_dec(&atomic_lmk);
@@ -360,6 +369,9 @@ kill_selected:
 			}
 		}
 		oom_score_adj = p->signal->oom_score_adj;
+
+        pr_debug("[LMK_DEBUG] lowmem_scan: adjusting : oom_score_adj value '%hd'\n",oom_score_adj);
+
 		if (oom_score_adj < min_score_adj) {
 			task_unlock(p);
 			continue;
@@ -369,6 +381,9 @@ kill_selected:
 		if (tasksize <= 0)
 			continue;
 		if (selected) {
+
+            pr_debug("[LMK_DEBUG] lowmem_scan: selected\n");
+
 			if (oom_score_adj < selected_oom_score_adj)
 				continue;
 			if (oom_score_adj == selected_oom_score_adj &&
@@ -493,8 +508,10 @@ static void lowmem_autodetect_oom_adj_values(void)
 	short oom_score_adj;
 	int array_size = ARRAY_SIZE(lowmem_adj);
 
-	if (lowmem_adj_size < array_size)
+	if (lowmem_adj_size < array_size){
 		array_size = lowmem_adj_size;
+         pr_debug("[LMK_DEBUG] lowmem_autodetect_adj_value : array_size '%hd'\n",array_size);
+    }
 
 	if (array_size <= 0)
 		return;
@@ -504,6 +521,8 @@ static void lowmem_autodetect_oom_adj_values(void)
 		return;
 
 	oom_score_adj = lowmem_oom_adj_to_oom_score_adj(oom_adj);
+
+     pr_debug("[LMK_DEBUG] lowmem_autodetect_adj_value : oom_score_adj value '%hd'\n",oom_score_adj);
 	if (oom_score_adj <= OOM_ADJUST_MAX)
 		return;
 
