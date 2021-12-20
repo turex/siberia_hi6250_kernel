@@ -329,7 +329,7 @@ static unsigned long lowmem_scan(struct shrinker *s, struct shrink_control *sc)
 
 	selected_oom_score_adj = min_score_adj;
 
-    pr_debug("[LMK_DEBUG] lowmem_scan: adjusting : selected_oom_score_adj value '%hd'\n",selected_oom_score_adj_score_adj);
+    pr_debug("[LMK_DEBUG] lowmem_scan: adjusting : selected_oom_score_adj value '%hd'\n",selected_oom_score_adj);
 
 	if (atomic_inc_return(&atomic_lmk) > 1) {
 		atomic_dec(&atomic_lmk);
