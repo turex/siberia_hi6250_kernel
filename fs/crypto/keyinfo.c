@@ -13,6 +13,7 @@
 #include <uapi/linux/keyctl.h>
 #include <crypto/skcipher.h>
 #include <crypto/hash.h>
+#include <crypto/aead.h>
 #include "fscrypt_private.h"
 
 static void derive_crypt_complete(struct crypto_async_request *req, int rc)
@@ -86,6 +87,7 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 	struct key *keyring_key;
 	struct fscrypt_key *master_key;
 	const struct user_key_payload *ukp;
+    struct crypto_skcipher *tfm = crypto_alloc_skcipher("ecb(aes)", 0, 0);
 	int res;
 
 	description = kasprintf(GFP_NOFS, "%s%*phN", prefix,
@@ -137,12 +139,12 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 	res = fscrypt_set_gcm_key(tfm, master_key->raw);
 	if (res)
 		goto out;
-	res = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, ctx->iv, 0);
+	/*res = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, ctx->iv, 0);
 	if (res)
 		goto out;
 
 	memcpy(raw_key, plain_text, FS_KEY_DERIVATION_NONCE_SIZE);
-
+*/
 	crypt_info->ci_gtfm = tfm;
 	up_read(&keyring_key->sem);
 	key_put(keyring_key);
@@ -236,7 +238,7 @@ int fscrypt_get_crypt_info(struct inode *inode)
 
 	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), &has_crc);
 	if (res < 0) {
-		if (!fscrypt_dummy_context_enabled(inode)
+		if (!fscrypt_dummy_context_enabled(inode))
 			return res;
 		/* Fake up a context for an unencrypted directory */
 		memset(&ctx, 0, sizeof(ctx));
@@ -247,13 +249,6 @@ int fscrypt_get_crypt_info(struct inode *inode)
 	} else if (res != sizeof(ctx)) {
 		pr_err("%s: inode %lu incorrect ctx size [%u : %lu]\n",
 			inode->i_sb->s_type->name, inode->i_ino, res, sizeof(ctx));
-		inode->i_sb->s_cop->set_encrypted_corrupt(inode);
-		return -EINVAL;
-	}
-
-	if (fscrypt_verify_ctx(&ctx)) {
-		pr_err("%s: inode %lu verify ctx failed\n",
-			inode->i_sb->s_type->name, inode->i_ino);
 		inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 		return -EINVAL;
 	}

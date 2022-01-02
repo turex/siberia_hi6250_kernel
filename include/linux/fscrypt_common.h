@@ -95,6 +95,7 @@ struct fscrypt_info {
 	u8 ci_flags;
 	struct crypto_skcipher *ci_ctfm;
 	struct crypto_aead *ci_gtfm;
+    struct key *ci_keyring_key;
 	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
 	void *ci_key;
 	int ci_key_len;
