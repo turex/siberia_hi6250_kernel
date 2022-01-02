@@ -2472,6 +2472,7 @@ static int
 cifs_set_cifscreds(struct smb_vol *vol, struct cifs_ses *ses)
 {
 	int rc = 0;
+    int is_domain = 0;
 	const char *delim, *payload;
 	char *desc;
 	ssize_t len;

@@ -58,10 +58,12 @@ static inline struct user_key_payload *user_key_payload_locked(const struct key 
 	return (struct user_key_payload *)dereference_key_locked((struct key *)key);
 }
 
+/* TODO remove turex
 static inline const struct user_key_payload *user_key_payload(const struct key *key)
 {
 	return (struct user_key_payload *)rcu_dereference_key(key);
 }
+*/
 
 #endif /* CONFIG_KEYS */
 
