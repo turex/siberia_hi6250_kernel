@@ -13,6 +13,8 @@
 #include <keys/user-type.h>
 #include <uapi/linux/keyctl.h>
 #include <linux/mount.h>
+#include <crypto/aead.h>
+#include <linux/fscrypt_common.h>
 
 static int inode_has_encryption_context(struct inode *inode)
 {
@@ -30,12 +32,12 @@ static bool is_encryption_context_consistent_with_policy(
 				const struct fscrypt_context *ctx,
 				const struct fscrypt_policy *policy)
 {
-	return (memcmp(ctx.master_key_descriptor, policy->master_key_descriptor,
+	return (memcmp(ctx->master_key_descriptor, policy->master_key_descriptor,
 			FS_KEY_DESCRIPTOR_SIZE) == 0 &&
-			(ctx.flags == policy->flags) &&
-			(ctx.contents_encryption_mode ==
+			(ctx->flags == policy->flags) &&
+			(ctx->contents_encryption_mode ==
 			 policy->contents_encryption_mode) &&
-			(ctx.filenames_encryption_mode ==
+			(ctx->filenames_encryption_mode ==
 			 policy->filenames_encryption_mode));
 }
 
@@ -114,7 +116,7 @@ got_key:
 
 	down_read(&keyring_key->sem);
 
-	ukp = user_key_payload(keyring_key);
+	ukp = user_key_payload_locked(keyring_key);
 	if (ukp->datalen != sizeof(struct fscrypt_key)) {
 		res = -EINVAL;
 		up_read(&keyring_key->sem);
@@ -186,7 +188,7 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
 
 	inode_lock(inode);
 
-	ret = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
+	ret = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), NULL);
 	if (ret == -ENODATA) {
 		if (!S_ISDIR(inode->i_mode))
 			ret = -ENOTDIR;
@@ -225,7 +227,7 @@ int fscrypt_ioctl_get_policy(struct file *filp, void __user *arg)
 			!inode->i_sb->s_cop->is_encrypted(inode))
 		return -ENODATA;
 
-	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
+	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx),NULL);
 	if (res < 0 && res != -ERANGE)
 		return res;
 	if (res != sizeof(ctx))
