@@ -30,9 +30,14 @@
 #include <linux/cgroup.h>
 
 #include <trace/events/block.h>
+/*
 #ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
 #include <linux/fscrypto.h>
 #endif
+*/
+#include <linux/fscrypt_common.h>
+
+
 #include "blk.h"
 /*
  * Test patch to inline a certain number of bi_io_vec's inside the bio
