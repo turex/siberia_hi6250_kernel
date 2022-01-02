@@ -78,132 +78,12 @@ out:
 	return res;
 }
 
-<<<<<<< HEAD
-int fscrypt_set_gcm_key(struct crypto_aead *tfm,
-			u8 deriving_key[FS_AES_256_GCM_KEY_SIZE])
-{
-	int res = 0;
-	unsigned int iv_len;
-
-	crypto_aead_set_flags(tfm, CRYPTO_TFM_REQ_WEAK_KEY);
-
-	iv_len = crypto_aead_ivsize(tfm);
-	if (iv_len > FS_KEY_DERIVATION_IV_SIZE) {
-		res = -EINVAL;
-		pr_err("fscrypt %s : IV length is incompatible\n", __func__);
-		goto out;
-	}
-
-	res = crypto_aead_setauthsize(tfm, FS_KEY_DERIVATION_TAG_SIZE);
-	if (res < 0) {
-		pr_err("fscrypt %s : Failed to set authsize\n", __func__);
-		goto out;
-	}
-
-	res = crypto_aead_setkey(tfm, deriving_key,
-					FS_AES_256_GCM_KEY_SIZE);
-	if (res < 0)
-		pr_err("fscrypt %s : Failed to set deriving key\n", __func__);
-out:
-	return res;
-}
-
-int fscrypt_derive_gcm_key(struct crypto_aead *tfm,
-				u8 source_key[FS_KEY_DERIVATION_CIPHER_SIZE],
-				u8 derived_key[FS_KEY_DERIVATION_CIPHER_SIZE],
-				u8 iv[FS_KEY_DERIVATION_IV_SIZE],
-				int enc)
-{
-	int res = 0;
-	struct aead_request *req = NULL;
-	DECLARE_FS_COMPLETION_RESULT(ecr);
-	struct scatterlist src_sg, dst_sg;
-	unsigned int ilen;
-
-	if (!tfm) {
-		res = -EINVAL;
-		goto out;
-	}
-
-	if (IS_ERR(tfm)) {
-		res = PTR_ERR(tfm);
-		goto out;
-	}
-
-	req = aead_request_alloc(tfm, GFP_NOFS);
-	if (!req) {
-		res = -ENOMEM;
-		goto out;
-	}
-
-	aead_request_set_callback(req,
-			CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
-			derive_crypt_complete, &ecr);
-
-	ilen = enc ? FS_KEY_DERIVATION_NONCE_SIZE :
-			FS_KEY_DERIVATION_CIPHER_SIZE;
-
-	sg_init_one(&src_sg, source_key, FS_KEY_DERIVATION_CIPHER_SIZE);
-	sg_init_one(&dst_sg, derived_key, FS_KEY_DERIVATION_CIPHER_SIZE);
-
-	aead_request_set_ad(req, 0);
-
-	aead_request_set_crypt(req, &src_sg, &dst_sg, ilen, iv);
-
-	res = enc ? crypto_aead_encrypt(req) : crypto_aead_decrypt(req);
-	if (res == -EINPROGRESS || res == -EBUSY) {
-		wait_for_completion(&ecr.completion);
-		res = ecr.res;
-	}
-
-out:
-	if (req)
-		aead_request_free(req);
-	return res;
-}
-
-struct key *fscrypt_request_key(u8 *descriptor, u8 *prefix,
-				int prefix_size)
-=======
 static int validate_user_key(struct fscrypt_info *crypt_info,
 			struct fscrypt_context *ctx, u8 *raw_key,
 			const char *prefix)
->>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 {
 	char *description;
 	struct key *keyring_key;
-<<<<<<< HEAD
-	int full_key_len = prefix_size + (FS_KEY_DESCRIPTOR_SIZE * 2) + 1;
-
-	full_key_descriptor = kmalloc(full_key_len, GFP_NOFS);
-	if (!full_key_descriptor)
-		return (struct key *)ERR_PTR(-ENOMEM);
-
-	memcpy(full_key_descriptor, prefix, prefix_size);
-	sprintf(full_key_descriptor + prefix_size,
-			"%*phN", FS_KEY_DESCRIPTOR_SIZE,
-			descriptor);
-	full_key_descriptor[full_key_len - 1] = '\0';
-	keyring_key = request_key(&key_type_logon, full_key_descriptor, NULL);
-	kfree(full_key_descriptor);
-
-	return keyring_key;
-}
-
-static int validate_user_key(struct fscrypt_info *crypt_info,
-			struct fscrypt_context *ctx, u8 *raw_key,
-			u8 *prefix, int prefix_size)
-{
-	struct key *keyring_key;
-	struct fscrypt_key *master_key;
-	const struct user_key_payload *ukp;
-	int res;
-	u8 plain_text[FS_KEY_DERIVATION_CIPHER_SIZE] = {0};
-	struct crypto_aead *tfm = NULL;
-
-	keyring_key = fscrypt_request_key(ctx->master_key_descriptor,
-				prefix, prefix_size);
-=======
 	struct fscrypt_key *master_key;
 	const struct user_key_payload *ukp;
 	int res;
@@ -216,7 +96,6 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 
 	keyring_key = request_key(&key_type_logon, description, NULL);
 	kfree(description);
->>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 	if (IS_ERR(keyring_key))
 		return PTR_ERR(keyring_key);
 	down_read(&keyring_key->sem);
@@ -332,52 +211,7 @@ static void put_crypt_info(struct fscrypt_info *ci)
 	kmem_cache_free(fscrypt_info_cachep, ci);
 }
 
-<<<<<<< HEAD
-static int fscrypt_verify_ctx(struct fscrypt_context *ctx)
-{
-	if ((u32)(ctx->format) != FS_ENCRYPTION_CONTEXT_FORMAT_V2)
-		return -EINVAL;
-
-	if (!fscrypt_valid_contents_enc_mode(
-			(u32)(ctx->contents_encryption_mode)))
-		return -EINVAL;
-
-	if (!fscrypt_valid_filenames_enc_mode(
-			(u32)(ctx->filenames_encryption_mode)))
-		return -EINVAL;
-
-	if ((u32)(ctx->flags) & ~FS_POLICY_FLAGS_VALID)
-		return -EINVAL;
-
-	return 0;
-}
-
-/*
- * When we cannot determine if original or backup ctx is valid,
- * trust original if @verify is 0, or backup if it is 1.
- */
-int fscrypt_get_verify_context(struct inode *inode, void *ctx, size_t len)
-{
-	if (!inode->i_sb->s_cop->get_verify_context)
-		return 0;
-
-	return inode->i_sb->s_cop->get_verify_context(inode, ctx, len);
-}
-
-int fscrypt_set_verify_context(struct inode *inode, const void *ctx,
-			size_t len, void *fs_data, int create_crc)
-{
-	if (!inode->i_sb->s_cop->set_verify_context)
-		return 0;
-
-	return inode->i_sb->s_cop->set_verify_context(inode,
-				ctx, len, fs_data, create_crc);
-}
-
-int fscrypt_get_encryption_info(struct inode *inode)
-=======
 int fscrypt_get_crypt_info(struct inode *inode)
->>>>>>> b5bb7b2de94d (fscrypt: catch up to v4.11-rc1)
 {
 	struct fscrypt_info *crypt_info;
 	struct fscrypt_context ctx;
