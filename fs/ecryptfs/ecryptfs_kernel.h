@@ -90,6 +90,8 @@ struct ecryptfs_page_crypt_context {
 static inline struct ecryptfs_auth_tok *
 ecryptfs_get_encrypted_key_payload_data(struct key *key)
 {
+    struct encrypted_key_payload *payload;
+
 	if (key->type == &key_type_encrypted)
 		return (struct ecryptfs_auth_tok *)
 			(&((struct encrypted_key_payload *)key->payload.data[0])->payload_data);
