@@ -6,7 +6,7 @@
 #include <linux/bio.h>
 #include <linux/blkdev.h>
 #include <linux/scatterlist.h>
-#include <linux/fscrypto.h>
+#include <linux/fscrypt_common.h>
 #include <trace/events/block.h>
 #include "hisi-blk-mq.h"
 #include "blk.h"

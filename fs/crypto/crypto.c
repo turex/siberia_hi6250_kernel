@@ -210,41 +210,6 @@ struct page *fscrypt_alloc_bounce_page(struct fscrypt_ctx *ctx,
 	return ctx->w.bounce_page;
 }
 
-static struct page *do_encrypt_page(struct inode *inode,
-				    struct page *plaintext_page,
-				    pgoff_t index,
-				    gfp_t gfp_flags)
-{
-	struct fscrypt_ctx *ctx;
-	struct page *ciphertext_page = NULL;
-	int err;
-
-	ctx = fscrypt_get_ctx(inode, gfp_flags);
-	if (IS_ERR(ctx))
-		return (struct page *)ctx;
-
-	/* The encryption operation will require a bounce page. */
-	ciphertext_page = alloc_bounce_page(ctx, gfp_flags);
-	if (IS_ERR(ciphertext_page))
-		goto errout;
-
-	ctx->w.control_page = plaintext_page;
-	err = do_page_crypto(inode, FS_ENCRYPT, index, plaintext_page,
-			     ciphertext_page, gfp_flags);
-	if (err) {
-		ciphertext_page = ERR_PTR(err);
-		goto errout;
-	}
-	SetPagePrivate(ciphertext_page);
-	set_page_private(ciphertext_page, (unsigned long)ctx);
-	lock_page(ciphertext_page);
-	return ciphertext_page;
-
-errout:
-	fscrypt_release_ctx(ctx);
-	return ciphertext_page;
-}
-
 /**
  * fscypt_encrypt_page() - Encrypts a page
  * @inode:     The inode for which the encryption should take place
