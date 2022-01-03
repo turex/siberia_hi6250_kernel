@@ -1427,8 +1427,10 @@ int do_write_data_page(struct f2fs_io_info *fio)
 
 		if (!f2fs_inline_encrypted_inode(inode)) {
 retry_encrypt:
-			fio->encrypted_page = fscrypt_encrypt_page(inode,
-							fio->page, gfp_flags);
+			fio->encrypted_page = fscrypt_encrypt_page(inode, fio->page,
+							PAGE_SIZE, 0,
+							fio->page->index,
+							gfp_flags);
 			if (IS_ERR(fio->encrypted_page)) {
 				err = PTR_ERR(fio->encrypted_page);
 				if (err == -ENOMEM) {
@@ -2235,8 +2237,11 @@ static int f2fs_encrypt_dio_pages(struct inode *inode, struct bio *bio,
 	bio_for_each_segment_all(bvec, bio, i) {
 		page = bvec->bv_page;
 
-		encrypted_page = fscrypt_encrypt_dio_page(inode, page, index,
-							  GFP_NOFS);
+		encrypted_page = fscrypt_encrypt_page(inode,
+							page,
+							PAGE_SIZE, 0,
+							index,
+							GFP_NOFS);
 		if (IS_ERR(encrypted_page))
 			goto error;
 

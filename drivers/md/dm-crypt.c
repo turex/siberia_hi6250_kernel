@@ -28,6 +28,8 @@
 #include <crypto/hash.h>
 #include <crypto/md5.h>
 #include <crypto/algapi.h>
+#include <linux/ctype.h>
+#include <keys/user-type.h>
 
 #include <linux/device-mapper.h>
 
@@ -146,6 +148,7 @@ struct crypt_config {
 
 	char *cipher;
 	char *cipher_string;
+    char *key_string;
 
 	struct crypt_iv_operations *iv_gen_ops;
 	union {
@@ -1573,7 +1576,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
 	/* clear the flag since following operations may invalidate previously valid key */
 	clear_bit(DM_CRYPT_KEY_VALID, &cc->flags);
 
-	ret = crypt_setkey(cc);
+	ret = crypt_setkey_allcpus(cc);
 
 	/* wipe the kernel key payload copy in each case */
 	memset(cc->key, 0, cc->key_size * sizeof(u8));
