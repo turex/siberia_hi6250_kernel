@@ -560,7 +560,7 @@ static int f2fs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	int err;
 
 	if (f2fs_encrypted_inode(inode)) {
-		err = fscrypt_get_crypt_info(inode);
+		err = fscrypt_get_encryption_info(inode);
 		if (err)
 			return 0;
 		if (!f2fs_encrypted_inode(inode))
@@ -583,7 +583,7 @@ static int f2fs_file_open(struct inode *inode, struct file *filp)
 	struct dentry *dir;
 
 	if (!ret && f2fs_encrypted_inode(inode)) {
-		ret = fscrypt_get_crypt_info(inode);
+		ret = fscrypt_get_encryption_info(inode);
 		if (ret)
 			return -EACCES;
 		if (!fscrypt_has_encryption_key(inode))
@@ -824,7 +824,7 @@ int f2fs_setattr(struct dentry *dentry, struct iattr *attr)
 
 	if (attr->ia_valid & ATTR_SIZE) {
 		if (f2fs_encrypted_inode(inode) &&
-				fscrypt_get_crypt_info(inode))
+				fscrypt_get_encryption_info(inode))
 			return -EACCES;
 
 		if (attr->ia_size <= i_size_read(inode)) {
@@ -2420,7 +2420,7 @@ static ssize_t f2fs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 
 	if (f2fs_encrypted_inode(inode) &&
 				!fscrypt_has_encryption_key(inode) &&
-				fscrypt_get_crypt_info(inode))
+				fscrypt_get_encryption_info(inode))
 		return -EACCES;
 
 	inode_lock(inode);

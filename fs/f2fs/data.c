@@ -2167,8 +2167,7 @@ static void f2fs_complete_dio_read(struct work_struct *work)
 		ret = fscrypt_decrypt_page(inode,
 							page,
 							PAGE_SIZE, 0,
-							index,
-							GFP_NOFS);
+							index);
 		if (ret) {
 			bio->bi_error = ret;
 			break;

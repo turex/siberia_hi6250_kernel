@@ -897,8 +897,8 @@ static int f2fs_readdir(struct file *file, struct dir_context *ctx)
 	struct blk_plug plug;
 
 	if (f2fs_encrypted_inode(inode)) {
-		err = fscrypt_get_crypt_info(inode);
-		if (err && err != -ENOKEY)
+		err = fscrypt_get_encryption_info(inode);
+		if (err != -ENOKEY)
 			return err;
 
 		err = fscrypt_fname_alloc_buffer(inode, F2FS_NAME_LEN, &fstr);
@@ -958,7 +958,7 @@ out:
 static int f2fs_dir_open(struct inode *inode, struct file *filp)
 {
 	if (f2fs_encrypted_inode(inode))
-		return fscrypt_get_crypt_info(inode) ? -EACCES : 0;
+		return fscrypt_get_encryption_info(inode) ? -EACCES : 0;
 	return 0;
 }
 

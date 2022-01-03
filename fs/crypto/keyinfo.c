@@ -324,7 +324,6 @@ int fscrypt_get_crypt_info(struct inode *inode)
 
 	if (cmpxchg(&inode->i_crypt_info, NULL, crypt_info) == NULL)
 		crypt_info = NULL;
-	fscrypt_set_verify_context(inode, &ctx, sizeof(ctx), NULL, !has_crc);
 
 out:
 	if (res == -ENOKEY)
@@ -333,7 +332,6 @@ out:
 	kzfree(raw_key);
 	return res;
 }
-EXPORT_SYMBOL(fscrypt_get_crypt_info);
 
 void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 {
@@ -351,3 +349,16 @@ void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 	put_crypt_info(ci);
 }
 EXPORT_SYMBOL(fscrypt_put_encryption_info);
+
+int fscrypt_get_encryption_info(struct inode *inode)
+{
+	struct fscrypt_info *ci = inode->i_crypt_info;
+	if (!ci ||
+		(ci->ci_keyring_key &&
+		 (ci->ci_keyring_key->flags & ((1 << KEY_FLAG_INVALIDATED) |
+					       (1 << KEY_FLAG_REVOKED) |
+					       (1 << KEY_FLAG_DEAD)))))
+		return fscrypt_get_crypt_info(inode);
+	return 0;
+}
+EXPORT_SYMBOL(fscrypt_get_encryption_info);
