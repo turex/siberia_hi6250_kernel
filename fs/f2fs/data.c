@@ -2164,7 +2164,11 @@ static void f2fs_complete_dio_read(struct work_struct *work)
 	bio_for_each_segment_all(bv, bio, i) {
 		page = bv->bv_page;
 
-		ret = fscrypt_decrypt_dio_page(inode, page, index);
+		ret = fscrypt_decrypt_page(inode,
+							page,
+							PAGE_SIZE, 0,
+							index,
+							GFP_NOFS);
 		if (ret) {
 			bio->bi_error = ret;
 			break;
@@ -2187,7 +2191,7 @@ static void f2fs_crypt_direct_read_end_io(struct bio *bio)
 		return;
 	}
 
-	fscrypt_decrypt_dio_bio_pages(ctx, bio, f2fs_complete_dio_read);
+	fscrypt_decrypt_bio_pages(ctx, bio);
 }
 
 static void f2fs_crypt_direct_write_end_io(struct bio *bio)

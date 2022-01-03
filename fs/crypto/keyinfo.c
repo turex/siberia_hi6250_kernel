@@ -136,10 +136,11 @@ static int validate_user_key(struct fscrypt_info *crypt_info,
 		goto out;
 	}
 
-	res = fscrypt_set_gcm_key(tfm, master_key->raw);
+	/*
+     res = fscrypt_set_gcm_key(tfm, master_key->raw);
 	if (res)
 		goto out;
-	/*res = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, ctx->iv, 0);
+	res = fscrypt_derive_gcm_key(tfm, ctx->nonce, plain_text, ctx->iv, 0);
 	if (res)
 		goto out;
 
@@ -291,18 +292,11 @@ int fscrypt_get_crypt_info(struct inode *inode)
 		int res2 = validate_user_key(crypt_info, &ctx, raw_key,
 					     inode->i_sb->s_cop->key_prefix);
 		if (res2) {
-			verify = fscrypt_get_verify_context(inode, &ctx,
-							    sizeof(ctx));
-			if (verify < 0 || res2 == -EBADMSG || res == -EBADMSG)
-				inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 			if (res2 == -ENOKEY)
 				res = -ENOKEY;
 			goto out;
 		}
 	} else if (res) {
-		verify = fscrypt_get_verify_context(inode, &ctx, sizeof(ctx));
-		if (verify < 0 || res == -EBADMSG)
-			inode->i_sb->s_cop->set_encrypted_corrupt(inode);
 		goto out;
 	}
 	ctfm = crypto_alloc_skcipher(cipher_str, 0, 0);
@@ -339,7 +333,7 @@ out:
 	kzfree(raw_key);
 	return res;
 }
-EXPORT_SYMBOL(fscrypt_get_encryption_info);
+EXPORT_SYMBOL(fscrypt_get_crypt_info);
 
 void fscrypt_put_encryption_info(struct inode *inode, struct fscrypt_info *ci)
 {
