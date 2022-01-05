@@ -12,7 +12,8 @@
 #define _FSCRYPT_PRIVATE_H
 
 #define __FS_HAS_ENCRYPTION 1
-#include <linux/fscrypt.h>
+// TODO remove? #include <linux/fscrypt.h>
+#include <uapi/linux/fscrypt.h>
 #include <crypto/hash.h>
 
 #define CONST_STRLEN(str)	(sizeof(str) - 1)

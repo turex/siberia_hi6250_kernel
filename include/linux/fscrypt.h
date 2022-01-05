@@ -19,7 +19,7 @@
 #include <linux/bio.h>
 #include <linux/dcache.h>
 #include <crypto/skcipher.h>
-#include <uapi/linux/fs.h>
+// TODO remove? #include <uapi/linux/fs.h>
 
 #define FS_CRYPTO_BLOCK_SIZE		16
 
@@ -121,6 +121,7 @@ struct fscrypt_info {
 	u8 ci_flags;
 	struct crypto_skcipher *ci_ctfm;
 	struct crypto_aead *ci_gtfm;
+    struct crypto_cipher *ci_essiv_tfm;
     struct key *ci_keyring_key;
 	u8 ci_master_key[FS_KEY_DESCRIPTOR_SIZE];
 	void *ci_key;
@@ -215,6 +216,11 @@ static inline int fscrypt_ci_key_len(struct inode *inode)
 #endif
 }
 
+typedef enum {
+	FS_DECRYPT = 0,
+	FS_ENCRYPT,
+} fscrypt_direction_t;
+
 #define FS_CTX_REQUIRES_FREE_ENCRYPT_FL		0x00000001
 #define FS_WRITE_PATH_FL			0x00000002
 
@@ -249,7 +255,7 @@ extern const struct dentry_operations fscrypt_d_ops;
 extern struct kmem_cache *fscrypt_info_cachep;
 int fscrypt_initialize(unsigned int cop_flags);
 
-extern void fscrypt_release_ctx(struct fscrypt_ctx *);
+// TODO extern void fscrypt_release_ctx(struct fscrypt_ctx *);
 extern int fscrypt_decrypt_dio_page(struct inode *, struct page *, pgoff_t);
 extern void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *, struct bio *);
 extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
