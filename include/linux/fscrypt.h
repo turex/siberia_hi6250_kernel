@@ -23,6 +23,28 @@
 
 #define FS_CRYPTO_BLOCK_SIZE		16
 
+
+struct fscrypt_str {
+	unsigned char *name;
+	u32 len;
+};
+
+struct fscrypt_name {
+	const struct qstr *usr_fname;
+	struct fscrypt_str disk_name;
+	u32 hash;
+	u32 minor_hash;
+	struct fscrypt_str crypto_buf;
+};
+
+
+#if __FS_HAS_ENCRYPTION
+#include <linux/fscrypt_supp.h>
+#else
+#include <linux/fscrypt_notsupp.h>
+#endif
+
+
 #define FS_KEY_DERIVATION_NONCE_SIZE		64
 #define FS_KEY_DERIVATION_IV_SIZE		16
 #define FS_KEY_DERIVATION_TAG_SIZE		16
@@ -140,23 +162,15 @@ static inline u32 fscrypt_symlink_data_len(u32 l)
 	return (l + sizeof(struct fscrypt_symlink_data) - 1);
 }
 
-struct fscrypt_str {
-	unsigned char *name;
-	u32 len;
-};
 
-struct fscrypt_name {
-	const struct qstr *usr_fname;
-	struct fscrypt_str disk_name;
-	u32 hash;
-	u32 minor_hash;
-	struct fscrypt_str crypto_buf;
-};
 
 #define FSTR_INIT(n, l)		{ .name = n, .len = l }
 #define FSTR_TO_QSTR(f)		QSTR_INIT((f)->name, (f)->len)
 #define fname_name(p)		((p)->disk_name.name)
 #define fname_len(p)		((p)->disk_name.len)
+
+
+
 
 /*
  * fscrypt superblock flags
@@ -227,7 +241,9 @@ struct fscrypt_completion_result {
 extern const struct dentry_operations fscrypt_d_ops;
 #endif
 
-#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
+
+#ifdef CONFIG_FS_ENCRYPTION
+
 /* crypto.c */
 extern struct kmem_cache *fscrypt_info_cachep;
 int fscrypt_initialize(unsigned int cop_flags);
@@ -246,23 +262,16 @@ extern int fscrypt_has_permitted_context(struct inode *, struct inode *);
 extern int fscrypt_inherit_context(struct inode *, struct inode *,
 					void *, bool);
 /* keyring.c */
-extern void fscrypt_sb_free(struct super_block *sb);
-extern int fscrypt_ioctl_add_key(struct file *filp, void __user *arg);
+void fscrypt_sb_free(struct super_block *sb);
+int fscrypt_ioctl_add_key(struct file *filp, void __user *arg);
+
 
 /* keysetup.c */
 extern int fscrypt_get_encryption_info(struct inode *);
 extern void fscrypt_put_encryption_info(struct inode *, struct fscrypt_info *);
 
-/* fname.c */
-extern int fscrypt_setup_filename(struct inode *, const struct qstr *,
-				int lookup, struct fscrypt_name *);
-extern void fscrypt_free_filename(struct fscrypt_name *);
-extern void fscrypt_fname_free_buffer(struct fscrypt_str *);
-extern int fscrypt_fname_disk_to_usr(struct inode *, u32, u32,
-			const struct fscrypt_str *, struct fscrypt_str *);
-extern int fscrypt_fname_usr_to_disk(struct inode *, const struct qstr *,
-			struct fscrypt_str *);
-#endif
+
+#else  /* !CONFIG_FS_ENCRYPTION */
 
 /* crypto.c */
 static inline struct fscrypt_ctx *fscrypt_notsupp_get_ctx(struct inode *i,
@@ -409,6 +418,10 @@ static inline int fscrypt_notsupp_fname_usr_to_disk(struct inode *inode,
 	return -EOPNOTSUPP;
 }
 
+#endif  /* !CONFIG_FS_ENCRYPTION */
+
+
+
 static inline bool fscrypt_dummy_context_enabled(struct inode *inode)
 {
 	if (inode->i_sb->s_cop->dummy_context &&
@@ -420,9 +433,10 @@ static inline bool fscrypt_dummy_context_enabled(struct inode *inode)
 static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
 					u32 filenames_mode)
 {
-	if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
-	    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
-		return true;
+	// Iceows Remove 128 encryption TODO
+	//if (contents_mode == FS_ENCRYPTION_MODE_AES_128_CBC &&
+	//    filenames_mode == FS_ENCRYPTION_MODE_AES_128_CTS)
+        //  return true;
 
 	if (contents_mode == FS_ENCRYPTION_MODE_AES_256_XTS &&
 	    filenames_mode == FS_ENCRYPTION_MODE_AES_256_CTS)
@@ -430,6 +444,7 @@ static inline bool fscrypt_valid_enc_modes(u32 contents_mode,
 
 	return false;
 }
+
 
 static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
 {
@@ -441,6 +456,7 @@ static inline bool fscrypt_is_dot_dotdot(const struct qstr *str)
 
 	return false;
 }
+
 
 #if __FS_HAS_ENCRYPTION
 

@@ -34,6 +34,8 @@
 #include <linux/fscrypt.h>
 #include <linux/fsnotify.h>
 #include <linux/lockdep.h>
+#include <linux/user_namespace.h>
+
 #include "internal.h"
 
 
@@ -213,7 +215,9 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags)
 	s->s_bdi = &noop_backing_dev_info;
 	s->s_flags = flags;
 	INIT_HLIST_NODE(&s->s_instances);
-	INIT_HLIST_BL_HEAD(&s->s_anon);
+	// Iceows replace 
+	//INIT_HLIST_BL_HEAD(&s->s_anon); 
+	INIT_HLIST_BL_HEAD(&s->s_roots);
 	mutex_init(&s->s_sync_lock);
 	INIT_LIST_HEAD(&s->s_inodes);
 	spin_lock_init(&s->s_inode_list_lock);
@@ -269,7 +273,7 @@ fail:
 /*
  * Drop a superblock's refcount.  The caller must hold sb_lock.
  */
-static void __put_super(struct super_block *sb)
+static void __put_super(struct super_block *s)
 {
 	if (!--s->s_count) {
 		list_del_init(&s->s_list);

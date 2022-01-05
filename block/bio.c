@@ -30,12 +30,12 @@
 #include <linux/cgroup.h>
 
 #include <trace/events/block.h>
-/*
+
+// Iceows remove comment --> Turex ? 
 #ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
 #include <linux/fscrypto.h>
 #endif
-*/
-#include <linux/fscrypt_common.h>
+//#include <linux/fscrypt_common.h>
 
 
 #include "blk.h"
