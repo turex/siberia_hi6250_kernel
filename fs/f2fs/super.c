@@ -1985,6 +1985,7 @@ static int f2fs_set_context(struct inode *inode, const void *ctx, size_t len,
 				ctx, len, fs_data, XATTR_CREATE);
 }
 
+/*FIXME Maybe useless
 static int f2fs_get_verify_context(struct inode *inode, void *ctx, size_t len)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
@@ -2021,7 +2022,7 @@ out:
 	put_xattr_header(xpage);
 	return err;
 }
-
+*/
 static int f2fs_set_verify_context(struct inode *inode, const void *ctx,
 			size_t len, void *fs_data, int create_crc)
 {
@@ -2049,7 +2050,6 @@ static unsigned f2fs_max_namelen(struct inode *inode)
 
 static const struct fscrypt_operations f2fs_cryptops = {
 	.get_context		= f2fs_get_context,
-	.get_verify_context	= f2fs_get_verify_context,
 	.key_prefix		    = "f2fs:",
 	.set_context		= f2fs_set_context,
 	.set_verify_context	= f2fs_set_verify_context,

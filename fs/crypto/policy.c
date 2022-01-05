@@ -20,7 +20,7 @@ static int inode_has_encryption_context(struct inode *inode)
 {
 	if (!inode->i_sb->s_cop->get_context)
 		return 0;
-	return (inode->i_sb->s_cop->get_context(inode, NULL, 0L, NULL) > 0);
+	return (inode->i_sb->s_cop->get_context(inode, NULL, 0L) > 0);
 }
 #include <linux/mount.h>
 #include "fscrypt_private.h"
@@ -84,7 +84,7 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
 
 	inode_lock(inode);
 
-	ret = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx), NULL);
+	ret = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
 	if (ret == -ENODATA) {
 		if (!S_ISDIR(inode->i_mode))
 			ret = -ENOTDIR;
@@ -123,7 +123,7 @@ int fscrypt_ioctl_get_policy(struct file *filp, void __user *arg)
 			!inode->i_sb->s_cop->is_encrypted(inode))
 		return -ENODATA;
 
-	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx),NULL);
+	res = inode->i_sb->s_cop->get_context(inode, &ctx, sizeof(ctx));
 	if (res < 0 && res != -ERANGE)
 		return res;
 	if (res != sizeof(ctx))
@@ -226,11 +226,11 @@ int fscrypt_has_permitted_context(struct inode *parent, struct inode *child)
 			(parent_ci->ci_flags == child_ci->ci_flags);
 	}
 
-	res = cops->get_context(parent, &parent_ctx, sizeof(parent_ctx), NULL);
+	res = cops->get_context(parent, &parent_ctx, sizeof(parent_ctx));
 	if (res != sizeof(parent_ctx))
 		return 0;
 
-	res = cops->get_context(child, &child_ctx, sizeof(child_ctx), NULL);
+	res = cops->get_context(child, &child_ctx, sizeof(child_ctx));
 	if (res != sizeof(child_ctx))
 		return 0;
 
