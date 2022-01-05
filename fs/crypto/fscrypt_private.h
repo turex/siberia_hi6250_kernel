@@ -20,27 +20,6 @@
 #define FS_KEY_DERIVATION_NONCE_SIZE	16
 
 #define FSCRYPT_MIN_KEY_SIZE		16
-
-/**
- * Encryption context for inode
- *
- * Protector format:
- *  1 byte: Protector format (1 = this version)
- *  1 byte: File contents encryption mode
- *  1 byte: File names encryption mode
- *  1 byte: Flags
- *  8 bytes: Master Key descriptor
- *  16 bytes: Encryption Key derivation nonce
- */
-struct fscrypt_context {
-	u8 format;
-	u8 contents_encryption_mode;
-	u8 filenames_encryption_mode;
-	u8 flags;
-	u8 master_key_descriptor[FSCRYPT_KEY_DESCRIPTOR_SIZE];
-	u8 nonce[FS_KEY_DERIVATION_NONCE_SIZE];
-} __packed;
-
 #define FS_ENCRYPTION_CONTEXT_FORMAT_V1		1
 
 
@@ -99,13 +78,6 @@ union fscrypt_iv {
 
 void fscrypt_generate_iv(union fscrypt_iv *iv, u64 lblk_num,
 			 const struct fscrypt_info *ci);
-
-/* fname.c */
-extern int fname_encrypt(struct inode *inode, const struct qstr *iname,
-			 u8 *out, unsigned int olen);
-extern bool fscrypt_fname_encrypted_size(const struct inode *inode,
-					 u32 orig_len, u32 max_len,
-					 u32 *encrypted_len_ret);
 
 /* keyring.c */
 
