@@ -35,7 +35,8 @@
 #ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
 #include <linux/fscrypto.h>
 #endif
-//#include <linux/fscrypt_common.h>
+#include <linux/fscrypt.h>
+
 
 
 #include "blk.h"

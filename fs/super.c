@@ -215,9 +215,9 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags)
 	s->s_bdi = &noop_backing_dev_info;
 	s->s_flags = flags;
 	INIT_HLIST_NODE(&s->s_instances);
-	// Iceows replace 
-	//INIT_HLIST_BL_HEAD(&s->s_anon); 
-	INIT_HLIST_BL_HEAD(&s->s_roots);
+	// Iceows replace s_roots with s_anon
+	INIT_HLIST_BL_HEAD(&s->s_anon); 
+	//INIT_HLIST_BL_HEAD(&s->s_roots);
 	mutex_init(&s->s_sync_lock);
 	INIT_LIST_HEAD(&s->s_inodes);
 	spin_lock_init(&s->s_inode_list_lock);
@@ -282,7 +282,7 @@ static void __put_super(struct super_block *s)
 		WARN_ON(!list_empty(&s->s_mounts));
 		security_sb_free(s);
 		fscrypt_sb_free(s);
-		put_user_ns(s->s_user_ns);
+		//put_user_ns(s->s_user_ns);
 		kfree(s->s_subtype);
 		call_rcu(&s->rcu, destroy_super_rcu);
 	}
