@@ -21,6 +21,7 @@
 #include <linux/random.h>
 #include <linux/scatterlist.h>
 #include <linux/ratelimit.h>
+#include <uapi/linux/fscrypt.h>
 #include "fscrypt_private.h"
 
 /**

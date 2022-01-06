@@ -19,7 +19,7 @@
 #include <linux/bio.h>
 #include <linux/dcache.h>
 #include <crypto/skcipher.h>
-// TODO remove? #include <uapi/linux/fs.h>
+#include <uapi/linux/fs.h>
 
 #define FS_CRYPTO_BLOCK_SIZE		16
 
@@ -37,6 +37,7 @@ struct fscrypt_name {
 	struct fscrypt_str crypto_buf;
 };
 
+#define __FS_HAS_ENCRYPTION 0
 
 #if __FS_HAS_ENCRYPTION
 #include <linux/fscrypt_supp.h>
@@ -104,16 +105,6 @@ struct fscrypt_context {
 } __packed;
 
 
-
-#define FS_KEY_DESC_PREFIX		"fscrypt:"
-#define FS_KEY_DESC_PREFIX_SIZE		8
-
-/* This is passed in from userspace into the kernel keyring */
-struct fscrypt_key {
-	u32 mode;
-	u8 raw[FS_MAX_KEY_SIZE];
-	u32 size;
-} __packed;
 
 struct fscrypt_info {
 	u8 ci_data_mode;
@@ -256,12 +247,13 @@ extern struct kmem_cache *fscrypt_info_cachep;
 int fscrypt_initialize(unsigned int cop_flags);
 
 // TODO extern void fscrypt_release_ctx(struct fscrypt_ctx *);
-extern int fscrypt_decrypt_dio_page(struct inode *, struct page *, pgoff_t);
-extern void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *, struct bio *);
-extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
-					  work_func_t func);
-extern void fscrypt_pullback_bio_page(struct page **, bool);
-extern void fscrypt_restore_control_page(struct page *);
+//extern int fscrypt_decrypt_dio_page(struct inode *, struct page *, pgoff_t);
+//extern void fscrypt_decrypt_bio_pages(struct fscrypt_ctx *, struct bio *);
+//extern void fscrypt_decrypt_dio_bio_pages(struct fscrypt_ctx *, struct bio *,
+//					  work_func_t func);
+//extern void fscrypt_pullback_bio_page(struct page **, bool);
+//extern void fscrypt_restore_control_page(struct page *);
+
 /* policy.c */
 extern int fscrypt_ioctl_set_policy(struct file *, const void __user *);
 extern int fscrypt_ioctl_get_policy(struct file *, void __user *);

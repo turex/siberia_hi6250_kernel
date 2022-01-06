@@ -30,7 +30,7 @@
 #include <linux/namei.h>
 #include <crypto/aes.h>
 #include <linux/fscrypt.h>
-// TODO #include "fscrypt_private.h"
+#include "fscrypt_private.h"
 
 static unsigned int num_prealloc_crypto_pages = 32;
 static unsigned int num_prealloc_crypto_ctxs = 128;

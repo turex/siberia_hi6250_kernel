@@ -12,22 +12,26 @@
 #define _FSCRYPT_PRIVATE_H
 
 #define __FS_HAS_ENCRYPTION 1
+
+
 // TODO remove? #include <linux/fscrypt.h>
 #include <uapi/linux/fscrypt.h>
 #include <crypto/hash.h>
 
+
+/* Encryption parameters */
+#define FS_IV_SIZE			16
+#define FS_KEY_DERIVATION_NONCE_SIZE	16
+
+
+
 #define CONST_STRLEN(str)	(sizeof(str) - 1)
 
 #define FS_KEY_DERIVATION_NONCE_SIZE	16
-
 #define FSCRYPT_MIN_KEY_SIZE		16
 #define FS_ENCRYPTION_CONTEXT_FORMAT_V1		1
 
 
-typedef enum {
-	FS_DECRYPT = 0,
-	FS_ENCRYPT,
-} fscrypt_direction_t;
 
 #define FS_CTX_REQUIRES_FREE_ENCRYPT_FL		0x00000001
 #define FS_CTX_HAS_BOUNCE_BUFFER_FL		0x00000002
