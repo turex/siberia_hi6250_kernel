@@ -37,12 +37,17 @@ struct fscrypt_name {
 	struct fscrypt_str crypto_buf;
 };
 
+#include <linux/fscrypt_supp.h>
 
+
+/* TODO FIX __FS_HAS_ENCRYPTION
 #if __FS_HAS_ENCRYPTION
 #include <linux/fscrypt_supp.h>
 #else
 #include <linux/fscrypt_notsupp.h>
 #endif
+
+*/
 
 
 #define FS_KEY_DERIVATION_NONCE_SIZE		64

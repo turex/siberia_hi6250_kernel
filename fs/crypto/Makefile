@@ -5,7 +5,6 @@ fscrypto-y := crypto.o \
 	      hooks.o \
 	      keyring.o \
 	      keysetup.o \
-	      keysetup_v1.o \
 	      policy.o
 
 fscrypto-$(CONFIG_BLOCK) += bio.o
