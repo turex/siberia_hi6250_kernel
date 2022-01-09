@@ -300,7 +300,7 @@ int update_inode(struct inode *inode, struct page *node_page)
 		read_lock(&et->lock);
 		set_raw_extent(&et->largest, &ri->i_ext);
 		read_unlock(&et->lock);
-	} else {
+	} else
 		memset(&ri->i_ext, 0, sizeof(ri->i_ext));
 	set_raw_inline(inode, ri);
 

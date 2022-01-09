@@ -552,7 +552,8 @@ enum {
 	F2FS_IPU_ASYNC,
 };
 
-static inline bool need_inplace_update(struct inode *inode, struct f2fs_io_info *fio)
+//static inline bool need_inplace_update(struct inode *inode, struct f2fs_io_info *fio) TODO TUREX
+static inline bool need_inplace_update(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	unsigned int policy = SM_I(sbi)->ipu_policy;
@@ -579,8 +580,6 @@ static inline bool need_inplace_update(struct inode *inode, struct f2fs_io_info 
 	 * IPU for rewrite async pages.
 	 */
 	if (policy & (0x1 << F2FS_IPU_ASYNC) &&
-			fio && fio->op == REQ_OP_WRITE &&
-			!(fio->op_flags & REQ_SYNC) &&
 			!f2fs_encrypted_inode(inode))
 		return true;
 
@@ -741,6 +740,13 @@ static inline bool sec_usage_check(struct f2fs_sb_info *sbi, unsigned int secno)
 	if (IS_CURSEC(sbi, secno) || (sbi->cur_victim_sec == secno))
 		return true;
 	return false;
+}
+
+static inline unsigned int max_hw_blocks(struct f2fs_sb_info *sbi)
+{
+	struct block_device *bdev = sbi->sb->s_bdev;
+	struct request_queue *q = bdev_get_queue(bdev);
+	return SECTOR_TO_BLOCK(queue_max_sectors(q));
 }
 
 /*

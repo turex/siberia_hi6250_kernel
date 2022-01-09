@@ -51,7 +51,7 @@ static struct inode *f2fs_new_inode(struct inode *dir, umode_t mode)
 
 	inode->i_ino = ino;
 	inode->i_blocks = 0;
-	inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
 	inode->i_generation = sbi->s_next_generation++;
 
 	err = insert_inode_locked(inode);
@@ -243,7 +243,7 @@ static int f2fs_link(struct dentry *old_dentry, struct inode *dir,
 
 	f2fs_balance_fs(sbi, true);
 
-	inode->i_ctime = current_time(inode);
+	inode->i_ctime = CURRENT_TIME;
 	ihold(inode);
 
 	set_inode_flag(inode, FI_INC_LINK);
@@ -251,7 +251,6 @@ static int f2fs_link(struct dentry *old_dentry, struct inode *dir,
 	err = f2fs_add_link(dentry, inode);
 	if (err)
 		goto out;
-	set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
 
 	d_instantiate(dentry, inode);
@@ -426,8 +425,6 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
 		goto fail;
 	}
 	f2fs_delete_entry(de, page, dir, inode);
-	if (S_ISDIR(inode->i_mode))
-		set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
 
 	if (IS_DIRSYNC(dir))
@@ -575,7 +572,6 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 	err = f2fs_add_link(dentry, inode);
 	if (err)
 		goto out_fail;
-	set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
 
 	alloc_nid_done(sbi, inode->i_ino);
@@ -794,7 +790,7 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 		f2fs_set_link(new_dir, new_entry, new_page, old_inode);
 
-		new_inode->i_ctime = current_time(new_inode);
+		new_inode->i_ctime = CURRENT_TIME;
 		down_write(&F2FS_I(new_inode)->i_sem);
 		if (old_dir_entry)
 			f2fs_i_links_write(new_inode, false);
@@ -874,7 +870,6 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		f2fs_i_links_write(old_dir, false);
 	}
 
-	set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
 
 	if (IS_DIRSYNC(old_dir) || IS_DIRSYNC(new_dir))
@@ -1033,7 +1028,6 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 	f2fs_mark_inode_dirty_sync(new_dir);
 
-	set_sbi_flag(sbi, SBI_NEED_CP_DIR);
 	f2fs_unlock_op(sbi);
 
 	if (IS_DIRSYNC(old_dir) || IS_DIRSYNC(new_dir))
@@ -1073,10 +1067,6 @@ static int f2fs_rename2(struct inode *old_dir, struct dentry *old_dentry,
 {
 	if (flags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE | RENAME_WHITEOUT))
 		return -EINVAL;
-
-	if (f2fs_encrypted_fixed_inode(old_dir) ||
-			f2fs_encrypted_fixed_inode(new_dir))
-		return -EPERM;
 
 	if (flags & RENAME_EXCHANGE) {
 		return f2fs_cross_rename(old_dir, old_dentry,

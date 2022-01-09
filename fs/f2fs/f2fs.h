@@ -2602,88 +2602,7 @@ enum {
 	HC_REWRITE_WARM_DATA,
 	NR_HOTCOLD_TYPE,
 };
-struct f2fs_bigdata_info {
-	unsigned int cp_cnt, cp_succ_cnt;
-	u64 cp_time, max_cp_time, max_cp_submit_time,
-	    max_cp_flush_meta_time, max_cp_discard_time;
-	/* avg_cp_time = cp_time / sbi->cp_cnt */
 
-	unsigned int discard_cnt, discard_blk_cnt, undiscard_cnt,
-		     undiscard_blk_cnt;
-	u64 discard_time, max_discard_time;
-	/* avg_discard_time = discard_time / discard_cnt */
-
-	/* BG_GC = 0, FG_GC = 1 */
-	unsigned int gc_cnt[2], gc_fail_cnt[2],
-		     gc_data_cnt[2], gc_node_cnt[2];
-	unsigned int gc_data_seg_cnt[2], gc_data_blk_cnt[2],
-		     gc_node_seg_cnt[2], gc_node_blk_cnt[2];
-	u64 fggc_time;
-	/*
-	 * avg_[bg|fg]gc_data_seg_cnt = [bg|fg]gc_data_seg_cnt / [bg|fg]gc_data_cnt
-	 * avg_[bg|fg]gc_data_blk_cnt = [bg|fg]gc_data_blk_cnt / [bg|fg]gc_data_cnt
-	 * avg_fggc_time = fggc_time / fggc_cnt
-	 */
-	/* LFS = 0, SSR = 1 */
-	unsigned int node_alloc_cnt[2], data_alloc_cnt[2], data_ipu_cnt;
-
-	unsigned long last_node_alloc_cnt, last_data_alloc_cnt;
-	unsigned long curr_node_alloc_cnt, curr_data_alloc_cnt;
-	unsigned long ssr_last_jiffies;
-
-	unsigned int fsync_reg_file_cnt, fsync_dir_cnt;
-	u64 fsync_time, max_fsync_time, fsync_cp_time, max_fsync_cp_time,
-	    fsync_wr_file_time, max_fsync_wr_file_time, fsync_sync_node_time,
-	    max_fsync_sync_node_time, fsync_flush_time, max_fsync_flush_time;
-
-	unsigned long hotcold_cnt[NR_HOTCOLD_TYPE];
-	unsigned long hotcold_gc_seg_cnt[NR_CURSEG];
-	unsigned long hotcold_gc_blk_cnt[NR_CURSEG];
-
-	union {
-		struct encrypt_struct {
-			unsigned int ctx_corrupt:1;
-			unsigned int ctx_nonexist:1;
-			unsigned int reserved:4;
-			unsigned int fixed:1;
-		} encrypt_struct;
-		unsigned int encrypt_val;
-	} encrypt;
-};
-
-
-#define inc_bd_val(sbi, member, val) do {			\
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
-	if (bd)							\
-		bd->member += (val);				\
-} while (0)
-#define inc_bd_array_val(sbi, member, idx, val) do {		\
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
-	if (bd)							\
-		bd->member[(idx)] += (val);			\
-} while (0)
-
-#define set_bd_val(sbi, member, val) do {			\
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
-	if (bd)							\
-		bd->member = (val);				\
-} while (0)
-#define set_bd_array_val(sbi, member, idx, val) do {		\
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
-	if (bd)							\
-		bd->member[(idx)] = (val);			\
-} while (0)
-
-#define max_bd_val(sbi, member, val) do {			\
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
-	if (bd) {						\
-		if (bd->member < (val))				\
-			bd->member = (val);			\
-	}							\
-} while (0)
-
-#define bd_mutex_lock(mutex) mutex_lock((mutex))
-#define bd_mutex_unlock(mutex) mutex_unlock((mutex))
 #else
 #define stat_inc_cp_count(si)
 #define stat_inc_bg_cp_count(si)
@@ -2717,13 +2636,6 @@ static inline void f2fs_destroy_stats(struct f2fs_sb_info *sbi) { }
 static inline int __init f2fs_create_root_stats(void) { return 0; }
 static inline void f2fs_destroy_root_stats(void) { }
 
-#define inc_bd_val(sbi, member, val)
-#define inc_bd_array_val(sbi, member, idx, val)
-#define set_bd_val(sbi, member, val)
-#define set_bd_array_val(sbi, member, idx, val)
-#define max_bd_val(sbi, member, val)
-#define bd_mutex_lock(mutex)
-#define bd_mutex_unlock(mutex)
 #endif
 
 extern const struct file_operations f2fs_dir_operations;
