@@ -492,8 +492,6 @@ struct extent_node {
 			unsigned int len;
 			u32 blk;
 		};
-		struct extent_info ei;	/* extent info */
-
 	};
 	struct list_head list;		/* node in global extent list of sbi */
 	struct extent_info ei;		/* extent info */
@@ -901,13 +899,6 @@ struct f2fs_dev_info {
 	unsigned int nr_blkz;			/* Total number of zones */
 	u8 *blkz_type;				/* Array of zones type */
 #endif
-};
-
-enum inode_type {
-	DIR_INODE,			/* for dirty dir inode */
-	FILE_INODE,			/* for dirty regular/symlink inode */
-	DIRTY_META,			/* for all dirtied inode metadata */
-	NR_INODE_TYPE,
 };
 
 enum inode_type {
@@ -1483,13 +1474,7 @@ static inline void dec_valid_block_count(struct f2fs_sb_info *sbi,
 		sbi->current_reserved_blocks < sbi->reserved_blocks) {
 		sbi->current_reserved_blocks = min(sbi->reserved_blocks,
 					sbi->current_reserved_blocks + (block_t)count);
-#ifdef CONFIG_F2FS_OVP_RESERVED
-		update_ovp_rsvd_max_blocks(sbi);
-#endif
 	}
-#ifdef CONFIG_F2FS_OVP_RESERVED
-	update_ovp_cur_rsvd_blocks(sbi);
-#endif
 	spin_unlock(&sbi->stat_lock);
 	f2fs_i_blocks_write(inode, count, false);
 }
@@ -1651,9 +1636,6 @@ static inline bool inc_valid_node_count(struct f2fs_sb_info *sbi,
 
 	sbi->total_valid_node_count++;
 	sbi->total_valid_block_count++;
-#ifdef CONFIG_F2FS_OVP_RESERVED
-	update_ovp_cur_rsvd_blocks(sbi);
-#endif
 	spin_unlock(&sbi->stat_lock);
 
 	percpu_counter_inc(&sbi->alloc_valid_block_count);
@@ -1665,27 +1647,15 @@ static inline void dec_valid_node_count(struct f2fs_sb_info *sbi,
 {
 	spin_lock(&sbi->stat_lock);
 
-	f2fs_bug_on_atomic(sbi, !sbi->total_valid_block_count);
-	f2fs_bug_on_atomic(sbi, !sbi->total_valid_node_count);
-	f2fs_bug_on_atomic(sbi, !inode->i_blocks);
-
 	f2fs_i_blocks_write(inode, 1, false);
 	sbi->total_valid_node_count--;
 	sbi->total_valid_block_count--;
 	if (sbi->reserved_blocks &&
 		sbi->current_reserved_blocks < sbi->reserved_blocks) {
 		sbi->current_reserved_blocks++;
-#ifdef CONFIG_F2FS_OVP_RESERVED
-		update_ovp_rsvd_max_blocks(sbi);
-#endif
 	}
-#ifdef CONFIG_F2FS_OVP_RESERVED
-		update_ovp_cur_rsvd_blocks(sbi);
-#endif
 
 	spin_unlock(&sbi->stat_lock);
-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-		set_extra_flag(sbi, EXTRA_NEED_FSCK_FLAG);
 }
 
 static inline unsigned int valid_node_count(struct f2fs_sb_info *sbi)
@@ -2681,10 +2651,6 @@ struct f2fs_bigdata_info {
 	} encrypt;
 };
 
-static inline struct f2fs_bigdata_info *F2FS_BD_STAT(struct f2fs_sb_info *sbi)
-{
-	return (struct f2fs_bigdata_info *)sbi->bd_info;
-}
 
 #define inc_bd_val(sbi, member, val) do {			\
 	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);	\
@@ -2839,11 +2805,7 @@ static inline void f2fs_set_encrypted_inode(struct inode *inode)
 #endif
 }
 
-static inline bool f2fs_inline_encrypted_inode(struct inode *inode)
-{
-	return file_is_inline_encrypt(inode);
-}
-
+/* TODO Remove TureX
 static inline void f2fs_set_inline_encrypted_inode(struct inode *inode)
 {
 	return bio->bi_private != NULL;
@@ -2862,7 +2824,7 @@ static inline void f2fs_set_encrypted_corrupt_inode(struct inode *inode)
 		 * only the first time the inode is set with CORRUPT_BIT,
 		 * flag SBI_NEED_FSCK will be set. Otherwise, NEED_FSCK
 		 * will not be set
-		 */
+
 		set_sbi_flag(F2FS_I_SB(inode), SBI_NEED_FSCK);
 	}
 #else
@@ -2875,6 +2837,7 @@ static inline bool f2fs_encrypted_fixed_inode(struct inode *inode)
 {
 	return file_is_encrypt_fixed(inode);
 }
+*/
 
 static inline bool f2fs_bio_encrypted(struct bio *bio)
 {
@@ -2940,6 +2903,5 @@ static inline bool f2fs_may_encrypt(struct inode *inode)
 #define fscrypt_fname_free_buffer	fscrypt_notsupp_fname_free_buffer
 #define fscrypt_fname_disk_to_usr	fscrypt_notsupp_fname_disk_to_usr
 #define fscrypt_fname_usr_to_disk	fscrypt_notsupp_fname_usr_to_disk
-
 #endif
 #endif

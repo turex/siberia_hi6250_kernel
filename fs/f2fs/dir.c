@@ -831,7 +831,7 @@ bool f2fs_fill_dentries(struct dir_context *ctx, struct f2fs_dentry_ptr *d,
 
 		if (f2fs_encrypted_inode(d->inode)) {
 			int save_len = fstr->len;
-			int err;
+			int ret;
 
 			ret = fscrypt_fname_disk_to_usr(d->inode,
 						(u32)de->hash_code, 0,
@@ -847,8 +847,6 @@ bool f2fs_fill_dentries(struct dir_context *ctx, struct f2fs_dentry_ptr *d,
 					le32_to_cpu(de->ino), d_type))
 			return 1;
 
-		if (F2FS_I_SB(d->inode)->readdir_ra == 1)
-			ra_node_page(F2FS_I_SB(d->inode), le32_to_cpu(de->ino));
 
 		ctx->pos = start_pos + bit_pos;
 	}
@@ -887,8 +885,6 @@ static int f2fs_readdir(struct file *file, struct dir_context *ctx)
 		page_cache_sync_readahead(inode->i_mapping, ra, file, n,
 				min(npages - n, (pgoff_t)MAX_DIR_RA_PAGES));
 
-	if (readdir_ra == 1)
-		blk_start_plug(&plug);
 	for (; n < npages; n++) {
 		dentry_page = get_lock_data_page(inode, n, false);
 		if (IS_ERR(dentry_page)) {

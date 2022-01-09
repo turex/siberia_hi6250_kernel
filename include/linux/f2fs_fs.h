@@ -58,6 +58,16 @@
 
 #define VERSION_LEN	256
 #define MAX_VOLUME_NAME		512
+#define MAX_PATH_LEN		64
+#define MAX_DEVICES		8
+
+/*
+ * For superblock
+ */
+struct f2fs_device {
+	__u8 path[MAX_PATH_LEN];
+	__le32 total_segments;
+} __packed;
 
 
 struct f2fs_super_block {
@@ -98,6 +108,7 @@ struct f2fs_super_block {
 	__le32 feature;			/* defined features */
 	__u8 encryption_level;		/* versioning level for encryption */
 	__u8 encrypt_pw_salt[16];	/* Salt used for string2key algorithm */
+    struct f2fs_device devs[MAX_DEVICES];	/* device list */
 	__u8 reserved[323];		/* valid reserved region */
 	__le32 crc;			/* checksum of superblock */
 } __packed;
@@ -269,6 +280,7 @@ struct f2fs_node {
  * For NAT entries
  */
 #define NAT_ENTRY_PER_BLOCK (PAGE_SIZE / sizeof(struct f2fs_nat_entry))
+#define NAT_ENTRY_BITMAP_SIZE	((NAT_ENTRY_PER_BLOCK + 7) / 8)
 
 struct f2fs_nat_entry {
 	__u8 version;		/* latest version of cached nat entry */
