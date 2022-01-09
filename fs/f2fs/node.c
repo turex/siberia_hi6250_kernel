@@ -1090,15 +1090,14 @@ fail:
  * 0: f2fs_put_page(page, 0)
  * LOCKED_PAGE or error: f2fs_put_page(page, 1)
  */
-static int read_node_page(struct page *page, int op_flags)
+static int read_node_page(struct page *page, int rw)
 {
 	struct f2fs_sb_info *sbi = F2FS_P_SB(page);
 	struct node_info ni;
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = NODE,
-		.op = REQ_OP_READ,
-		.op_flags = op_flags,
+		.rw = rw,
 		.page = page,
 		.encrypted_page = NULL,
 	};
@@ -1586,8 +1585,7 @@ static int __write_node_page(struct page *page, bool atomic, bool *submitted,
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = NODE,
-		.op = REQ_OP_WRITE,
-		.op_flags = wbc_to_write_flags(wbc),
+		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
 		.page = page,
 		.encrypted_page = NULL,
 		.submitted = false,

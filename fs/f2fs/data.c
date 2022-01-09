@@ -201,12 +201,12 @@ static inline void __submit_bio(struct f2fs_sb_info *sbi, int rw,
 static void __submit_merged_bio(struct f2fs_bio_info *io)
 {
 	struct f2fs_io_info *fio = &io->fio;
-
 	if (!io->bio)
 		return;
-
-	bio_set_op_attrs(io->bio, fio->op, fio->op_flags);
-
+	if (is_read_io(fio->rw))
+		trace_f2fs_submit_read_bio(io->sbi->sb, fio, io->bio);
+	else
+		trace_f2fs_submit_write_bio(io->sbi->sb, fio, io->bio);
 	__submit_bio(io->sbi, fio->rw, io->bio, fio->type);
 	io->bio = NULL;
 }
@@ -313,122 +313,50 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	struct bio *bio;
 	struct page *page = fio->encrypted_page ?
 			fio->encrypted_page : fio->page;
-
 	trace_f2fs_submit_page_bio(page, fio);
 	f2fs_trace_ios(fio, 0);
-
 	/* Allocate a new bio */
 	bio = __bio_alloc(fio->sbi, fio->new_blkaddr, 1, is_read_io(fio->rw));
-
 	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
 		bio_put(bio);
 		return -EFAULT;
 	}
-	bio_set_op_attrs(bio, fio->op, fio->op_flags);
-
 	__submit_bio(fio->sbi, fio->rw, bio, fio->type);
 	return 0;
 }
 
 int f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 {
-	struct f2fs_sb_info *sbi = fio->sbi;
+struct f2fs_sb_info *sbi = fio->sbi;
 	enum page_type btype = PAGE_TYPE_OF_BIO(fio->type);
 	struct f2fs_bio_info *io;
-	bool is_read = is_read_io(fio->op);
+	bool is_read = is_read_io(fio->rw);
 	struct page *bio_page;
-	int err = 0;
-
 	io = is_read ? &sbi->read_io : &sbi->write_io[btype];
-
 	if (fio->old_blkaddr != NEW_ADDR)
 		verify_block_addr(sbi, fio->old_blkaddr);
 	verify_block_addr(sbi, fio->new_blkaddr);
-
 	down_write(&io->io_rwsem);
-
 	if (io->bio && (io->last_block_in_bio != fio->new_blkaddr - 1 ||
 						io->fio.rw != fio->rw))
 		__submit_merged_bio(io);
 alloc_new:
 	if (io->bio == NULL) {
 		int bio_blocks = MAX_BIO_BLOCKS(sbi);
-
 		io->bio = __bio_alloc(sbi, fio->new_blkaddr,
 						bio_blocks, is_read);
 		io->fio = *fio;
 	}
-
 	bio_page = fio->encrypted_page ? fio->encrypted_page : fio->page;
-
-	if (bio_add_page(io->bio, bio_page, PAGE_SIZE, 0) <
-							PAGE_SIZE) {
-		__submit_merged_bio(io);
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-	else if ((io->bio) && ((io->bio->ci_key != fio->ci_key) ||
-				(io->bio->ci_key_len != fio->ci_key_len) ||
-				(fio->ci_key &&	io->last_index_in_bio !=
-						bio_page->index - 1)))
-		__submit_merged_bio(io);
-#endif
-
-alloc_new:
-	if (io->bio == NULL) {
-		bool nomerge;
-		int bio_blocks;
-
-		if ((fio->type == DATA || fio->type == NODE) &&
-				fio->new_blkaddr & F2FS_IO_SIZE_MASK(sbi)) {
-			err = -EAGAIN;
-			if (!is_read)
-				dec_page_count(sbi, WB_DATA_TYPE(bio_page));
-			goto out_fail;
-		}
-		/* if nomerge return true, bio would be tracked
-		 * by wbt, we force to shrink the bio->bi_max_vecs,
-		 * avoid too much delay introduced by a big bio.
-		 */
-		bio_blocks = wbt_max_bio_blocks(sbi->sb->s_bdev,
-					fio->op, BIO_MAX_PAGES, &nomerge);
-
-		io->bio = __bio_alloc(sbi, fio->new_blkaddr,
-						bio_blocks, is_read);
-
-		if (nomerge)
-			io->bio->bi_rw |= REQ_NOMERGE;
-		io->fio = *fio;
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-		io->bio->ci_key = fio->ci_key;
-		io->bio->ci_key_len = fio->ci_key_len;
-		if (fio->ci_key)
-			io->bio->index = bio_page->index;
-#endif
-	}
-
-	io->last_block_in_bio = fio->new_blkaddr;
-	f2fs_trace_ios(fio, 0);
-
 	if (bio_add_page(io->bio, bio_page, PAGE_SIZE, 0) <
 							PAGE_SIZE) {
 		__submit_merged_bio(io);
 		goto alloc_new;
-	} else {
-		/* if it's a wbt tracked bio, kick it once bio is full,
-		 * so the wbt inflight could update in time.
-		 */
-		if (wbt_need_kick_bio(io->bio))
-			__submit_merged_bio(io);
 	}
-
 	io->last_block_in_bio = fio->new_blkaddr;
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-	io->last_index_in_bio = bio_page->index;
-#endif
 	f2fs_trace_ios(fio, 0);
-out_fail:
 	up_write(&io->io_rwsem);
 	trace_f2fs_submit_page_mbio(fio->page, fio);
-	return err;
 }
 
 static void __set_data_blkaddr(struct dnode_of_data *dn)

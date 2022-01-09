@@ -892,6 +892,7 @@ struct f2fs_bio_info {
 #define RDEV(i)				(raw_super->devs[i])
 struct f2fs_dev_info {
 	struct block_device *bdev;
+    char path[MAX_PATH_LEN];
 	unsigned int total_segments;
 	block_t start_blk;
 	block_t end_blk;

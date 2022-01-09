@@ -454,7 +454,6 @@ static int f2fs_bd_discard_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
 	struct dirty_seglist_info *dirty_i = DIRTY_I(sbi);
 	struct sit_info *sit_i = SIT_I(sbi);
@@ -511,18 +510,6 @@ static int f2fs_bd_discard_info_show(struct seq_file *seq, void *p)
 		mutex_unlock(&sit_i->sentry_lock);
 	}
 
-	/*
-	 * each colum indicates: discard_cnt discard_blk_cnt undiscard_cnt
-	 * undiscard_blk_cnt discard_time max_discard_time
-	 */
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->undiscard_cnt = undiscard_cnt;
-	bd->undiscard_blk_cnt = total_blks;
-	seq_printf(seq, "%u %u %u %u %llu %llu\n", bd->discard_cnt,
-		   bd->discard_blk_cnt, bd->undiscard_cnt,
-		   bd->undiscard_blk_cnt, bd->discard_time,
-		   bd->max_discard_time);
-	bd_mutex_unlock(&sbi->bd_mutex);
 	return 0;
 }
 
@@ -533,7 +520,6 @@ static ssize_t f2fs_bd_discard_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	char buffer[3] = {0};
 
 	if (!buf || length > 2)
@@ -545,14 +531,6 @@ static ssize_t f2fs_bd_discard_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->discard_cnt = 0;
-	bd->discard_blk_cnt = 0;
-	bd->undiscard_cnt = 0;
-	bd->undiscard_blk_cnt = 0;
-	bd->discard_time = 0;
-	bd->max_discard_time = 0;
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	return length;
 }
@@ -561,19 +539,12 @@ static int f2fs_bd_cp_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
 	/*
 	 * each column indicates: cp_cnt cp_succ_cnt cp_time max_cp_time
 	 * max_cp_submit_time max_cp_flush_meta_time max_cp_discard_time
 	 */
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->cp_cnt = sbi->stat_info->cp_count;
-	seq_printf(seq, "%u %u %llu %llu %llu %llu %llu\n", bd->cp_cnt,
-		   bd->cp_succ_cnt, bd->cp_time, bd->max_cp_time,
-		   bd->max_cp_submit_time, bd->max_cp_flush_meta_time,
-		   bd->max_cp_discard_time);
-	bd_mutex_unlock(&sbi->bd_mutex);
+
 	return 0;
 }
 
@@ -584,7 +555,6 @@ static ssize_t f2fs_bd_cp_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	char buffer[3] = {0};
 
 	if (!buf || length > 2)
@@ -596,15 +566,6 @@ static ssize_t f2fs_bd_cp_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->cp_cnt = 0;
-	bd->cp_succ_cnt = 0;
-	bd->cp_time = 0;
-	bd->max_cp_time = 0;
-	bd->max_cp_submit_time = 0;
-	bd->max_cp_flush_meta_time = 0;
-	bd->max_cp_discard_time = 0;
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	return length;
 }
@@ -613,7 +574,6 @@ static int f2fs_bd_gc_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
 	/*
 	 * each column indicates: bggc_cnt bggc_fail_cnt fggc_cnt fggc_fail_cnt
@@ -622,18 +582,7 @@ static int f2fs_bd_gc_info_show(struct seq_file *seq, void *p)
 	 * node_ssr_cnt data_ssr_cnt node_lfs_cnt data_lfs_cnt data_ipu_cnt
 	 * fggc_time
 	 */
-	bd_mutex_lock(&sbi->bd_mutex);
-	seq_printf(seq, "%u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %u %llu\n",
-		   bd->gc_cnt[BG_GC], bd->gc_fail_cnt[BG_GC],
-		   bd->gc_cnt[FG_GC], bd->gc_fail_cnt[FG_GC],
-		   bd->gc_data_seg_cnt[BG_GC], bd->gc_data_blk_cnt[BG_GC],
-		   bd->gc_node_seg_cnt[BG_GC], bd->gc_node_blk_cnt[BG_GC],
-		   bd->gc_data_seg_cnt[FG_GC], bd->gc_data_blk_cnt[FG_GC],
-		   bd->gc_node_seg_cnt[FG_GC], bd->gc_node_blk_cnt[FG_GC],
-		   bd->data_alloc_cnt[SSR], bd->node_alloc_cnt[SSR],
-		   bd->data_alloc_cnt[LFS], bd->node_alloc_cnt[LFS],
-		   bd->data_ipu_cnt, bd->fggc_time);
-	bd_mutex_unlock(&sbi->bd_mutex);
+
 	return 0;
 }
 
@@ -644,7 +593,6 @@ static ssize_t f2fs_bd_gc_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	int i;
 	char buffer[3] = {0};
 
@@ -657,24 +605,6 @@ static ssize_t f2fs_bd_gc_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	for (i = BG_GC; i <= FG_GC; i++) {
-		bd->gc_cnt[i] = 0;
-		bd->gc_fail_cnt[i] = 0;
-		bd->gc_data_cnt[i] = 0;
-		bd->gc_node_cnt[i] = 0;
-		bd->gc_data_seg_cnt[i] = 0;
-		bd->gc_data_blk_cnt[i] = 0;
-		bd->gc_node_seg_cnt[i] = 0;
-		bd->gc_node_blk_cnt[i] = 0;
-	}
-	bd->fggc_time = 0;
-	for (i = LFS; i <= SSR; i++) {
-		bd->node_alloc_cnt[i] = 0;
-		bd->data_alloc_cnt[i] = 0;
-	}
-	bd->data_ipu_cnt = 0;
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	return length;
 }
@@ -683,7 +613,6 @@ static int f2fs_bd_fsync_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
 	/*
 	 * eacho column indicates: fsync_reg_file_cnt fsync_dir_cnt fsync_time
@@ -691,15 +620,6 @@ static int f2fs_bd_fsync_info_show(struct seq_file *seq, void *p)
 	 * fsync_cp_time max_fsync_cp_time fsync_sync_node_time
 	 * max_fsync_sync_node_time fsync_flush_time max_fsync_flush_time
 	 */
-	bd_mutex_lock(&sbi->bd_mutex);
-	seq_printf(seq, "%u %u %llu %llu %llu %llu %llu %llu %llu %llu %llu %llu\n",
-		   bd->fsync_reg_file_cnt, bd->fsync_dir_cnt, bd->fsync_time,
-		   bd->max_fsync_time, bd->fsync_wr_file_time,
-		   bd->max_fsync_wr_file_time, bd->fsync_cp_time,
-		   bd->max_fsync_cp_time, bd->fsync_sync_node_time,
-		   bd->max_fsync_sync_node_time, bd->fsync_flush_time,
-		   bd->max_fsync_flush_time);
-	bd_mutex_unlock(&sbi->bd_mutex);
 	return 0;
 }
 
@@ -710,7 +630,6 @@ static ssize_t f2fs_bd_fsync_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	char buffer[3] = {0};
 
 	if (!buf || length > 2)
@@ -722,21 +641,6 @@ static ssize_t f2fs_bd_fsync_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->fsync_reg_file_cnt = 0;
-	bd->fsync_dir_cnt = 0;
-	bd->fsync_time = 0;
-	bd->max_fsync_time = 0;
-	bd->fsync_cp_time = 0;
-	bd->max_fsync_cp_time = 0;
-	bd->fsync_wr_file_time = 0;
-	bd->max_fsync_wr_file_time = 0;
-	bd->fsync_sync_node_time = 0;
-	bd->max_fsync_sync_node_time = 0;
-	bd->fsync_flush_time = 0;
-	bd->max_fsync_flush_time = 0;
-	bd_mutex_unlock(&sbi->bd_mutex);
-
 	return length;
 }
 
@@ -744,9 +648,7 @@ static int f2fs_bd_hotcold_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
-	bd_mutex_lock(&sbi->bd_mutex);
 	/*
 	 * each colum indicates: hot_data_cnt, warm_data_cnt, cold_data_cnt, hot_node_cnt,
 	 * warm_node_cnt, cold_node_cnt, meta_cp_cnt, meta_sit_cnt, meta_nat_cnt, meta_ssa_cnt,
@@ -756,30 +658,6 @@ static int f2fs_bd_hotcold_info_show(struct seq_file *seq, void *p)
 	 * gc_block_hot_data_cnt, gc_block_warm_data_cnt, gc_block_cold_data_cnt,
 	 * gc_block_hot_node_cnt, gc_block_warm_node_cnt, gc_block_cold_node_cnt
 	 */
-	seq_printf(seq, "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
-		   "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu\n",
-		   bd->hotcold_cnt[HC_HOT_DATA], bd->hotcold_cnt[HC_WARM_DATA],
-		   bd->hotcold_cnt[HC_COLD_DATA], bd->hotcold_cnt[HC_HOT_NODE],
-		   bd->hotcold_cnt[HC_WARM_NODE], bd->hotcold_cnt[HC_COLD_NODE],
-		   bd->hotcold_cnt[HC_META], bd->hotcold_cnt[HC_META_SB],
-		   bd->hotcold_cnt[HC_META_CP], bd->hotcold_cnt[HC_META_SIT],
-		   bd->hotcold_cnt[HC_META_NAT], bd->hotcold_cnt[HC_META_SSA],
-		   bd->hotcold_cnt[HC_DIRECTIO], bd->hotcold_cnt[HC_GC_COLD_DATA],
-		   bd->hotcold_cnt[HC_REWRITE_HOT_DATA],
-		   bd->hotcold_cnt[HC_REWRITE_WARM_DATA],
-		   bd->hotcold_gc_seg_cnt[HC_HOT_DATA],
-		   bd->hotcold_gc_seg_cnt[HC_WARM_DATA],
-		   bd->hotcold_gc_seg_cnt[HC_COLD_DATA],
-		   bd->hotcold_gc_seg_cnt[HC_HOT_NODE],
-		   bd->hotcold_gc_seg_cnt[HC_WARM_NODE],
-		   bd->hotcold_gc_seg_cnt[HC_COLD_NODE],
-		   bd->hotcold_gc_blk_cnt[HC_HOT_DATA],
-		   bd->hotcold_gc_blk_cnt[HC_WARM_DATA],
-		   bd->hotcold_gc_blk_cnt[HC_COLD_DATA],
-		   bd->hotcold_gc_blk_cnt[HC_HOT_NODE],
-		   bd->hotcold_gc_blk_cnt[HC_WARM_NODE],
-		   bd->hotcold_gc_blk_cnt[HC_COLD_NODE]);
-	bd_mutex_unlock(&sbi->bd_mutex);
 	return 0;
 }
 
@@ -790,7 +668,6 @@ static ssize_t f2fs_bd_hotcold_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	char buffer[3] = {0};
 	int i;
 
@@ -803,15 +680,6 @@ static ssize_t f2fs_bd_hotcold_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	for (i = 0; i < NR_HOTCOLD_TYPE; i++)
-		bd->hotcold_cnt[i] = 0;
-	for (i = 0; i < NR_CURSEG; i++) {
-		bd->hotcold_gc_seg_cnt[i] = 0;
-		bd->hotcold_gc_blk_cnt[i] = 0;
-	}
-	bd_mutex_unlock(&sbi->bd_mutex);
-
 	return length;
 }
 
@@ -819,11 +687,7 @@ static int f2fs_bd_encrypt_info_show(struct seq_file *seq, void *p)
 {
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	seq_printf(seq, "%x\n", bd->encrypt.encrypt_val);
-	bd_mutex_unlock(&sbi->bd_mutex);
 	return 0;
 }
 
@@ -834,7 +698,6 @@ static ssize_t f2fs_bd_encrypt_info_write(struct file *file,
 	struct seq_file *seq = file->private_data;
 	struct super_block *sb = seq->private;
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
-	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	char buffer[3] = {0};
 
 	if (!buf || length > 2)
@@ -846,57 +709,10 @@ static ssize_t f2fs_bd_encrypt_info_write(struct file *file,
 	if (buffer[0] != '0')
 		return -EINVAL;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	bd->encrypt.encrypt_val = 0;
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	return length;
 }
 
-F2FS_BD_PROC_DEF(bd_base_info);
-F2FS_BD_PROC_DEF(bd_discard_info);
-F2FS_BD_PROC_DEF(bd_gc_info);
-F2FS_BD_PROC_DEF(bd_cp_info);
-F2FS_BD_PROC_DEF(bd_fsync_info);
-F2FS_BD_PROC_DEF(bd_hotcold_info);
-F2FS_BD_PROC_DEF(bd_encrypt_info);
-
-static void f2fs_build_bd_stat(struct f2fs_sb_info *sbi)
-{
-	struct super_block *sb = sbi->sb;
-
-	mutex_init(&sbi->bd_mutex);
-	proc_create_data("bd_base_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_base_info_fops, sb);
-	proc_create_data("bd_discard_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_discard_info_fops, sb);
-	proc_create_data("bd_cp_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_cp_info_fops, sb);
-	proc_create_data("bd_gc_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_gc_info_fops, sb);
-	proc_create_data("bd_fsync_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_fsync_info_fops, sb);
-	proc_create_data("bd_hotcold_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_hotcold_info_fops, sb);
-	proc_create_data("bd_encrypt_info", S_IRUGO | S_IWUGO, sbi->s_proc,
-				&f2fs_bd_encrypt_info_fops, sb);
-}
-
-static void f2fs_destroy_bd_stat(struct f2fs_sb_info *sbi)
-{
-	remove_proc_entry("bd_base_info", sbi->s_proc);
-	remove_proc_entry("bd_discard_info", sbi->s_proc);
-	remove_proc_entry("bd_cp_info", sbi->s_proc);
-	remove_proc_entry("bd_gc_info", sbi->s_proc);
-	remove_proc_entry("bd_fsync_info", sbi->s_proc);
-	remove_proc_entry("bd_hotcold_info", sbi->s_proc);
-	remove_proc_entry("bd_encrypt_info", sbi->s_proc);
-
-	if (sbi->bd_info) {
-		kfree(sbi->bd_info);
-		sbi->bd_info = NULL;
-	}
-}
 #else /* !CONFIG_F2FS_STAT_FS */
 #define f2fs_build_bd_stat
 #define f2fs_destroy_bd_stat
@@ -2441,16 +2257,6 @@ try_onemore:
 	if (!sbi)
 		return -ENOMEM;
 	sbi->print_sbi_safe = false;
-
-#ifdef CONFIG_F2FS_STAT_FS
-	sbi->bd_info = kzalloc(sizeof(struct f2fs_bigdata_info), GFP_KERNEL);
-	if (!sbi->bd_info) {
-		err = -ENOMEM;
-		goto free_sbi;
-	}
-	sbi->bd_info->ssr_last_jiffies = jiffies;
-#endif
-
 	sbi->sb = sb;
 
 	/* Load the checksum driver */

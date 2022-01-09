@@ -442,9 +442,6 @@ bool need_balance_dirty_type(struct f2fs_sb_info *sbi)
 	struct f2fs_bigdata_info *bd = F2FS_BD_STAT(sbi);
 	unsigned long last_jiffies;
 
-	bd_mutex_lock(&sbi->bd_mutex);
-	last_jiffies = bd->ssr_last_jiffies;
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	if (!time_after(jiffies, last_jiffies + interval))
 		return false;
@@ -454,18 +451,6 @@ bool need_balance_dirty_type(struct f2fs_sb_info *sbi)
 	for (i = CURSEG_HOT_NODE; i <= CURSEG_COLD_NODE; i++)
 		dirty_node += dirty_i->nr_dirty[i];
 	all_dirties = dirty_data+dirty_node;
-
-	/* how many blocks are consumed during this interval */
-	bd_mutex_lock(&sbi->bd_mutex);
-
-	diff_node_blocks = (long)(bd->curr_node_alloc_cnt - bd->last_node_alloc_cnt);
-	diff_data_blocks = (long)(bd->curr_data_alloc_cnt - bd->last_data_alloc_cnt);
-
-	bd->last_node_alloc_cnt = bd->curr_node_alloc_cnt;
-	bd->last_data_alloc_cnt = bd->curr_data_alloc_cnt;
-	bd->ssr_last_jiffies = jiffies;
-
-	bd_mutex_unlock(&sbi->bd_mutex);
 
 	if (!all_dirties)
 		return false;
@@ -2628,7 +2613,7 @@ void write_meta_page(struct f2fs_sb_info *sbi, struct page *page)
 	};
 
 	if (unlikely(page->index >= MAIN_BLKADDR(sbi)))
-		fio.op_flags &= ~REQ_META;
+		fio.rw &= ~REQ_META;
 
 	set_page_writeback(page);
 	f2fs_submit_page_mbio(&fio);
@@ -3444,11 +3429,7 @@ static void build_sit_entries(struct f2fs_sb_info *sbi)
 	int sit_blk_cnt = SIT_BLK_CNT(sbi);
 	unsigned int i, start, end;
 	unsigned int readed, start_blk = 0;
-<<<<<<< HEAD
 	int nrpages = MAX_BIO_BLOCKS(sbi) * 8;
-=======
-	int nrpages = MAX_BIO_BLOCKS(sbi);
->>>>>>> 90a893c749f4 (f2fs: use MAX_BIO_BLOCKS(sbi))
 
 	do {
 		readed = ra_meta_pages(sbi, start_blk, BIO_MAX_PAGES,

@@ -725,8 +725,7 @@ static int move_encrypted_block(struct inode *inode, block_t bidx,
 	struct f2fs_io_info fio = {
 		.sbi = F2FS_I_SB(inode),
 		.type = DATA,
-		.op = REQ_OP_READ,
-		.op_flags = REQ_SYNC,
+		.rw = READ_SYNC,
 		.encrypted_page = NULL,
 	};
 	struct dnode_of_data dn;
@@ -858,8 +857,7 @@ static int move_data_page(struct inode *inode, block_t bidx, int gc_type,
 		struct f2fs_io_info fio = {
 			.sbi = F2FS_I_SB(inode),
 			.type = DATA,
-			.op = REQ_OP_WRITE,
-			.op_flags = REQ_SYNC | REQ_NOIDLE,
+			.rw = WRITE_SYNC,
 			.page = page,
 			.encrypted_page = NULL,
 		};
