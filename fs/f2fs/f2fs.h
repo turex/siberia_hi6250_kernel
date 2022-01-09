@@ -26,24 +26,8 @@
 #include <crypto/hash.h>
 
 #ifdef CONFIG_F2FS_CHECK_FS
-
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-#define f2fs_bug_on(sbi, condition) \
-	do { \
-		if (unlikely(condition)) { \
-			if(f2fs_dclient && !dsm_client_ocuppy(f2fs_dclient)) \
-			{ \
-				dsm_client_record(f2fs_dclient,"F2FS bug: %s:%d\n", __func__, __LINE__); \
-				dsm_client_notify(f2fs_dclient, DSM_F2FS_NEED_FSCK); \
-			} \
-			f2fs_print_raw_sb_info(sbi); \
-			f2fs_print_ckpt_info(sbi); \
-			f2fs_print_sbi_info(sbi); \
-		} \
-		BUG_ON(condition); \
-	} while (0)
-#else
 #define f2fs_bug_on(sbi, condition)	BUG_ON(condition)
+#else
 #define f2fs_bug_on(sbi, condition)					\
 	do {								\
 		if (unlikely(condition)) {				\
@@ -2884,7 +2868,7 @@ static inline void f2fs_set_encrypted_corrupt_inode(struct inode *inode)
 #else
 	pr_err("%s: do not set CORRUPT_BIT\n", __func__);
 #endif
-#endif
+
 }
 
 static inline bool f2fs_encrypted_fixed_inode(struct inode *inode)
