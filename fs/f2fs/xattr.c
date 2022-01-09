@@ -80,8 +80,7 @@ static int f2fs_xattr_generic_get(const struct xattr_handler *handler,
 	if (strcmp(name, "") == 0)
 		return -EINVAL;
 	return f2fs_getxattr(d_inode(dentry), handler->flags, name,
-			     buffer, size, NULL, NULL);
-}
+			     buffer, size, NULL);
 
 static int f2fs_xattr_generic_set(const struct xattr_handler *handler,
 		struct dentry *dentry, const char *name, const void *value,
@@ -407,53 +406,36 @@ static inline int write_all_xattrs(struct inode *inode, __u32 hsize,
 }
 
 int f2fs_getxattr(struct inode *inode, int index, const char *name,
-		void *buffer, size_t buffer_size, struct page *ipage,
-		int *has_crc)
+		void *buffer, size_t buffer_size, struct page *ipage)
 {
-	struct f2fs_xattr_entry *entry = NULL;
+	struct f2fs_xattr_entry *entry;
+	void *base_addr;
 	int error = 0;
-	unsigned int size, len;
-	void *base_addr = NULL;
-
+	size_t size, len;
 	if (name == NULL)
 		return -EINVAL;
-
 	len = strlen(name);
 	if (len > F2FS_NAME_LEN)
 		return -ERANGE;
-
 	error = read_all_xattrs(inode, ipage, &base_addr);
 	if (error)
 		return error;
-
 	entry = __find_xattr(base_addr, index, len, name);
 	if (IS_XATTR_LAST_ENTRY(entry)) {
 		error = -ENODATA;
 		goto cleanup;
 	}
-
 	size = le16_to_cpu(entry->e_value_size);
-
 	if (buffer && size > buffer_size) {
 		error = -ERANGE;
-		goto out;
+		goto cleanup;
 	}
-
 	if (buffer) {
 		char *pval = entry->e_name + entry->e_name_len;
 		memcpy(buffer, pval, size);
 	}
 	error = size;
-
-	if (has_crc) {
-		struct f2fs_xattr_header *hdr = XATTR_HDR(base_addr);
-
-		if (hdr->h_ctx_crc)
-			*has_crc = 1;
-		else
-			*has_crc = 0;
-	}
-out:
+cleanup:
 	kzfree(base_addr);
 	return error;
 }

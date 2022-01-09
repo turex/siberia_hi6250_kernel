@@ -1097,7 +1097,8 @@ static int read_node_page(struct page *page, int rw)
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = NODE,
-		.rw = rw,
+		.op = REQ_OP_READ,
+		.op_flags = op_flags,
 		.page = page,
 		.encrypted_page = NULL,
 	};
@@ -1585,7 +1586,8 @@ static int __write_node_page(struct page *page, bool atomic, bool *submitted,
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = NODE,
-		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
+		.op = REQ_OP_WRITE,
+		.op_flags = wbc_to_write_flags(wbc),
 		.page = page,
 		.encrypted_page = NULL,
 		.submitted = false,

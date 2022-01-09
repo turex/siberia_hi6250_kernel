@@ -651,7 +651,8 @@ TRACE_EVENT(f2fs_direct_IO_enter,
 		__field(ino_t,	ino)
 		__field(loff_t,	pos)
 		__field(unsigned long,	len)
-		__field(int,	rw)
+		__entry->op		= bio_op(bio);
+		__entry->op_flags	= bio->bi_rw;
 	),
 
 	TP_fast_assign(
@@ -763,7 +764,7 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->old_blkaddr,
 		(unsigned long long)__entry->new_blkaddr,
-		show_bio_type(__entry->rw),
+		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type))
 );
 

@@ -203,11 +203,11 @@ static void __submit_merged_bio(struct f2fs_bio_info *io)
 	struct f2fs_io_info *fio = &io->fio;
 	if (!io->bio)
 		return;
-	if (is_read_io(fio->rw))
+	if (is_read_io(fio->op))
 		trace_f2fs_submit_read_bio(io->sbi->sb, fio, io->bio);
 	else
 		trace_f2fs_submit_write_bio(io->sbi->sb, fio, io->bio);
-	__submit_bio(io->sbi, fio->rw, io->bio, fio->type);
+	__submit_bio(io->sbi, fio->op, io->bio, fio->type);
 	io->bio = NULL;
 }
 
@@ -316,12 +316,12 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	trace_f2fs_submit_page_bio(page, fio);
 	f2fs_trace_ios(fio, 0);
 	/* Allocate a new bio */
-	bio = __bio_alloc(fio->sbi, fio->new_blkaddr, 1, is_read_io(fio->rw));
+	bio = __bio_alloc(fio->sbi, fio->new_blkaddr, 1, is_read_io(fio->op));
 	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
 		bio_put(bio);
 		return -EFAULT;
 	}
-	__submit_bio(fio->sbi, fio->rw, bio, fio->type);
+	__submit_bio(fio->sbi, fio->op, bio, fio->type);
 	return 0;
 }
 
@@ -330,7 +330,7 @@ int f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 struct f2fs_sb_info *sbi = fio->sbi;
 	enum page_type btype = PAGE_TYPE_OF_BIO(fio->type);
 	struct f2fs_bio_info *io;
-	bool is_read = is_read_io(fio->rw);
+	bool is_read = is_read_io(fio->op);
 	struct page *bio_page;
 	io = is_read ? &sbi->read_io : &sbi->write_io[btype];
 	if (fio->old_blkaddr != NEW_ADDR)
@@ -338,7 +338,7 @@ struct f2fs_sb_info *sbi = fio->sbi;
 	verify_block_addr(sbi, fio->new_blkaddr);
 	down_write(&io->io_rwsem);
 	if (io->bio && (io->last_block_in_bio != fio->new_blkaddr - 1 ||
-						io->fio.rw != fio->rw))
+						io->fio.op != fio->op))
 		__submit_merged_bio(io);
 alloc_new:
 	if (io->bio == NULL) {
