@@ -125,18 +125,6 @@ static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
 	bio->bi_rw = op | op_flags;
 }
 
-
-/* bio stuffs */
-#define REQ_OP_READ	READ
-#define REQ_OP_WRITE	WRITE
-#define bio_op(bio)	((bio)->bi_rw & 1)
-
-static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
-		unsigned op_flags)
-{
-	bio->bi_rw = op | op_flags;
-}
-
 static inline int wbc_to_write_flags(struct writeback_control *wbc)
 {
 	if (wbc->sync_mode == WB_SYNC_ALL)
@@ -312,25 +300,6 @@ struct discard_info {
 	block_t lstart;			/* logical start address */
 	block_t len;			/* length */
 	block_t start;			/* actual start address in dev */
-};
-
-struct discard_cmd {
-	struct rb_node rb_node;		/* rb node located in rb-tree */
-	union {
-		struct {
-			block_t lstart;	/* logical start address */
-			block_t len;	/* length */
-			block_t start;	/* actual start address in dev */
-		};
-		struct discard_info di;	/* discard info */
-
-	};
-	struct list_head list;		/* command list */
-	struct completion wait;		/* compleation */
-	struct block_device *bdev;	/* bdev */
-	unsigned short ref;		/* reference count */
-	unsigned char state;		/* state */
-	int error;			/* bio error */
 };
 
 enum {
@@ -934,20 +903,6 @@ struct f2fs_bio_info {
 	struct rw_semaphore io_rwsem;	/* blocking op for bio */
 #ifdef CONFIG_F2FS_FS_ENCRYPTION
 	pgoff_t last_index_in_bio;
-#endif
-};
-
-#define FDEV(i)				(sbi->devs[i])
-#define RDEV(i)				(raw_super->devs[i])
-struct f2fs_dev_info {
-	struct block_device *bdev;
-    char path[MAX_PATH_LEN];
-	unsigned int total_segments;
-	block_t start_blk;
-	block_t end_blk;
-#ifdef CONFIG_BLK_DEV_ZONED
-	unsigned int nr_blkz;			/* Total number of zones */
-	u8 *blkz_type;				/* Array of zones type */
 #endif
 };
 
