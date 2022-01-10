@@ -1524,71 +1524,6 @@ static int init_percpu_info(struct f2fs_sb_info *sbi)
 								GFP_KERNEL);
 }
 
-#ifdef CONFIG_BLK_DEV_ZONED
-static int init_blkz_info(struct f2fs_sb_info *sbi, int devi)
-{
-	struct block_device *bdev = FDEV(devi).bdev;
-	sector_t nr_sectors = bdev->bd_part->nr_sects;
-	sector_t sector = 0;
-	struct blk_zone *zones;
-	unsigned int i, nr_zones;
-	unsigned int n = 0;
-	int err = -EIO;
-
-	if (!f2fs_sb_mounted_hmsmr(sbi->sb))
-		return 0;
-
-	if (sbi->blocks_per_blkz && sbi->blocks_per_blkz !=
-				SECTOR_TO_BLOCK(bdev_zone_size(bdev)))
-		return -EINVAL;
-	sbi->blocks_per_blkz = SECTOR_TO_BLOCK(bdev_zone_size(bdev));
-	if (sbi->log_blocks_per_blkz && sbi->log_blocks_per_blkz !=
-				__ilog2_u32(sbi->blocks_per_blkz))
-		return -EINVAL;
-	sbi->log_blocks_per_blkz = __ilog2_u32(sbi->blocks_per_blkz);
-	FDEV(devi).nr_blkz = SECTOR_TO_BLOCK(nr_sectors) >>
-					sbi->log_blocks_per_blkz;
-	if (nr_sectors & (bdev_zone_size(bdev) - 1))
-		FDEV(devi).nr_blkz++;
-
-	FDEV(devi).blkz_type = kmalloc(FDEV(devi).nr_blkz, GFP_KERNEL);
-	if (!FDEV(devi).blkz_type)
-		return -ENOMEM;
-
-#define F2FS_REPORT_NR_ZONES   4096
-
-	zones = kcalloc(F2FS_REPORT_NR_ZONES, sizeof(struct blk_zone),
-			GFP_KERNEL);
-	if (!zones)
-		return -ENOMEM;
-
-	/* Get block zones type */
-	while (zones && sector < nr_sectors) {
-
-		nr_zones = F2FS_REPORT_NR_ZONES;
-		err = blkdev_report_zones(bdev, sector,
-					  zones, &nr_zones,
-					  GFP_KERNEL);
-		if (err)
-			break;
-		if (!nr_zones) {
-			err = -EIO;
-			break;
-		}
-
-		for (i = 0; i < nr_zones; i++) {
-			FDEV(devi).blkz_type[n] = zones[i].type;
-			sector += zones[i].len;
-			n++;
-		}
-	}
-
-	kfree(zones);
-
-	return err;
-}
-#endif
-
 /*
  * Read f2fs raw super block.
  * Because we have two copies of super block, so read both of them
@@ -1684,20 +1619,16 @@ static int f2fs_fill_super(struct super_block *sb, void *data, int silent)
 	char *options = NULL;
 	int recovery, i, valid_super_block;
 	struct curseg_info *seg_i;
-
 try_onemore:
 	err = -EINVAL;
 	raw_super = NULL;
 	valid_super_block = -1;
 	recovery = 0;
-
-	pr_err("%s: do not set CORRUPT_BIT\n", __func__);
 	/* allocate memory for f2fs-specific super block info */
 	sbi = kzalloc(sizeof(struct f2fs_sb_info), GFP_KERNEL);
 	if (!sbi)
 		return -ENOMEM;
 	sbi->sb = sb;
-
 	/* Load the checksum driver */
 	sbi->s_chksum_driver = crypto_alloc_shash("crc32", 0, 0);
 	if (IS_ERR(sbi->s_chksum_driver)) {
@@ -1706,32 +1637,17 @@ try_onemore:
 		sbi->s_chksum_driver = NULL;
 		goto free_sbi;
 	}
-
-	sbi->sb = sb;
-
-	/* Load the checksum driver */
-	sbi->s_chksum_driver = crypto_alloc_shash("crc32", 0, 0);
-	if (IS_ERR(sbi->s_chksum_driver)) {
-		f2fs_msg(sb, KERN_ERR, "Cannot load crc32 driver.");
-		err = PTR_ERR(sbi->s_chksum_driver);
-		sbi->s_chksum_driver = NULL;
-		goto free_sbi;
-	}
-
 	/* set a block size */
 	if (unlikely(!sb_set_blocksize(sb, F2FS_BLKSIZE))) {
 		f2fs_msg(sb, KERN_ERR, "unable to set blocksize");
 		goto free_sbi;
 	}
-
 	err = read_raw_super_block(sbi, &raw_super, &valid_super_block,
 								&recovery);
 	if (err)
 		goto free_sbi;
-
 	sb->s_fs_info = sbi;
 	sbi->raw_super = raw_super;
-
 	default_options(sbi);
 	/* parse mount options */
 	options = kstrdup((const char *)data, GFP_KERNEL);
@@ -1739,41 +1655,31 @@ try_onemore:
 		err = -ENOMEM;
 		goto free_sb_buf;
 	}
-
 	err = parse_options(sb, options);
 	if (err)
 		goto free_options;
-
 	sbi->max_file_blocks = max_file_blocks();
 	sb->s_maxbytes = sbi->max_file_blocks <<
 				le32_to_cpu(raw_super->log_blocksize);
 	sb->s_max_links = F2FS_LINK_MAX;
 	get_random_bytes(&sbi->s_next_generation, sizeof(u32));
-
 	sb->s_op = &f2fs_sops;
 	sb->s_cop = &f2fs_cryptops;
 	sb->s_xattr = f2fs_xattr_handlers;
 	sb->s_export_op = &f2fs_export_ops;
 	sb->s_magic = F2FS_SUPER_MAGIC;
-#ifdef CONFIG_HISI_F2FS_MTIME
-	sb->s_time_gran = TIME_NS_NEED_UPDATE_MTIME;
-#else
 	sb->s_time_gran = 1;
-#endif
 	sb->s_flags = (sb->s_flags & ~MS_POSIXACL) |
 		(test_opt(sbi, POSIX_ACL) ? MS_POSIXACL : 0);
 	memcpy(sb->s_uuid, raw_super->uuid, sizeof(raw_super->uuid));
-
 	/* init f2fs-specific super block info */
 	sbi->valid_super_block = valid_super_block;
 	mutex_init(&sbi->gc_mutex);
 	mutex_init(&sbi->cp_mutex);
 	init_rwsem(&sbi->node_write);
-
 	/* disallow all the data/node/meta page writes */
 	set_sbi_flag(sbi, SBI_POR_DOING);
 	spin_lock_init(&sbi->stat_lock);
-
 	init_rwsem(&sbi->read_io.io_rwsem);
 	sbi->read_io.sbi = sbi;
 	sbi->read_io.bio = NULL;
@@ -1782,21 +1688,24 @@ try_onemore:
 		sbi->write_io[i].sbi = sbi;
 		sbi->write_io[i].bio = NULL;
 	}
-
 	init_rwsem(&sbi->cp_rwsem);
 	init_waitqueue_head(&sbi->cp_wait);
 	init_sb_info(sbi);
-
 	err = init_percpu_info(sbi);
 	if (err)
 		goto free_options;
-
+	/* get an inode for meta space */
+	sbi->meta_inode = f2fs_iget(sb, F2FS_META_INO(sbi));
+	if (IS_ERR(sbi->meta_inode)) {
+		f2fs_msg(sb, KERN_ERR, "Failed to read F2FS meta data inode");
+		err = PTR_ERR(sbi->meta_inode);
+		goto free_options;
+	}
 	err = get_valid_checkpoint(sbi);
 	if (err) {
 		f2fs_msg(sb, KERN_ERR, "Failed to get valid F2FS checkpoint");
 		goto free_meta_inode;
 	}
-
 	sbi->total_valid_node_count =
 				le32_to_cpu(sbi->ckpt->valid_node_count);
 	percpu_counter_set(&sbi->total_valid_inode_count,
@@ -1805,16 +1714,12 @@ try_onemore:
 	sbi->total_valid_block_count =
 				le64_to_cpu(sbi->ckpt->valid_block_count);
 	sbi->last_valid_block_count = sbi->total_valid_block_count;
-
 	for (i = 0; i < NR_INODE_TYPE; i++) {
 		INIT_LIST_HEAD(&sbi->inode_list[i]);
 		spin_lock_init(&sbi->inode_lock[i]);
 	}
-
 	init_extent_cache_info(sbi);
-
 	init_ino_entry_info(sbi);
-
 	/* setup f2fs internal modules */
 	err = build_segment_manager(sbi);
 	if (err) {
@@ -1828,21 +1733,16 @@ try_onemore:
 			"Failed to initialize F2FS node manager");
 		goto free_nm;
 	}
-
 	/* For write statistics */
 	if (sb->s_bdev->bd_part)
 		sbi->sectors_written_start =
 			(u64)part_stat_read(sb->s_bdev->bd_part, sectors[1]);
-
 	/* Read accumulated write IO statistics if exists */
 	seg_i = CURSEG_I(sbi, CURSEG_HOT_NODE);
 	if (__exist_node_summaries(sbi))
 		sbi->kbytes_written =
 			le64_to_cpu(seg_i->journal->info.kbytes_written);
-
 	build_gc_manager(sbi);
-	atomic_set(&sbi->need_ssr_gc, 0);
-
 	/* get an inode for node space */
 	sbi->node_inode = f2fs_iget(sb, F2FS_NODE_INO(sbi));
 	if (IS_ERR(sbi->node_inode)) {
@@ -1850,14 +1750,11 @@ try_onemore:
 		err = PTR_ERR(sbi->node_inode);
 		goto free_nm;
 	}
-
 	f2fs_join_shrinker(sbi);
-
 	/* if there are nt orphan nodes free them */
 	err = recover_orphan_inodes(sbi);
 	if (err)
 		goto free_node_inode;
-
 	/* read root inode and dentry */
 	root = f2fs_iget(sb, F2FS_ROOT_INO(sbi));
 	if (IS_ERR(root)) {
@@ -1870,34 +1767,28 @@ try_onemore:
 		err = -EINVAL;
 		goto free_node_inode;
 	}
-
 	sb->s_root = d_make_root(root); /* allocate root dentry */
 	if (!sb->s_root) {
 		err = -ENOMEM;
 		goto free_root_inode;
 	}
-
 	err = f2fs_build_stats(sbi);
 	if (err)
 		goto free_root_inode;
-
 	if (f2fs_proc_root)
 		sbi->s_proc = proc_mkdir(sb->s_id, f2fs_proc_root);
-
 	if (sbi->s_proc) {
 		proc_create_data("segment_info", S_IRUGO, sbi->s_proc,
 				 &f2fs_seq_segment_info_fops, sb);
 		proc_create_data("segment_bits", S_IRUGO, sbi->s_proc,
 				 &f2fs_seq_segment_bits_fops, sb);
 	}
-
 	sbi->s_kobj.kset = f2fs_kset;
 	init_completion(&sbi->s_kobj_unregister);
 	err = kobject_init_and_add(&sbi->s_kobj, &f2fs_ktype, NULL,
 							"%s", sb->s_id);
 	if (err)
 		goto free_proc;
-
 	/* recover fsynced data */
 	if (!test_opt(sbi, DISABLE_ROLL_FORWARD)) {
 		/*
@@ -1909,13 +1800,10 @@ try_onemore:
 			err = -EROFS;
 			goto free_kobj;
 		}
-
 		if (need_fsck)
 			set_sbi_flag(sbi, SBI_NEED_FSCK);
-
 		if (!retry)
 			goto skip_recovery;
-
 		err = recover_fsync_data(sbi, false);
 		if (err < 0) {
 			need_fsck = true;
@@ -1925,7 +1813,6 @@ try_onemore:
 		}
 	} else {
 		err = recover_fsync_data(sbi, true);
-
 		if (!f2fs_readonly(sb) && err > 0) {
 			err = -EINVAL;
 			f2fs_msg(sb, KERN_ERR,
@@ -1936,7 +1823,6 @@ try_onemore:
 skip_recovery:
 	/* recover_fsync_data() cleared this already */
 	clear_sbi_flag(sbi, SBI_POR_DOING);
-
 	/*
 	 * If filesystem is not mounted as read-only then
 	 * do start the gc_thread.
@@ -1948,7 +1834,6 @@ skip_recovery:
 			goto free_kobj;
 	}
 	kfree(options);
-
 	/* recover broken superblock */
 	if (recovery) {
 		err = f2fs_commit_super(sbi, true);
@@ -1956,11 +1841,9 @@ skip_recovery:
 			"Try to recover %dth superblock, ret: %d",
 			sbi->valid_super_block ? 1 : 2, err);
 	}
-
 	f2fs_update_time(sbi, CP_TIME);
 	f2fs_update_time(sbi, REQ_TIME);
 	return 0;
-
 free_kobj:
 	f2fs_sync_inode_meta(sbi);
 	kobject_del(&sbi->s_kobj);
@@ -1981,13 +1864,6 @@ free_node_inode:
 	mutex_lock(&sbi->umount_mutex);
 	release_ino_entry(sbi, true);
 	f2fs_leave_shrinker(sbi);
-	/*
-	 * Some dirty meta pages can be produced by recover_orphan_inodes()
-	 * failed by EIO. Then, iput(node_inode) can trigger balance_fs_bg()
-	 * followed by write_checkpoint() through f2fs_write_node_pages(), which
-	 * falls into an infinite loop in sync_meta_pages().
-	 */
-	truncate_inode_pages_final(META_MAPPING(sbi));
 	iput(sbi->node_inode);
 	mutex_unlock(&sbi->umount_mutex);
 free_nm:
@@ -2007,7 +1883,6 @@ free_sbi:
 	if (sbi->s_chksum_driver)
 		crypto_free_shash(sbi->s_chksum_driver);
 	kfree(sbi);
-
 	/* give only one another chance */
 	if (retry) {
 		retry = false;
