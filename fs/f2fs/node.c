@@ -1766,27 +1766,21 @@ int f2fs_sync_node_pages(struct f2fs_sb_info *sbi,
 	int nwritten = 0;
 	int ret = 0;
 	int nr_pages, done = 0;
-
 	pagevec_init(&pvec, 0);
-
 next_step:
 	index = 0;
-
 	while (!done && (nr_pages = pagevec_lookup_tag(&pvec,
 			NODE_MAPPING(sbi), &index, PAGECACHE_TAG_DIRTY))) {
 		int i;
-
 		for (i = 0; i < nr_pages; i++) {
 			struct page *page = pvec.pages[i];
 			bool submitted = false;
-
 			/* give a priority to WB_SYNC threads */
 			if (atomic_read(&sbi->wb_sync_req[NODE]) &&
 					wbc->sync_mode == WB_SYNC_NONE) {
 				done = 1;
 				break;
 			}
-
 			/*
 			 * flushing sequence with step:
 			 * 0. indirect nodes
@@ -1795,25 +1789,26 @@ next_step:
 			 */
 			if (step == 0 && IS_DNODE(page))
 				continue;
-			if (ino_of_node(page) != ino)
+			if (step == 1 && (!IS_DNODE(page) ||
+						is_cold_node(page)))
+				continue;
+			if (step == 2 && (!IS_DNODE(page) ||
+						!is_cold_node(page)))
 				continue;
 lock_node:
 			if (wbc->sync_mode == WB_SYNC_ALL)
 				lock_page(page);
 			else if (!trylock_page(page))
 				continue;
-
 			if (unlikely(page->mapping != NODE_MAPPING(sbi))) {
 continue_unlock:
 				unlock_page(page);
 				continue;
 			}
-
 			if (!PageDirty(page)) {
 				/* someone wrote it for us */
 				goto continue_unlock;
 			}
-
 			/* flush inline_data */
 			if (is_inline_node(page)) {
 				clear_inline_node(page);
@@ -1821,34 +1816,27 @@ continue_unlock:
 				flush_inline_data(sbi, ino_of_node(page));
 				goto lock_node;
 			}
-
 			f2fs_wait_on_page_writeback(page, NODE, true, true);
-
 			if (!clear_page_dirty_for_io(page))
 				goto continue_unlock;
-
 			set_fsync_mark(page, 0);
 			set_dentry_mark(page, 0);
-
 			ret = __write_node_page(page, false, &submitted,
 						wbc, do_balance, io_type, NULL);
 			if (ret)
 				unlock_page(page);
 			else if (submitted)
 				nwritten++;
-
 			if (--wbc->nr_to_write == 0)
 				break;
 		}
 		pagevec_release(&pvec);
 		cond_resched();
-
 		if (wbc->nr_to_write == 0) {
 			step = 2;
 			break;
 		}
 	}
-
 	if (step < 2) {
 		if (wbc->sync_mode == WB_SYNC_NONE && step == 1)
 			goto out;
@@ -1858,7 +1846,6 @@ continue_unlock:
 out:
 	if (nwritten)
 		f2fs_submit_merged_write(sbi, NODE);
-
 	if (unlikely(f2fs_cp_error(sbi)))
 		return -EIO;
 	return ret;
@@ -2380,16 +2367,12 @@ void f2fs_alloc_nid_done(struct f2fs_sb_info *sbi, nid_t nid)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct free_nid *i;
-
 	spin_lock(&nm_i->nid_list_lock);
 	i = __lookup_free_nid_list(nm_i, nid);
 	f2fs_bug_on(sbi, !i);
 	__remove_free_nid(sbi, i, PREALLOC_NID);
 	spin_unlock(&nm_i->nid_list_lock);
-
 	kmem_cache_free(free_nid_slab, i);
-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-		set_extra_flag(sbi, EXTRA_NEED_FSCK_FLAG);
 }
 
 /*
@@ -2400,31 +2383,22 @@ void f2fs_alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct free_nid *i;
 	bool need_free = false;
-
 	if (!nid)
 		return;
-
 	spin_lock(&nm_i->nid_list_lock);
 	i = __lookup_free_nid_list(nm_i, nid);
 	f2fs_bug_on(sbi, !i);
-
 	if (!f2fs_available_free_memory(sbi, FREE_NIDS)) {
 		__remove_free_nid(sbi, i, PREALLOC_NID);
 		need_free = true;
 	} else {
 		__move_free_nid(sbi, i, PREALLOC_NID, FREE_NID);
 	}
-
 	nm_i->available_nids++;
-
 	update_free_nid_bitmap(sbi, nid, true, false);
-
 	spin_unlock(&nm_i->nid_list_lock);
-
 	if (need_free)
 		kmem_cache_free(free_nid_slab, i);
-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-		set_extra_flag(sbi, EXTRA_NEED_FSCK_FLAG);
 }
 
 int f2fs_try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)

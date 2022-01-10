@@ -492,28 +492,21 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 	unsigned int end = fofs + len;
 	unsigned int pos = (unsigned int)fofs;
 	bool updated = false;
-
 	if (!et)
 		return;
-
 	trace_f2fs_update_extent_tree_range(inode, fofs, blkaddr, len);
-
 	write_lock(&et->lock);
-
 	if (is_inode_flag_set(inode, FI_NO_EXTENT)) {
 		write_unlock(&et->lock);
 		return;
 	}
-
 	prev = et->largest;
 	dei.len = 0;
-
 	/*
 	 * drop largest extent before lookup, in case it's already
 	 * been shrunk from extent tree
 	 */
 	__drop_largest_extent(et, fofs, len);
-
 	/* 1. lookup first extent node in range [fofs, fofs + len - 1] */
 	en = (struct extent_node *)f2fs_lookup_rb_tree_ret(&et->root,
 					(struct rb_entry *)et->cached_en, fofs,
@@ -522,24 +515,19 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 					&insert_p, &insert_parent, false);
 	if (!en)
 		en = next_en;
-
 	/* 2. invlidate all extent nodes in range [fofs, fofs + len - 1] */
 	while (en && en->ei.fofs < end) {
 		unsigned int org_end;
 		int parts = 0;	/* # of parts current extent split into */
-
 		next_en = en1 = NULL;
-
 		dei = en->ei;
 		org_end = dei.fofs + dei.len;
-		f2fs_bug_on_atomic(sbi, pos >= org_end);
-
+		f2fs_bug_on(sbi, pos >= org_end);
 		if (pos > dei.fofs &&	pos - dei.fofs >= F2FS_MIN_EXTENT_LEN) {
 			en->ei.len = pos - en->ei.fofs;
 			prev_en = en;
 			parts = 1;
 		}
-
 		if (end < org_end && org_end - end >= F2FS_MIN_EXTENT_LEN) {
 			if (parts) {
 				set_extent_info(&ei, end,
@@ -556,19 +544,15 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 			}
 			parts++;
 		}
-
 		if (!next_en) {
 			struct rb_node *node = rb_next(&en->rb_node);
-
 			next_en = rb_entry_safe(node, struct extent_node,
 						rb_node);
 		}
-
 		if (parts)
 			__try_update_largest_extent(et, en);
 		else
 			__release_extent_node(sbi, et, en);
-
 		/*
 		 * if original extent is split into zero or two parts, extent
 		 * tree has been altered by deletion or insertion, therefore
@@ -580,15 +564,12 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 		}
 		en = next_en;
 	}
-
 	/* 3. update extent in extent cache */
 	if (blkaddr) {
-
 		set_extent_info(&ei, fofs, blkaddr, len);
 		if (!__try_merge_extent_node(sbi, et, &ei, prev_en, next_en))
 			__insert_extent_tree(sbi, et, &ei,
 						insert_p, insert_parent);
-
 		/* give up extent_cache, if split and small updates happen */
 		if (dei.len >= 1 &&
 				prev.len < F2FS_MIN_EXTENT_LEN &&
@@ -598,17 +579,13 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 			set_inode_flag(inode, FI_NO_EXTENT);
 		}
 	}
-
 	if (is_inode_flag_set(inode, FI_NO_EXTENT))
 		__free_extent_tree(sbi, et);
-
 	if (et->largest_updated) {
 		et->largest_updated = false;
 		updated = true;
 	}
-
 	write_unlock(&et->lock);
-
 	if (updated)
 		f2fs_mark_inode_dirty_sync(inode, true);
 }

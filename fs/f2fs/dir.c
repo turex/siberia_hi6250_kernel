@@ -423,7 +423,7 @@ struct page *f2fs_init_inode_metadata(struct inode *inode, struct inode *dir,
 	}
 
 	/* in case of zero inode page */
-	update_inode(inode, page);
+	f2fs_update_inode(inode, page);
 	return page;
 
 put_error:

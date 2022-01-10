@@ -1156,29 +1156,6 @@ struct inode_management {
 	unsigned long ino_num;			/* number of entries */
 };
 
-struct f2fs_gc_kthread {
-	struct task_struct *f2fs_gc_task;
-	wait_queue_head_t gc_wait_queue_head;
-
-	/* for gc sleep time */
-	unsigned int min_sleep_time;
-	unsigned int max_sleep_time;
-	unsigned int no_gc_sleep_time;
-
-	/* for changing gc mode */
-	unsigned int gc_idle;
-	unsigned int gc_preference;
-
-#ifdef CONFIG_HISI_BLK_CORE
-	/* block idle notify */
-	struct blk_busy_idle_nb gc_nb;
-	struct timer_list nb_timer;
-	bool block_idle;
-#endif
-
-	wait_queue_head_t fg_gc_wait;
-};
-
 /* For s_flag in struct f2fs_sb_info */
 enum {
 	SBI_IS_DIRTY,				/* dirty flag for checkpoint */
@@ -1348,7 +1325,7 @@ struct f2fs_sb_info {
 
 	/* for cleaning operations */
 	struct mutex gc_mutex;			/* mutex for GC */
-	struct f2fs_gc_kthread	gc_thread;	/* GC thread */
+	struct f2fs_gc_kthread	*gc_thread;	/* GC thread */
 	unsigned int cur_victim_sec;		/* current victim section num */
 	unsigned int gc_mode;			/* current GC state */
 	unsigned int next_victim_seg[2];	/* next segment in victim section */

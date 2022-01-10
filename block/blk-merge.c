@@ -6,10 +6,16 @@
 #include <linux/bio.h>
 #include <linux/blkdev.h>
 #include <linux/scatterlist.h>
-#include <linux/fscrypto.h>
 #include <trace/events/block.h>
 #include "hisi-blk-mq.h"
 #include "blk.h"
+
+/*
+ * Necessary add file by turex
+ * to avoid conflicts
+*/
+
+#define FS_AES_256_XTS_KEY_SIZE		64
 
 static struct bio *blk_bio_discard_split(struct request_queue *q,
 					 struct bio *bio,

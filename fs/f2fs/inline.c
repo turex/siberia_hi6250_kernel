@@ -67,16 +67,12 @@ void f2fs_truncate_inline_inode(struct inode *inode,
 					struct page *ipage, u64 from)
 {
 	void *addr;
-
 	if (from >= MAX_INLINE_DATA(inode))
 		return;
-
 	addr = inline_data_addr(inode, ipage);
-
 	f2fs_wait_on_page_writeback(ipage, NODE, true, true);
 	memset(addr + from, 0, MAX_INLINE_DATA(inode) - from);
 	set_page_dirty(ipage);
-
 	if (from == 0)
 		clear_inode_flag(inode, FI_DATA_EXIST);
 }
@@ -230,31 +226,24 @@ int f2fs_write_inline_data(struct inode *inode, struct page *page)
 	void *src_addr, *dst_addr;
 	struct dnode_of_data dn;
 	int err;
-
 	set_new_dnode(&dn, inode, NULL, NULL, 0);
 	err = f2fs_get_dnode_of_data(&dn, 0, LOOKUP_NODE);
 	if (err)
 		return err;
-
 	if (!f2fs_has_inline_data(inode)) {
 		f2fs_put_dnode(&dn);
 		return -EAGAIN;
 	}
-
 	f2fs_bug_on(F2FS_I_SB(inode), page->index);
-
 	f2fs_wait_on_page_writeback(dn.inode_page, NODE, true, true);
 	src_addr = kmap_atomic(page);
 	dst_addr = inline_data_addr(inode, dn.inode_page);
 	memcpy(dst_addr, src_addr, MAX_INLINE_DATA(inode));
 	kunmap_atomic(src_addr);
 	set_page_dirty(dn.inode_page);
-
 	f2fs_clear_radix_tree_dirty_tag(page);
-
 	set_inode_flag(inode, FI_APPEND_WRITE);
 	set_inode_flag(inode, FI_DATA_EXIST);
-
 	clear_inline_node(dn.inode_page);
 	f2fs_put_dnode(&dn);
 	return 0;
@@ -266,7 +255,6 @@ bool f2fs_recover_inline_data(struct inode *inode, struct page *npage)
 	struct f2fs_inode *ri = NULL;
 	void *src_addr, *dst_addr;
 	struct page *ipage;
-
 	/*
 	 * The inline_data recovery policy is as follows.
 	 * [prev.] [next] of inline_data flag
@@ -277,27 +265,21 @@ bool f2fs_recover_inline_data(struct inode *inode, struct page *npage)
 	 */
 	if (IS_INODE(npage))
 		ri = F2FS_INODE(npage);
-
 	if (f2fs_has_inline_data(inode) &&
 			ri && (ri->i_inline & F2FS_INLINE_DATA)) {
 process_inline:
 		ipage = f2fs_get_node_page(sbi, inode->i_ino);
 		f2fs_bug_on(sbi, IS_ERR(ipage));
-
 		f2fs_wait_on_page_writeback(ipage, NODE, true, true);
-
 		src_addr = inline_data_addr(inode, npage);
 		dst_addr = inline_data_addr(inode, ipage);
 		memcpy(dst_addr, src_addr, MAX_INLINE_DATA(inode));
-
 		set_inode_flag(inode, FI_INLINE_DATA);
 		set_inode_flag(inode, FI_DATA_EXIST);
-
 		set_page_dirty(ipage);
 		f2fs_put_page(ipage, 1);
 		return true;
 	}
-
 	if (f2fs_has_inline_data(inode)) {
 		ipage = f2fs_get_node_page(sbi, inode->i_ino);
 		f2fs_bug_on(sbi, IS_ERR(ipage));
@@ -715,47 +697,4 @@ int f2fs_inline_data_fiemap(struct inode *inode,
 out:
 	f2fs_put_page(ipage, 1);
 	return err;
-}
-
-bool recover_inline_dentry(struct inode *inode, struct page *npage)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct f2fs_inode *ri = NULL;
-	void *src_addr, *dst_addr;
-	struct page *ipage;
-
-	if (IS_INODE(npage))
-		ri = F2FS_INODE(npage);
-
-	if (f2fs_has_inline_dentry(inode) &&
-			ri && (ri->i_inline & F2FS_INLINE_DENTRY)) {
-process_inline:
-		ipage = get_node_page(sbi, inode->i_ino);
-		f2fs_bug_on(sbi, IS_ERR(ipage));
-
-		f2fs_wait_on_page_writeback(ipage, NODE, true);
-
-		src_addr = inline_data_addr(npage);
-		dst_addr = inline_data_addr(ipage);
-		memcpy(dst_addr, src_addr, MAX_INLINE_DATA);
-
-		set_inode_flag(inode, FI_INLINE_DENTRY);
-
-		set_page_dirty(ipage);
-		f2fs_put_page(ipage, 1);
-		return true;
-	}
-
-	if (f2fs_has_inline_dentry(inode)) {
-		/*
-		 * No support for recovering from inline to non-inline
-		 * dentry for now.
-		 */
-		f2fs_bug_on(sbi, 1);
-	} else if (ri && (ri->i_inline & F2FS_INLINE_DENTRY)) {
-		if (truncate_blocks(inode, 0, false))
-			return false;
-		goto process_inline;
-	}
-	return false;
 }

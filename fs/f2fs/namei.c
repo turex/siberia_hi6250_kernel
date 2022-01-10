@@ -266,59 +266,6 @@ int f2fs_update_extension_list(struct f2fs_sb_info *sbi, const char *name,
 	return 0;
 }
 
-#ifdef CONFIG_ACM
-static bool is_unrm_file(struct inode *inode, struct dentry *dentry)
-{
-	static const char * const ext[] = { "jpg", "jpe", "jpeg", "gif", "png",
-					    "bmp", "wbmp", "webp", "dng", "cr2",
-					    "nef", "nrw", "arw", "rw2", "orf",
-					    "raf", "pef", "srw", NULL };
-	int i;
-
-	if (S_ISDIR(inode->i_mode))
-		return true;
-
-	for (i = 0; ext[i]; i++) {
-		if (is_multimedia_file(dentry->d_name.name, ext[i]))
-			return true;
-	}
-
-	return false;
-}
-
-static bool should_monitor_file(struct dentry *dentry)
-{
-	struct inode *i = d_inode(dentry);
-	struct dentry *d;
-
-	if (F2FS_I(i)->i_flags & FS_UNRM_FL)
-		return true;
-
-	if (!is_unrm_file(i, dentry))
-		return false;
-
-	/* check if parent directory is set with FS_UNRM_FL */
-	d = dget_parent(dentry);
-	i = d_inode(d);
-	dput(d);
-	if (F2FS_I(i)->i_flags & FS_UNRM_FL)
-		return true;
-
-	return false;
-}
-
-static void inherit_parent_flag(struct inode *dir, struct inode *inode)
-{
-	if (!S_ISDIR(inode->i_mode))
-		return;
-
-	if (!(F2FS_I(dir)->i_flags & FS_UNRM_FL))
-		return;
-
-	F2FS_I(inode)->i_flags |= FS_UNRM_FL;
-}
-#endif
-
 static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 						bool excl)
 {

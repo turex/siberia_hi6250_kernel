@@ -35,17 +35,6 @@ static inline int gc_perf_ratio(struct f2fs_sb_info *sbi)
 			100ULL * free_user_blocks(sbi) / reclaimable_user_blocks;
 }
 
-static inline int __gc_thread_wait_timeout(struct f2fs_sb_info *sbi, struct f2fs_gc_kthread *gc_th,
-	int timeout)
-{
-	wait_queue_head_t *wq = &gc_th->gc_wait_queue_head;
-	wait_queue_head_t *fg_gc_wait = &gc_th->fg_gc_wait;
-
-	return wait_event_interruptible_timeout(*wq,
-		kthread_should_stop() || waitqueue_active(fg_gc_wait) || atomic_read(&sbi->need_ssr_gc),
-		timeout);
-}
-
 static int gc_thread_func(void *data)
 {
 	struct f2fs_sb_info *sbi = data;
@@ -290,34 +279,23 @@ static unsigned int get_cb_cost(struct f2fs_sb_info *sbi, unsigned int segno)
 	unsigned int start = GET_SEG_FROM_SEC(sbi, secno);
 	unsigned long long mtime = 0;
 	unsigned int vblocks;
-	unsigned int max_age;
 	unsigned char age = 0;
 	unsigned char u;
 	unsigned int i;
-
 	for (i = 0; i < sbi->segs_per_sec; i++)
 		mtime += get_seg_entry(sbi, start + i)->mtime;
 	vblocks = get_valid_blocks(sbi, segno, true);
-
 	mtime = div_u64(mtime, sbi->segs_per_sec);
 	vblocks = div_u64(vblocks, sbi->segs_per_sec);
-
 	u = (vblocks * 100) >> sbi->log_blocks_per_seg;
-
 	/* Handle if the system time has changed by the user */
 	if (mtime < sit_i->min_mtime)
 		sit_i->min_mtime = mtime;
 	if (mtime > sit_i->max_mtime)
 		sit_i->max_mtime = mtime;
-	/*lint -save -e613 -e666 */
-	/* Reduce the cost weight of age when free blocks less than 10% */
-	max_age = (gc_th && gc_th->gc_preference != GC_LIFETIME &&
-		gc_perf_ratio(sbi) < 10) ? max(10 * gc_perf_ratio(sbi), 1) : 100;
-	/*lint -restore*/
 	if (sit_i->max_mtime != sit_i->min_mtime)
-		age = max_age - div64_u64(max_age * (mtime - sit_i->min_mtime),
+		age = 100 - div64_u64(100 * (mtime - sit_i->min_mtime),
 				sit_i->max_mtime - sit_i->min_mtime);
-
 	return UINT_MAX - ((100 * (100 - u) * age) / (100 + u));
 }
 
@@ -1021,12 +999,9 @@ static int gc_data_segment(struct f2fs_sb_info *sbi, struct f2fs_summary *sum,
 	int off;
 	int phase = 0;
 	int submitted = 0;
-
 	start_addr = START_BLOCK(sbi, segno);
-
 next_step:
 	entry = sum;
-
 	for (off = 0; off < sbi->blocks_per_seg; off++, entry++) {
 		struct page *data_page;
 		struct inode *inode;
@@ -1034,54 +1009,42 @@ next_step:
 		unsigned int ofs_in_node, nofs;
 		block_t start_bidx;
 		nid_t nid = le32_to_cpu(entry->nid);
-
 		/* stop BG_GC if there is not enough free sections. */
 		if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0))
 			return submitted;
-
 		if (check_valid_map(sbi, segno, off) == 0)
 			continue;
-
 		if (phase == 0) {
 			f2fs_ra_meta_pages(sbi, NAT_BLOCK_OFFSET(nid), 1,
 							META_NAT, true);
 			continue;
 		}
-
 		if (phase == 1) {
 			f2fs_ra_node_page(sbi, nid);
 			continue;
 		}
-
 		/* Get an inode by ino with checking validity */
 		if (!is_alive(sbi, entry, &dni, start_addr + off, &nofs))
 			continue;
-
 		if (phase == 2) {
 			f2fs_ra_node_page(sbi, dni.ino);
 			continue;
 		}
-
 		ofs_in_node = le16_to_cpu(entry->ofs_in_node);
-
 		if (phase == 3) {
 			inode = f2fs_iget(sb, dni.ino);
 			if (IS_ERR(inode) || is_bad_inode(inode))
 				continue;
-
 			if (!down_write_trylock(
 				&F2FS_I(inode)->i_gc_rwsem[WRITE])) {
 				iput(inode);
 				sbi->skipped_gc_rwsem++;
 				continue;
 			}
-
 			start_bidx = f2fs_start_bidx_of_node(nofs, inode) +
 								ofs_in_node;
-
 			if (f2fs_post_read_required(inode)) {
 				int err = ra_data_block(inode, start_bidx);
-
 				up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
 				if (err) {
 					iput(inode);
@@ -1090,7 +1053,6 @@ next_step:
 				add_gc_inode(gc_list, inode);
 				continue;
 			}
-
 			data_page = f2fs_get_read_data_page(inode,
 						start_bidx, REQ_RAHEAD, true);
 			up_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
@@ -1098,19 +1060,16 @@ next_step:
 				iput(inode);
 				continue;
 			}
-
 			f2fs_put_page(data_page, 0);
 			add_gc_inode(gc_list, inode);
 			continue;
 		}
-
 		/* phase 4 */
 		inode = find_gc_inode(gc_list, dni.ino);
 		if (inode) {
 			struct f2fs_inode_info *fi = F2FS_I(inode);
 			bool locked = false;
 			int err;
-
 			if (S_ISREG(inode->i_mode)) {
 				if (!down_write_trylock(&fi->i_gc_rwsem[READ]))
 					continue;
@@ -1121,11 +1080,9 @@ next_step:
 					continue;
 				}
 				locked = true;
-
 				/* wait for all inflight aio data */
 				inode_dio_wait(inode);
 			}
-
 			start_bidx = f2fs_start_bidx_of_node(nofs, inode)
 								+ ofs_in_node;
 			if (f2fs_post_read_required(inode))
@@ -1134,25 +1091,18 @@ next_step:
 			else
 				err = move_data_page(inode, start_bidx, gc_type,
 								segno, off);
-
 			if (!err && (gc_type == FG_GC ||
 					f2fs_post_read_required(inode)))
 				submitted++;
-
 			if (locked) {
 				up_write(&fi->i_gc_rwsem[WRITE]);
 				up_write(&fi->i_gc_rwsem[READ]);
 			}
-
 			stat_inc_data_blk_count(sbi, 1, gc_type);
-			if (!ret)
-				gc_cnt++;
 		}
 	}
-
 	if (++phase < 5)
 		goto next_step;
-
 	return submitted;
 }
 
@@ -1289,7 +1239,6 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
 	unsigned long long last_skipped = sbi->skipped_atomic_files[FG_GC];
 	unsigned long long first_skipped;
 	unsigned int skipped_round = 0, round = 0;
-
 	trace_f2fs_gc_begin(sbi->sb, sync, background,
 				get_pages(sbi, F2FS_DIRTY_NODES),
 				get_pages(sbi, F2FS_DIRTY_DENTS),
@@ -1298,7 +1247,6 @@ int f2fs_gc(struct f2fs_sb_info *sbi, bool sync,
 				free_segments(sbi),
 				reserved_segments(sbi),
 				prefree_segments(sbi));
-
 	cpc.reason = __get_cp_reason(sbi);
 	sbi->skipped_gc_rwsem = 0;
 	first_skipped = last_skipped;
@@ -1311,7 +1259,6 @@ gc_more:
 		ret = -EIO;
 		goto stop;
 	}
-
 	if (gc_type == BG_GC && has_not_enough_free_secs(sbi, 0, 0)) {
 		/*
 		 * For example, if there are many prefree_segments below given
@@ -1327,7 +1274,6 @@ gc_more:
 		if (has_not_enough_free_secs(sbi, 0, 0))
 			gc_type = FG_GC;
 	}
-
 	/* f2fs_balance_fs doesn't need to do BG_GC in critical path. */
 	if (gc_type == BG_GC && !background) {
 		ret = -EINVAL;
@@ -1337,12 +1283,10 @@ gc_more:
 		ret = -ENODATA;
 		goto stop;
 	}
-
 	seg_freed = do_garbage_collect(sbi, segno, &gc_list, gc_type);
 	if (gc_type == FG_GC && seg_freed == sbi->segs_per_sec)
 		sec_freed++;
 	total_freed += seg_freed;
-
 	if (gc_type == FG_GC) {
 		if (sbi->skipped_atomic_files[FG_GC] > last_skipped ||
 						sbi->skipped_gc_rwsem)
@@ -1350,20 +1294,16 @@ gc_more:
 		last_skipped = sbi->skipped_atomic_files[FG_GC];
 		round++;
 	}
-
 	if (gc_type == FG_GC)
 		sbi->cur_victim_sec = NULL_SEGNO;
-
 	if (sync)
 		goto stop;
-
 	if (has_not_enough_free_secs(sbi, sec_freed, 0)) {
 		if (skipped_round <= MAX_SKIP_GC_COUNT ||
 					skipped_round * 2 < round) {
 			segno = NULL_SEGNO;
 			goto gc_more;
 		}
-
 		if (first_skipped < last_skipped &&
 				(last_skipped - first_skipped) >
 						sbi->skipped_gc_rwsem) {
@@ -1377,7 +1317,6 @@ gc_more:
 stop:
 	SIT_I(sbi)->last_victim[ALLOC_NEXT] = 0;
 	SIT_I(sbi)->last_victim[FLUSH_DEVICE] = init_segno;
-
 	trace_f2fs_gc_end(sbi->sb, ret, total_freed, sec_freed,
 				get_pages(sbi, F2FS_DIRTY_NODES),
 				get_pages(sbi, F2FS_DIRTY_DENTS),
@@ -1386,20 +1325,8 @@ stop:
 				free_segments(sbi),
 				reserved_segments(sbi),
 				prefree_segments(sbi));
-
 	mutex_unlock(&sbi->gc_mutex);
-	bd_mutex_lock(&sbi->bd_mutex);
-	if (gc_type == FG_GC && fggc_begin) {
-		fggc_end = local_clock();
-		inc_bd_val(sbi, fggc_time, fggc_end - fggc_begin);
-	}
-	inc_bd_array_val(sbi, gc_cnt, gc_type, 1);
-	if (ret)
-		inc_bd_array_val(sbi, gc_fail_cnt, gc_type, 1);
-	bd_mutex_unlock(&sbi->bd_mutex);
-
 	put_gc_inode(&gc_list);
-
 	if (sync && !ret)
 		ret = sec_freed ? 0 : -EAGAIN;
 	return ret;

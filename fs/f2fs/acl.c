@@ -171,19 +171,16 @@ static struct posix_acl *__f2fs_get_acl(struct inode *inode, int type,
 	void *value = NULL;
 	struct posix_acl *acl;
 	int retval;
-
 	if (type == ACL_TYPE_ACCESS)
 		name_index = F2FS_XATTR_INDEX_POSIX_ACL_ACCESS;
-
-	retval = f2fs_getxattr(inode, name_index, "", NULL, 0, dpage, NULL);
+	retval = f2fs_getxattr(inode, name_index, "", NULL, 0, dpage);
 	if (retval > 0) {
 		value = f2fs_kmalloc(F2FS_I_SB(inode), retval, GFP_F2FS_ZERO);
 		if (!value)
 			return ERR_PTR(-ENOMEM);
 		retval = f2fs_getxattr(inode, name_index, "", value,
-							retval, dpage, NULL);
+							retval, dpage);
 	}
-
 	if (retval > 0)
 		acl = f2fs_acl_from_disk(value, retval);
 	else if (retval == -ENODATA)
@@ -191,10 +188,8 @@ static struct posix_acl *__f2fs_get_acl(struct inode *inode, int type,
 	else
 		acl = ERR_PTR(retval);
 	kvfree(value);
-
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
-
 	return acl;
 }
 

@@ -29,16 +29,22 @@
 #include <linux/workqueue.h>
 #include <linux/cgroup.h>
 
+
 #include <trace/events/block.h>
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-#include <linux/fscrypto.h>
-#endif
 #include "blk.h"
 /*
  * Test patch to inline a certain number of bi_io_vec's inside the bio
  * itself, to shrink a bio data allocation from two mempool calls to one
  */
 #define BIO_INLINE_VECS		4
+
+/*
+ * Necessary add file by turex
+ * to avoid conflicts
+*/
+
+#define FS_AES_256_XTS_KEY_SIZE		64
+
 
 /*
  * if you change this list, also change bvec_alloc or things will

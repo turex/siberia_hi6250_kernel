@@ -1029,9 +1029,7 @@ static void f2fs_put_super(struct super_block *sb)
 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
 	int i;
 	bool dropped;
-
 	f2fs_quota_off_umount(sb);
-
 	/* prevent remaining shrinker jobs */
 	mutex_lock(&sbi->umount_mutex);
 	/*
@@ -1046,10 +1044,8 @@ static void f2fs_put_super(struct super_block *sb)
 		};
 		f2fs_write_checkpoint(sbi, &cpc);
 	}
-
 	/* be sure to wait for any on-going discard commands */
 	dropped = f2fs_issue_discard_timeout(sbi);
-
 	if ((f2fs_hw_support_discard(sbi) || f2fs_hw_should_discard(sbi)) &&
 					!sbi->discard_blks && !dropped) {
 		struct cp_control cpc = {
@@ -1057,47 +1053,35 @@ static void f2fs_put_super(struct super_block *sb)
 		};
 		f2fs_write_checkpoint(sbi, &cpc);
 	}
-
 	/*
 	 * normally superblock is clean, so we need to release this.
 	 * In addition, EIO will skip do checkpoint, we need this as well.
 	 */
 	f2fs_release_ino_entry(sbi, true);
-
 	f2fs_leave_shrinker(sbi);
 	mutex_unlock(&sbi->umount_mutex);
 	/* our cp_error case, we can wait for any writeback page */
 	f2fs_flush_merged_writes(sbi);
-
 	f2fs_wait_on_all_pages_writeback(sbi);
-
 	f2fs_bug_on(sbi, sbi->fsync_node_num);
-
 	iput(sbi->node_inode);
 	sbi->node_inode = NULL;
-
 	iput(sbi->meta_inode);
 	sbi->meta_inode = NULL;
-
 	/*
 	 * iput() can update stat information, if f2fs_write_checkpoint()
 	 * above failed with error.
 	 */
 	f2fs_destroy_stats(sbi);
-
 	/* destroy f2fs internal modules */
 	f2fs_destroy_node_manager(sbi);
 	f2fs_destroy_segment_manager(sbi);
-
 	kvfree(sbi->ckpt);
-
 	f2fs_unregister_sysfs(sbi);
-
 	sb->s_fs_info = NULL;
 	if (sbi->s_chksum_driver)
 		crypto_free_shash(sbi->s_chksum_driver);
 	kvfree(sbi->raw_super);
-
 	destroy_device_list(sbi);
 	if (sbi->write_io_dummy)
 		mempool_destroy(sbi->write_io_dummy);
@@ -3542,13 +3526,6 @@ static int __init init_f2fs_fs(void)
 
 	f2fs_build_trace_ios();
 
-	/*wq for reboot in interrupt context*/
-	atomic_set(&restart, 0);
-	f2fs_wq = alloc_workqueue("f2fs", WQ_FREEZABLE, 0);
-	if (!f2fs_wq)
-		return -ENOMEM;
-	INIT_WORK(&f2fs_work, f2fs_reboot);
-
 	err = init_inodecache();
 	if (err)
 		goto fail;
@@ -3613,7 +3590,6 @@ static void __exit exit_f2fs_fs(void)
 	f2fs_destroy_node_manager_caches();
 	destroy_inodecache();
 	f2fs_destroy_trace_ios();
-	destroy_workqueue(f2fs_wq);
 }
 
 module_init(init_f2fs_fs)

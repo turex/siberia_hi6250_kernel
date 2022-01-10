@@ -25,26 +25,6 @@
 #include <trace/events/f2fs.h>
 #include <trace/events/android_fs.h>
 
-static bool __is_cp_guaranteed(struct page *page)
-{
-	struct address_space *mapping = page->mapping;
-	struct inode *inode;
-	struct f2fs_sb_info *sbi;
-
-	if (!mapping)
-		return false;
-
-	inode = mapping->host;
-	sbi = F2FS_I_SB(inode);
-
-	if (inode->i_ino == F2FS_META_INO(sbi) ||
-			inode->i_ino ==  F2FS_NODE_INO(sbi) ||
-			S_ISDIR(inode->i_mode) ||
-			is_cold_data(page))
-		return true;
-	return false;
-}
-
 #define NUM_PREALLOC_POST_READ_CTXS	128
 
 static struct kmem_cache *bio_post_read_ctx_cache;
@@ -634,15 +614,6 @@ static void __set_data_blkaddr(struct dnode_of_data *dn)
 	addr_array[base + dn->ofs_in_node] = cpu_to_le32(dn->data_blkaddr);
 }
 
-static void __set_data_blkaddr(struct dnode_of_data *dn)
-{
-	struct f2fs_node *rn = F2FS_NODE(dn->node_page);
-	__le32 *addr_array;
-
-	/* Get physical address of data block */
-	addr_array = blkaddr_in_node(rn);
-	addr_array[dn->ofs_in_node] = cpu_to_le32(dn->data_blkaddr);
-}
 
 /*
  * Lock ordering for the change of data block address:
@@ -2109,15 +2080,12 @@ static int f2fs_write_cache_pages(struct address_space *mapping,
 	int range_whole = 0;
 	int tag;
 	int nwritten = 0;
-
 	pagevec_init(&pvec, 0);
-
 	if (get_dirty_pages(mapping->host) <=
 				SM_I(F2FS_M_SB(mapping))->min_hot_blocks)
 		set_inode_flag(mapping->host, FI_HOT_DATA);
 	else
 		clear_inode_flag(mapping->host, FI_HOT_DATA);
-
 	if (wbc->range_cyclic) {
 		writeback_index = mapping->writeback_index; /* prev offset */
 		index = writeback_index;
@@ -2143,41 +2111,31 @@ retry:
 	done_index = index;
 	while (!done && (index <= end)) {
 		int i;
-
 		nr_pages = pagevec_lookup_range_tag(&pvec, mapping, &index, end,
 				tag);
 		if (nr_pages == 0)
 			break;
-
-#ifdef CONFIG_WBT
-		f2fs_wbt_blk_throtl(mapping->host->i_sb->s_bdev, wbc);
-#endif
 		for (i = 0; i < nr_pages; i++) {
 			struct page *page = pvec.pages[i];
 			bool submitted = false;
-
 			/* give a priority to WB_SYNC threads */
 			if (atomic_read(&sbi->wb_sync_req[DATA]) &&
 					wbc->sync_mode == WB_SYNC_NONE) {
 				done = 1;
 				break;
 			}
-
 			done_index = page->index;
 retry_write:
 			lock_page(page);
-
 			if (unlikely(page->mapping != mapping)) {
 continue_unlock:
 				unlock_page(page);
 				continue;
 			}
-
 			if (!PageDirty(page)) {
 				/* someone wrote it for us */
 				goto continue_unlock;
 			}
-
 			if (PageWriteback(page)) {
 				if (wbc->sync_mode != WB_SYNC_NONE)
 					f2fs_wait_on_page_writeback(page,
@@ -2185,10 +2143,8 @@ continue_unlock:
 				else
 					goto continue_unlock;
 			}
-
 			if (!clear_page_dirty_for_io(page))
 				goto continue_unlock;
-
 			ret = __write_data_page(page, &submitted, wbc, io_type);
 			if (unlikely(ret)) {
 				/*
@@ -2215,7 +2171,6 @@ continue_unlock:
 			} else if (submitted) {
 				nwritten++;
 			}
-
 			if (--wbc->nr_to_write <= 0 &&
 					wbc->sync_mode == WB_SYNC_NONE) {
 				done = 1;
@@ -2225,7 +2180,6 @@ continue_unlock:
 		pagevec_release(&pvec);
 		cond_resched();
 	}
-
 	if (!cycled && !done) {
 		cycled = 1;
 		index = 0;
@@ -2234,11 +2188,9 @@ continue_unlock:
 	}
 	if (wbc->range_cyclic || (range_whole && wbc->nr_to_write > 0))
 		mapping->writeback_index = done_index;
-
 	if (nwritten)
 		f2fs_submit_merged_write_cond(F2FS_M_SB(mapping), mapping->host,
 								NULL, 0, DATA);
-
 	return ret;
 }
 
