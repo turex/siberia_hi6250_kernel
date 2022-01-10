@@ -151,7 +151,6 @@ int f2fs_convert_inline_page(struct dnode_of_data *dn, struct page *page)
 	if (dirty)
 		inode_dec_dirty_pages(dn->inode);
 		remove_dirty_inode(dn->inode);
-	}
 
 	/* this converted inline_data should be recovered. */
 	set_inode_flag(dn->inode, FI_APPEND_WRITE);

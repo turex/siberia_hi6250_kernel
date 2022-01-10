@@ -60,7 +60,8 @@ TRACE_DEFINE_ENUM(CP_TRIMMED);
 #define F2FS_BIO_MASK(t)	(t & (READA | WRITE_FLUSH_FUA))
 #define F2FS_BIO_EXTRA_MASK(t)	(t & (REQ_META | REQ_PRIO))
 
-#define show_bio_type(type)	show_bio_base(type), show_bio_extra(type)
+#define show_bio_type(op, op_flags)					\
+		show_bio_base((op|op_flags)), show_bio_extra((op|op_flags))
 
 #define show_bio_base(type)						\
 	__print_symbolic(F2FS_BIO_MASK(type),				\
@@ -651,7 +652,7 @@ TRACE_EVENT(f2fs_direct_IO_enter,
 		__field(ino_t,	ino)
 		__field(loff_t,	pos)
 		__field(unsigned long,	len)
-		__field(int,rw)
+		__field(int,	rw)
 	),
 
 	TP_fast_assign(
@@ -765,7 +766,7 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->old_blkaddr,
 		(unsigned long long)__entry->new_blkaddr,
-		show_bio_type(__entry->rw),
+		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type))
 );
 
@@ -796,7 +797,8 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(dev_t,	target)
-		__field(int,	rw)
+		__field(int,	op)
+		__field(int,	op_flags)
 		__field(int,	type)
 		__field(sector_t,	sector)
 		__field(unsigned int,	size)
@@ -805,7 +807,8 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
 		__entry->target		= bio->bi_bdev->bd_dev;
-		__entry->rw		    = rw;
+		__entry->op		= bio_op(bio);
+		__entry->op_flags	= bio->bi_rw;
 		__entry->type		= type;
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->size		= bio->bi_iter.bi_size;
@@ -814,7 +817,7 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 	TP_printk("dev = (%d,%d)/(%d,%d), rw = %s%s, %s, sector = %lld, size = %u",
 		show_dev(__entry->target),
 		show_dev(__entry->dev),
-		show_bio_type(__entry->rw),
+		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type),
 		(unsigned long long)__entry->sector,
 		__entry->size)

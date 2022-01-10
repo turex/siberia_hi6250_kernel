@@ -112,6 +112,19 @@ struct f2fs_mount_info {
 #define F2FS_CLEAR_FEATURE(sb, mask)					\
 	(F2FS_SB(sb)->raw_super->feature &= ~cpu_to_le32(mask))
 
+
+/* bio stuffs */
+#define REQ_OP_READ	READ
+#define REQ_OP_WRITE	WRITE
+#define bio_op(bio)	((bio)->bi_rw & 1)
+
+static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
+		unsigned op_flags)
+{
+	bio->bi_rw = op | op_flags;
+}
+
+
 /**
  * wq_has_sleeper - check if there are any waiting processes
  * @wq: wait queue head
@@ -863,7 +876,8 @@ enum page_type {
 struct f2fs_io_info {
 	struct f2fs_sb_info *sbi;	/* f2fs_sb_info pointer */
 	enum page_type type;	/* contains DATA/NODE/META/META_FLUSH */
-	int rw;			/* contains R/RS/W/WS with REQ_META/REQ_PRIO */
+	int op;			/* contains REQ_OP_ */
+	int op_flags;		/* req_flag_bits */
 	block_t new_blkaddr;	/* new block address to be written */
 	block_t old_blkaddr;	/* old block address before Cow */
 	struct page *page;	/* page to be written */
