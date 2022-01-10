@@ -214,7 +214,7 @@ struct page *fscrypt_alloc_bounce_page(struct fscrypt_ctx *ctx,
 	ctx->w.bounce_page = mempool_alloc(fscrypt_bounce_page_pool, gfp_flags);
 	if (ctx->w.bounce_page == NULL)
 		return ERR_PTR(-ENOMEM);
-	ctx->flags |= FS_CTX_HAS_BOUNCE_BUFFER_FL;
+	ctx->flags |= FS_WRITE_PATH_FL;
 	return ctx->w.bounce_page;
 }
 

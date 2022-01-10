@@ -37,7 +37,10 @@ struct fscrypt_name {
 	struct fscrypt_str crypto_buf;
 };
 
+
 #define __FS_HAS_ENCRYPTION 0
+
+/* TODO FIX __FS_HAS_ENCRYPTION*/
 
 #if __FS_HAS_ENCRYPTION
 #include <linux/fscrypt_supp.h>
