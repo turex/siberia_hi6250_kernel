@@ -705,15 +705,6 @@ static int attempt_merge(struct request_queue *q, struct request *req,
 	if (!ll_merge_requests_fn(q, req, next))
 		return 0;
 
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	/*
-	 * check current bio->key to last-merged request key,
-	 * which is submitted only by f2fs file system now.
-	 */
-	if (!blk_bio_key_compare(req, next->bio))
-		return 0;
-#endif
-
 	/*
 	 * If failfast settings disagree or any of the two is already
 	 * a mixed merge, mark both as mixed before proceeding.  This
@@ -793,15 +784,6 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 
 	if (!blk_check_merge_flags(rq->cmd_flags, bio->bi_rw))
 		return false;
-
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	/*
-	 * check current bio->key to last-merged request key,
-	 * which is submitted only by f2fs file system now.
-	 */
-	if (!blk_bio_key_compare(rq, bio))
-		return false;
-#endif
 
 	/* different data direction or already started, don't merge */
 	if (bio_data_dir(bio) != rq_data_dir(rq))

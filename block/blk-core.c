@@ -1826,19 +1826,6 @@ void init_request_from_bio(struct request *req, struct bio *bio)
 
 	req->errors = 0;
 
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	if (likely(is_blk_queue_support_crypto(req->q))) {
-		if (bio->ci_key) {
-			if (unlikely(bio->ci_key_len != 64)) {
-				pr_err("[%s]init rq key len not 64\n", __func__);
-				BUG_ON(1);
-			}
-			req->ci_key = bio->ci_key;
-			req->ci_key_len = bio->ci_key_len;
-		}
-	}
-#endif
-
 	req->__sector = bio->bi_iter.bi_sector;
 	req->ioprio = bio_prio(bio);
 #ifdef CONFIG_HISI_BLK_CORE

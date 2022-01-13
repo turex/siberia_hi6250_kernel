@@ -147,12 +147,6 @@ struct request {
 	struct bio *bio;
 	struct bio *biotail;
 
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	/* only for inline crypto */
-	void	*ci_key;
-	int ci_key_len;
-#endif
-
 	/*
 	 * The hash is used inside the scheduler, and killed once the
 	 * request reaches the dispatch list. The ipi_list is only used
@@ -848,27 +842,7 @@ struct request_queue {
 	unsigned long           disk_iops;
 
 	bool			mq_sysfs_init_done;
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	int crypto_flag;
-#endif
 };
-
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-#define BLK_CRYPTO_SUPPORT		(1U << 1)
-static inline void blk_queue_set_crypto_flag(struct request_queue *q)
-{
-	q->crypto_flag |= BLK_CRYPTO_SUPPORT;
-}
-static inline void blk_queue_clr_crypto_flag(struct request_queue *q)
-{
-	q->crypto_flag &= ~BLK_CRYPTO_SUPPORT;
-}
-
-static inline int is_blk_queue_support_crypto(struct request_queue *q)
-{
-	return (q->crypto_flag & BLK_CRYPTO_SUPPORT);
-}
-#endif
 
 #define QUEUE_FLAG_QUEUED	1	/* uses generic tag queueing */
 #define QUEUE_FLAG_STOPPED	2	/* queue is stopped */

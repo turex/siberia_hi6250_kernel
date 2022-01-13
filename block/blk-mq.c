@@ -235,11 +235,6 @@ static void blk_mq_rq_ctx_init(struct request_queue *q, struct blk_mq_ctx *ctx,
 	/* tag was already set */
 	rq->errors = 0;
 
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	rq->ci_key = NULL;
-	rq->ci_key_len = 0;
-#endif
-
 	rq->cmd = rq->__cmd;
 
 	rq->extra_len = 0;
