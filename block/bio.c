@@ -1863,30 +1863,10 @@ struct bio *bio_split(struct bio *bio, int sectors,
 
 	split->bi_iter.bi_size = sectors << 9;
 
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	if (bio->ci_key) {
-		if (bio->ci_key_len != FS_AES_256_XTS_KEY_SIZE) {
-			pr_err("[%s]init key len not 64\n", __func__);
-		}
-		split->ci_key = bio->ci_key;
-		split->ci_key_len = bio->ci_key_len;
-		split->index = bio->index;
-	}
-#endif
-
 	if (bio_integrity(split))
 		bio_integrity_trim(split, 0, sectors);
 
 	bio_advance(bio, split->bi_iter.bi_size);
-
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-	if (bio->ci_key) {
-		if (bio->ci_key_len != FS_AES_256_XTS_KEY_SIZE) {
-			pr_err("[%s]init key len not 64\n", __func__);
-		}
-		bio->index = bio_page(bio)->index;
-	}
-#endif
 
 	return split;
 }

@@ -15,8 +15,6 @@
  * to avoid conflicts
 */
 
-#define FS_AES_256_XTS_KEY_SIZE		64
-
 static struct bio *blk_bio_discard_split(struct request_queue *q,
 					 struct bio *bio,
 					 struct bio_set *bs,
@@ -670,60 +668,6 @@ static void blk_account_io_merge(struct request *req)
 		part_stat_unlock();
 	}
 }
-
-#ifdef CONFIG_HISI_BLK_INLINE_CRYPTO
-static int blk_bio_key_compare(struct request *rq, struct bio *bio)
-{
-	if (!is_blk_queue_support_crypto(rq->q))
-		return true;
-
-	/*
-	 * check if both the bio->key & last merged request->key
-	 * do not exist, wo shall tell block that this bio may merge to the rq.
-	 */
-	if (!bio->ci_key && !rq->ci_key)
-		return true;
-
-	/*
-	 * check if the bio->key or last merged request->key
-	 * does not exist, but the other's was existing,
-	 * wo shall tell block that the bio should not be merged to the rq.
-	 */
-	if (!bio->ci_key || !rq->ci_key)
-		return false;
-
-	if (bio->ci_key_len != rq->ci_key_len)
-		return false;
-
-	if (bio->ci_key_len != FS_AES_256_XTS_KEY_SIZE) {
-		pr_err("[%s]key len not 64\n", __func__);
-		//BUG_ON(1);
-	}
-
-	if (bio->ci_key == rq->ci_key) {
-		struct bio *prev = rq->biotail;
-		int ret;
-
-		ret = blk_try_merge(rq, bio);
-		switch (ret) {
-		case ELEVATOR_BACK_MERGE:
-			if (prev->index + prev->bi_vcnt != bio->index)
-				return false;
-			break;
-		case ELEVATOR_FRONT_MERGE:
-			if (bio->index + bio->bi_vcnt != rq->bio->index)
-				return false;
-			break;
-		default:
-			return false;
-		}
-
-		return true;
-	}
-
-	return false;
-}
-#endif
 
 /*
  * Has to be called with the request spinlock acquired
