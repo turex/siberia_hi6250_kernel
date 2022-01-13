@@ -96,14 +96,8 @@
 #define EXPORT_FOR_ACM_TEST(name)
 #endif
 
-#ifdef CONFIG_HUAWEI_DSM
-#define ACM_DSM
-#endif
-
-#ifdef ACM_DSM
 #include <dsm/dsm_pub.h>
 extern struct dsm_client *f2fs_dclient;
-#endif
 
 enum UEVENT_VAL_INDEX {
 	UEVENT_PKGNAME_INDEX = 0,
