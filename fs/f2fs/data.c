@@ -107,12 +107,14 @@ static void __submit_merged_bio(struct f2fs_bio_info *io)
 	if (!io->bio)
 		return;
 
-	if (is_read_io(fio->rw))
+	if (is_read_io(fio->op))
 		trace_f2fs_submit_read_bio(io->sbi->sb, fio, io->bio);
 	else
 		trace_f2fs_submit_write_bio(io->sbi->sb, fio, io->bio);
 
-	submit_bio(fio->rw, io->bio);
+	bio_set_op_attrs(io->bio, fio->op, fio->op_flags);
+
+	__submit_bio(io->sbi, io->bio);
 	io->bio = NULL;
 }
 
@@ -129,10 +131,11 @@ void f2fs_submit_merged_bio(struct f2fs_sb_info *sbi,
 	/* change META to META_FLUSH in the checkpoint procedure */
 	if (type >= META_FLUSH) {
 		io->fio.type = META_FLUSH;
+        io->fio.op = REQ_OP_WRITE;
 		if (test_opt(sbi, NOBARRIER))
-			io->fio.rw = WRITE_FLUSH | REQ_META | REQ_PRIO;
+			io->fio.op_flags = WRITE_FLUSH | REQ_META | REQ_PRIO;
 		else
-			io->fio.rw = WRITE_FLUSH_FUA | REQ_META | REQ_PRIO;
+			io->fio.op_flags = WRITE_FLUSH_FUA | REQ_META | REQ_PRIO;
 	}
 	__submit_merged_bio(io);
 	up_write(&io->io_rwsem);
@@ -151,12 +154,14 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 	f2fs_trace_ios(fio, 0);
 
 	/* Allocate a new bio */
-	bio = __bio_alloc(fio->sbi, fio->blk_addr, 1, is_read_io(fio->rw));
+	bio = __bio_alloc(fio->sbi, fio->blk_addr, 1, is_read_io(fio->op));
 
 	if (bio_add_page(bio, page, PAGE_CACHE_SIZE, 0) < PAGE_CACHE_SIZE) {
 		bio_put(bio);
 		return -EFAULT;
 	}
+	bio->bi_rw = fio->op_flags;
+	bio_set_op_attrs(bio, fio->op, fio->op_flags);
 
 	submit_bio(fio->rw, bio);
 	return 0;
@@ -167,7 +172,7 @@ void f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 	struct f2fs_sb_info *sbi = fio->sbi;
 	enum page_type btype = PAGE_TYPE_OF_BIO(fio->type);
 	struct f2fs_bio_info *io;
-	bool is_read = is_read_io(fio->rw);
+	bool is_read = is_read_io(fio->op);
 	struct page *bio_page;
 
 	io = is_read ? &sbi->read_io : &sbi->write_io[btype];
@@ -180,7 +185,7 @@ void f2fs_submit_page_mbio(struct f2fs_io_info *fio)
 		inc_page_count(sbi, F2FS_WRITEBACK);
 
 	if (io->bio && (io->last_block_in_bio != fio->blk_addr - 1 ||
-						io->fio.rw != fio->rw))
+						io->fio.op != fio->op))
 		__submit_merged_bio(io);
 alloc_new:
 	if (io->bio == NULL) {
@@ -276,7 +281,7 @@ int f2fs_get_block(struct dnode_of_data *dn, pgoff_t index)
 }
 
 struct page *get_read_data_page(struct inode *inode, pgoff_t index,
-						int rw, bool for_write)
+						int op_flags, bool for_write)
 {
 	struct address_space *mapping = inode->i_mapping;
 	struct dnode_of_data dn;
@@ -286,7 +291,8 @@ struct page *get_read_data_page(struct inode *inode, pgoff_t index,
 	struct f2fs_io_info fio = {
 		.sbi = F2FS_I_SB(inode),
 		.type = DATA,
-		.rw = rw,
+		.op = REQ_OP_READ,
+		.op_flags = op_flags,
 		.encrypted_page = NULL,
 	};
 
@@ -1115,7 +1121,8 @@ static int f2fs_write_data_page(struct page *page,
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = DATA,
-		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
+		.op = REQ_OP_WRITE,
+		.op_flags = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : 0,
 		.page = page,
 		.encrypted_page = NULL,
 	};
@@ -1480,7 +1487,8 @@ put_next:
 		struct f2fs_io_info fio = {
 			.sbi = sbi,
 			.type = DATA,
-			.rw = READ_SYNC,
+			.op = REQ_OP_READ,
+			.op_flags = READ_SYNC,
 			.blk_addr = dn.data_blkaddr,
 			.page = page,
 			.encrypted_page = NULL,

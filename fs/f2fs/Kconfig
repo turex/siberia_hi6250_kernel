@@ -91,6 +91,18 @@ config F2FS_FS_ENCRYPTION
 	  efficient since it avoids caching the encrypted and
 	  decrypted pages in the page cache.
 
+config HUAWEI_F2FS_DSM
+	bool "Listen f2fs kernel err"
+	default n
+	help
+		use huawei fs log radar
+
+config HISI_F2FS_MTIME
+	bool "reduce freq to update mtime"
+	default n
+	help
+		reduce freq to update mtime
+
 config F2FS_IO_TRACE
 	bool "F2FS IO tracer"
 	depends on F2FS_FS

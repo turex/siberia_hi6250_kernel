@@ -55,17 +55,21 @@ TRACE_DEFINE_ENUM(CP_DISCARD);
 		{ IPU,		"IN-PLACE" },				\
 		{ OPU,		"OUT-OF-PLACE" })
 
-#define F2FS_BIO_MASK(t)	(t & (READA | WRITE_FLUSH_FUA))
+#define F2FS_BIO_FLAG_MASK(t)	(t & (READA | WRITE_FLUSH_FUA))
 #define F2FS_BIO_EXTRA_MASK(t)	(t & (REQ_META | REQ_PRIO))
 
-#define show_bio_type(type)	show_bio_base(type), show_bio_extra(type)
+#define show_bio_type(op, op_flags) show_bio_op(op),			\
+			show_bio_op_flags(op_flags), show_bio_extra(op_flags)
 
-#define show_bio_base(type)						\
-	__print_symbolic(F2FS_BIO_MASK(type),				\
+#define show_bio_op(op)							\
+	__print_symbolic(op,						\
 		{ READ, 		"READ" },			\
+		{ WRITE,		"WRITE" })
+
+#define show_bio_op_flags(flags)					\
+	__print_symbolic(F2FS_BIO_FLAG_MASK(flags),			\
 		{ READA, 		"READAHEAD" },			\
 		{ READ_SYNC, 		"READ_SYNC" },			\
-		{ WRITE, 		"WRITE" },			\
 		{ WRITE_SYNC, 		"WRITE_SYNC" },			\
 		{ WRITE_FLUSH,		"WRITE_FLUSH" },		\
 		{ WRITE_FUA, 		"WRITE_FUA" },			\
@@ -728,7 +732,8 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__field(ino_t, ino)
 		__field(pgoff_t, index)
 		__field(block_t, blkaddr)
-		__field(int, rw)
+		__field(int, op)
+		__field(int, op_flags)
 		__field(int, type)
 	),
 
@@ -737,16 +742,17 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__entry->ino		= page->mapping->host->i_ino;
 		__entry->index		= page->index;
 		__entry->blkaddr	= fio->blk_addr;
-		__entry->rw		= fio->rw;
+		__entry->op		= fio->op;
+		__entry->op_flags	= fio->op_flags;
 		__entry->type		= fio->type;
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, page_index = 0x%lx, "
-		"blkaddr = 0x%llx, rw = %s%s, type = %s",
+		"blkaddr = 0x%llx, rw = %s%si%s, type = %s",
 		show_dev_ino(__entry),
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->blkaddr,
-		show_bio_type(__entry->rw),
+		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type))
 );
 
@@ -777,7 +783,8 @@ DECLARE_EVENT_CLASS(f2fs__submit_bio,
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
-		__field(int,	rw)
+		__field(int,	op)
+		__field(int,	op_flags)
 		__field(int,	type)
 		__field(sector_t,	sector)
 		__field(unsigned int,	size)
@@ -785,15 +792,16 @@ DECLARE_EVENT_CLASS(f2fs__submit_bio,
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
-		__entry->rw		= fio->rw;
+		__entry->op		= fio->op;
+		__entry->op_flags	= fio->op_flags;
 		__entry->type		= fio->type;
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->size		= bio->bi_iter.bi_size;
 	),
 
-	TP_printk("dev = (%d,%d), %s%s, %s, sector = %lld, size = %u",
+	TP_printk("dev = (%d,%d), %s%s%s, %s, sector = %lld, size = %u",
 		show_dev(__entry),
-		show_bio_type(__entry->rw),
+		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_type(__entry->type),
 		(unsigned long long)__entry->sector,
 		__entry->size)

@@ -220,7 +220,8 @@ int commit_inmem_pages(struct inode *inode, bool abort)
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = DATA,
-		.rw = WRITE_SYNC | REQ_PRIO,
+		.op = REQ_OP_WRITE,
+		.op_flags = WRITE_SYNC | REQ_PRIO,
 		.encrypted_page = NULL,
 	};
 	int err = 0;
@@ -1304,14 +1305,15 @@ void write_meta_page(struct f2fs_sb_info *sbi, struct page *page)
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = META,
-		.rw = WRITE_SYNC | REQ_META | REQ_PRIO,
+		.op = REQ_OP_WRITE,
+		.op_flags = WRITE_SYNC | REQ_META | REQ_PRIO,
 		.blk_addr = page->index,
 		.page = page,
 		.encrypted_page = NULL,
 	};
 
 	if (unlikely(page->index >= MAIN_BLKADDR(sbi)))
-		fio.rw &= ~REQ_META;
+		fio.op_flags &= ~REQ_META;
 
 	set_page_writeback(page);
 	f2fs_submit_page_mbio(&fio);

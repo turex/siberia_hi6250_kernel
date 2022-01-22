@@ -35,6 +35,7 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/f2fs.h>
 
+static struct proc_dir_entry *f2fs_proc_root;
 #ifdef CONFIG_HUAWEI_F2FS_DSM
 #include <dsm/dsm_pub.h>
 struct dsm_dev dsm_f2fs = {
