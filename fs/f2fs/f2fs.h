@@ -84,6 +84,31 @@ struct f2fs_mount_info {
 
 #define CRCPOLY_LE 0xedb88320
 
+
+/* bio stuffs */
+#define REQ_OP_READ	READ
+#define REQ_OP_WRITE	WRITE
+#define bio_op(bio)	((bio)->bi_rw & 1)
+
+static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
+		unsigned op_flags)
+{
+	bio->bi_rw = op | op_flags;
+}
+
+/*
+static inline int wbc_to_write_flags(struct writeback_control *wbc)
+{
+	if (wbc->sync_mode == WB_SYNC_ALL)
+		return REQ_SYNC | REQ_NOIDLE;
+	if(wbc->reason == WB_REASON_SYNC)
+		return REQ_SYNC;
+	return 0;
+}
+*/
+
+
+
 static inline __u32 f2fs_crc32(void *buf, size_t len)
 {
 	unsigned char *p = (unsigned char *)buf;
@@ -781,6 +806,7 @@ struct f2fs_sb_info {
 	block_t discard_blks;			/* discard command candidats */
 	block_t last_valid_block_count;		/* for recovery */
 	u32 s_next_generation;			/* for NFS support */
+	atomic_t nr_wb_bios;			/* # of writeback bios */
 	atomic_t nr_pages[NR_COUNT_TYPE];	/* # of pages, see count_type */
 
 	struct f2fs_mount_info mount_opt;	/* mount options */

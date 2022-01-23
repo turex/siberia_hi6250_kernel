@@ -100,6 +100,13 @@ static struct bio *__bio_alloc(struct f2fs_sb_info *sbi, block_t blk_addr,
 	return bio;
 }
 
+static inline void __submit_bio(struct f2fs_sb_info *sbi, struct bio *bio)
+ {
+	if (!is_read_io(bio_op(bio)))
+ 		atomic_inc(&sbi->nr_wb_bios);
+ 	submit_bio(READ,bio);
+ }
+
 static void __submit_merged_bio(struct f2fs_bio_info *io)
 {
 	struct f2fs_io_info *fio = &io->fio;
@@ -160,10 +167,9 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
 		bio_put(bio);
 		return -EFAULT;
 	}
-	bio->bi_rw = fio->op_flags;
 	bio_set_op_attrs(bio, fio->op, fio->op_flags);
 
-	submit_bio(fio->rw, bio);
+	__submit_bio(fio->sbi, bio);
 	return 0;
 }
 
