@@ -77,7 +77,7 @@ struct rb_node **__lookup_rb_tree_for_insert(struct f2fs_sb_info *sbi,
 		else if (ofs >= re->ofs + re->len)
 			p = &(*p)->rb_right;
 		else
-			f2fs_bug_on_atomic(sbi, 1);
+			f2fs_bug_on(sbi, 1);
 	}
 
 	return p;
@@ -237,9 +237,10 @@ static void __release_extent_node(struct f2fs_sb_info *sbi,
 			struct extent_tree *et, struct extent_node *en)
 {
 	spin_lock(&sbi->extent_lock);
-	f2fs_bug_on_atomic(sbi, list_empty(&en->list));
+	f2fs_bug_on(sbi, list_empty(&en->list));
 	list_del_init(&en->list);
 	spin_unlock(&sbi->extent_lock);
+
 	__detach_extent_node(sbi, et, en);
 }
 
@@ -359,7 +360,7 @@ out:
 
 bool f2fs_init_extent_tree(struct inode *inode, struct f2fs_extent *i_ext)
 {
-	bool ret = __f2fs_init_extent_tree(inode, i_ext);
+	bool ret =  __f2fs_init_extent_tree(inode, i_ext);
 
 	if (!F2FS_I(inode)->extent_tree)
 		set_inode_flag(inode, FI_NO_EXTENT);
@@ -459,7 +460,7 @@ static struct extent_node *__insert_extent_tree(struct inode *inode,
 				struct rb_node *insert_parent)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	struct rb_node **p = &et->root.rb_node;
+	struct rb_node **p;
 	struct rb_node *parent = NULL;
 	struct extent_node *en = NULL;
 
@@ -536,7 +537,7 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 
 		dei = en->ei;
 		org_end = dei.fofs + dei.len;
-		f2fs_bug_on_atomic(sbi, pos >= org_end);
+		f2fs_bug_on(sbi, pos >= org_end);
 
 		if (pos > dei.fofs &&	pos - dei.fofs >= F2FS_MIN_EXTENT_LEN) {
 			en->ei.len = pos - en->ei.fofs;
@@ -606,9 +607,6 @@ static void f2fs_update_extent_tree_range(struct inode *inode,
 		__free_extent_tree(sbi, et);
 
 	write_unlock(&et->lock);
-
-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-		set_extra_flag(sbi, EXTRA_NEED_FSCK_FLAG);
 }
 
 unsigned int f2fs_shrink_extent_tree(struct f2fs_sb_info *sbi, int nr_shrink)
@@ -646,9 +644,7 @@ unsigned int f2fs_shrink_extent_tree(struct f2fs_sb_info *sbi, int nr_shrink)
 			goto unlock_out;
 		cond_resched();
 	}
-	/*lint -save -e455*/
 	mutex_unlock(&sbi->extent_tree_lock);
-	/*lint -restore*/
 
 free_node:
 	/* 2. remove LRU extent entries */
@@ -682,9 +678,7 @@ free_node:
 	spin_unlock(&sbi->extent_lock);
 
 unlock_out:
-	/*lint -save -e455*/
 	mutex_unlock(&sbi->extent_tree_lock);
-	/*lint -restore*/
 out:
 	trace_f2fs_shrink_extent_tree(sbi, node_cnt, tree_cnt);
 
@@ -711,6 +705,9 @@ void f2fs_drop_extent_tree(struct inode *inode)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	struct extent_tree *et = F2FS_I(inode)->extent_tree;
+
+	if (!f2fs_may_extent_tree(inode))
+		return;
 
 	set_inode_flag(inode, FI_NO_EXTENT);
 
@@ -797,9 +794,7 @@ void init_extent_cache_info(struct f2fs_sb_info *sbi)
 	mutex_init(&sbi->extent_tree_lock);
 	INIT_LIST_HEAD(&sbi->extent_list);
 	spin_lock_init(&sbi->extent_lock);
-	/*lint -save -e1058*/
 	atomic_set(&sbi->total_ext_tree, 0);
-	/*lint -restore*/
 	INIT_LIST_HEAD(&sbi->zombie_list);
 	atomic_set(&sbi->total_zombie_tree, 0);
 	atomic_set(&sbi->total_ext_node, 0);
