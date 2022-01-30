@@ -50,6 +50,7 @@ struct dsm_dev dsm_f2fs = {
 struct dsm_client *f2fs_dclient = NULL;
 #endif
 
+>>>>>>> db831f50da75 (fs: f2fs: Add ACM driver registration on super)
 static struct kmem_cache *f2fs_inode_cachep;
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
