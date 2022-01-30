@@ -37,20 +37,6 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/f2fs.h>
 
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-#include <dsm/dsm_pub.h>
-struct dsm_dev dsm_f2fs = {
-	.name = "dsm_f2fs",
-	.device_name = NULL,
-	.ic_name = NULL,
-	.module_name = NULL,
-	.fops = NULL,
-	.buff_size = 1024,
-};
-struct dsm_client *f2fs_dclient = NULL;
-#endif
-
->>>>>>> db831f50da75 (fs: f2fs: Add ACM driver registration on super)
 static struct kmem_cache *f2fs_inode_cachep;
 
 #ifdef CONFIG_F2FS_FAULT_INJECTION
@@ -3176,14 +3162,6 @@ static int __init init_f2fs_fs(void)
 	err = f2fs_init_post_read_processing();
 	if (err)
 		goto free_root_stats;
-
-#ifdef CONFIG_HUAWEI_F2FS_DSM
-	if(!f2fs_dclient)
-	{
-		f2fs_dclient = dsm_register_client(&dsm_f2fs);
-	}
-#endif
-
 	return 0;
 
 free_root_stats:
