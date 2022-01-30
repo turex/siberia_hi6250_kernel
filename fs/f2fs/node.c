@@ -1051,7 +1051,7 @@ int remove_inode_page(struct inode *inode)
 
 	/* 0 is possible, after f2fs_new_inode() has failed */
 	f2fs_bug_on(F2FS_I_SB(inode),
-			inode->i_blocks != 0 && inode->i_blocks != 8);
+			inode->i_blocks != 0 && inode->i_blocks != 1);
 
 	/* will put inode & node pages */
 	truncate_node(&dn);
@@ -2707,7 +2707,7 @@ static int init_node_manager(struct f2fs_sb_info *sbi)
 
 	/* not used nids: 0, node, meta, (and root counted as valid node) */
 	nm_i->available_nids = nm_i->max_nid - sbi->total_valid_node_count -
-				sbi->nquota_files - F2FS_RESERVED_NODE_NUM;
+                            F2FS_RESERVED_NODE_NUM;
 	nm_i->nid_cnt[FREE_NID] = 0;
 	nm_i->nid_cnt[PREALLOC_NID] = 0;
 	nm_i->nat_cnt = 0;

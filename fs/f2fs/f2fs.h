@@ -2151,7 +2151,7 @@ static inline block_t datablock_addr(struct inode *inode,
 	}
 
 	addr_array = blkaddr_in_node(raw_node);
-	return le32_to_cpu(addr_array[base + offset]);
+	return le32_to_cpu(addr_array[offset]);
 }
 
 static inline int f2fs_test_bit(unsigned int nr, char *addr)

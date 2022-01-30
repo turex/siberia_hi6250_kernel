@@ -59,18 +59,18 @@ static void __get_inode_rdev(struct inode *inode, struct f2fs_inode *ri)
 
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode) ||
 			S_ISFIFO(inode->i_mode) || S_ISSOCK(inode->i_mode)) {
-		if (ri->i_addr[extra_size])
+		if (ri->i_addr[0])
 			inode->i_rdev = old_decode_dev(
-				le32_to_cpu(ri->i_addr[extra_size]));
+				le32_to_cpu(ri->i_addr[0]));
 		else
 			inode->i_rdev = new_decode_dev(
-				le32_to_cpu(ri->i_addr[extra_size + 1]));
+				le32_to_cpu(ri->i_addr[1]));
 	}
 }
 
 static bool __written_first_block(struct f2fs_inode *ri)
 {
-	block_t addr = le32_to_cpu(ri->i_addr[offset_in_addr(ri)]);
+	block_t addr = le32_to_cpu(ri->i_addr[0]);
 
 	if (addr != NEW_ADDR && addr != NULL_ADDR)
 		return true;
@@ -83,14 +83,14 @@ static void __set_inode_rdev(struct inode *inode, struct f2fs_inode *ri)
 
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode)) {
 		if (old_valid_dev(inode->i_rdev)) {
-			ri->i_addr[extra_size] =
+			ri->i_addr[0] =
 				cpu_to_le32(old_encode_dev(inode->i_rdev));
-			ri->i_addr[extra_size + 1] = 0;
+			ri->i_addr[1] = 0;
 		} else {
-			ri->i_addr[extra_size] = 0;
-			ri->i_addr[extra_size + 1] =
+			ri->i_addr[0] = 0;
+			ri->i_addr[1] =
 				cpu_to_le32(new_encode_dev(inode->i_rdev));
-			ri->i_addr[extra_size + 2] = 0;
+			ri->i_addr[2] = 0;
 		}
 	}
 }
@@ -212,7 +212,7 @@ static int do_read_inode(struct inode *inode)
 	i_gid_write(inode, le32_to_cpu(ri->i_gid));
 	set_nlink(inode, le32_to_cpu(ri->i_links));
 	inode->i_size = le64_to_cpu(ri->i_size);
-	inode->i_blocks = SECTOR_FROM_BLOCK(le64_to_cpu(ri->i_blocks) - 1);
+	inode->i_blocks = le64_to_cpu(ri->i_blocks);
 
 	inode->i_atime.tv_sec = le64_to_cpu(ri->i_atime);
 	inode->i_ctime.tv_sec = le64_to_cpu(ri->i_ctime);
@@ -391,7 +391,7 @@ void update_inode(struct inode *inode, struct page *node_page)
 	ri->i_gid = cpu_to_le32(i_gid_read(inode));
 	ri->i_links = cpu_to_le32(inode->i_nlink);
 	ri->i_size = cpu_to_le64(i_size_read(inode));
-	ri->i_blocks = cpu_to_le64(SECTOR_TO_BLOCK(inode->i_blocks) + 1);
+	ri->i_blocks = cpu_to_le64(inode->i_blocks);
 
 	if (et) {
 		read_lock(&et->lock);

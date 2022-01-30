@@ -94,7 +94,7 @@ static struct f2fs_dir_entry *find_in_block(struct page *dentry_page,
 	struct f2fs_dir_entry *de;
 	struct f2fs_dentry_ptr d;
 
-	dentry_blk = (struct f2fs_dentry_block *)page_address(dentry_page);
+	dentry_blk = (struct f2fs_dentry_block *)kmap(dentry_page);
 
 	make_dentry_ptr_block(NULL, &d, dentry_blk);
 	de = find_target_dentry(fname, namehash, max_slots, &d);
@@ -346,7 +346,7 @@ static int make_empty_dir(struct inode *inode,
 	if (IS_ERR(dentry_page))
 		return PTR_ERR(dentry_page);
 
-	dentry_blk = page_address(dentry_page);
+	dentry_blk = kmap_atomic(dentry_page);
 
 	make_dentry_ptr_block(NULL, &d, dentry_blk);
 	do_make_empty_dir(inode, parent, &d);
@@ -541,7 +541,7 @@ start:
 		if (IS_ERR(dentry_page))
 			return PTR_ERR(dentry_page);
 
-		dentry_blk = page_address(dentry_page);
+		dentry_blk = kmap(dentry_page);
 		bit_pos = room_for_filename(&dentry_blk->dentry_bitmap,
 						slots, NR_DENTRY_IN_BLOCK);
 		if (bit_pos < NR_DENTRY_IN_BLOCK)
@@ -766,7 +766,7 @@ bool f2fs_empty_dir(struct inode *dir)
 				return false;
 		}
 
-		dentry_blk = page_address(dentry_page);
+		dentry_blk = kmap_atomic(dentry_page);
 		if (bidx == 0)
 			bit_pos = 2;
 		else
@@ -901,7 +901,7 @@ static int f2fs_readdir(struct file *file, struct dir_context *ctx)
 			}
 		}
 
-		dentry_blk = page_address(dentry_page);
+		dentry_blk = kmap(dentry_page);
 
 		make_dentry_ptr_block(inode, &d, dentry_blk);
 
