@@ -369,7 +369,7 @@ static void dump_hifi(char *filepath)
 	BB_PRINT_PN("rdr:%s():dump hifi ddr, %s\n", __func__, ret ? "fail" : "success");
 
 	if ((soc_des.modid >= (unsigned int)RDR_AUDIO_SOC_MODID_START) && (soc_des.modid <= RDR_AUDIO_SOC_MODID_END)) {
-		audio_dsm_report_info(AUDIO_CODEC, DSM_SOC_HIFI_RESET, "DSM_SOC_HIFI_RESET\n");
+		//audio_dsm_report_info(AUDIO_CODEC, DSM_SOC_HIFI_RESET, "DSM_SOC_HIFI_RESET\n");
 	}
 
 	return;

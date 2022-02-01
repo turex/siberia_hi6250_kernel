@@ -197,7 +197,7 @@ static void _lock_pll(struct hi64xx_resmgr_priv *priv, enum hi64xx_pll_type pll_
 
 	if (!pll_locked) {
 		pr_err("failed to lock pll[%d]\n", pll_type);
-		audio_dsm_report_info(AUDIO_CODEC, DSM_HI6402_PLL_CANNOT_LOCK, "64xx codec failed to lock pll after retry\n");
+		//audio_dsm_report_info(AUDIO_CODEC, DSM_HI6402_PLL_CANNOT_LOCK, "64xx codec failed to lock pll after retry\n");
 		/* Anyway, turn on the pll to provide clock */
 		(void)_turn_on_pll(priv, pll_type);
 	}

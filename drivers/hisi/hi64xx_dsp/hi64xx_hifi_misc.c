@@ -724,7 +724,7 @@ static bool hi64xx_error_detect(void)
 		&& HI64XX_VERSION_ES != version) {
 		HI64XX_DSP_ERROR("Codec err,ver 0x%x,pll 0x%x\n",
 			version, hi64xx_hifi_read_reg(HI64xx_CODEC_ANA_PLL));
-		audio_dsm_report_info(AUDIO_CODEC, DSM_CODEC_HIFI_RESET, "DSM_HI6402_CRASH\n");
+		//audio_dsm_report_info(AUDIO_CODEC, DSM_CODEC_HIFI_RESET, "DSM_HI6402_CRASH\n");
 		return true;
 	}
 
@@ -1453,8 +1453,8 @@ static void dsp_to_ap_msg_proc(unsigned char * msg_buff)
 		reverse_msg = (struct pa_buffer_reverse_msg *)(msg_buff + 4); /*lint !e826*/
 		HI64XX_DSP_ERROR("pa count:%u, proc time:%u00us\n",
 			reverse_msg->pa_count, reverse_msg->proc_interval);
-		audio_dsm_report_info(AUDIO_CODEC, DSM_CODEC_HIFI_TIMEOUT, "pa count:%u, proc time:%u00us\n",
-				reverse_msg->pa_count, reverse_msg->proc_interval);
+		/*audio_dsm_report_info(AUDIO_CODEC, DSM_CODEC_HIFI_TIMEOUT, "pa count:%u, proc time:%u00us\n",
+				reverse_msg->pa_count, reverse_msg->proc_interval); */
 		break;
 	default:
 		break;
@@ -1606,7 +1606,7 @@ static int hi64xx_func_if_open(struct krn_param_io_buf *param)
 		ret = check_dp_clk();
 		if (ret != OK) {
 			HI64XX_DSP_ERROR("DP clk is disable, it's dangerous to send if_open\n");
-			audio_dsm_report_info(AUDIO_CODEC,DSM_CODEC_HIFI_IF_OPEN_ERR,"DSM_CODEC_HIFI_IF_OPEN_WITHOUT_DPCLK\n");
+			//audio_dsm_report_info(AUDIO_CODEC,DSM_CODEC_HIFI_IF_OPEN_ERR,"DSM_CODEC_HIFI_IF_OPEN_WITHOUT_DPCLK\n");
 			goto end;
 		}
 		ret = hi64xx_request_pll_resource(HI_FREQ_SCENE_PA);

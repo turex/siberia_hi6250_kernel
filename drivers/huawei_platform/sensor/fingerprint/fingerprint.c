@@ -407,6 +407,8 @@ exit:
 *	SUCCESS:	pointer to sensor info
 *	FAILED:		NULL
 */
+
+/*
 static char* fingerprint_get_sensor_name(unsigned int sensor_id)
 {
     unsigned int i = 0;
@@ -420,6 +422,8 @@ static char* fingerprint_get_sensor_name(unsigned int sensor_id)
     }
     return NULL;
 }
+
+*/
 #if defined (CONFIG_HUAWEI_DSM)
 /*
 *FUNCTION: fingerprint_update_vendor_info

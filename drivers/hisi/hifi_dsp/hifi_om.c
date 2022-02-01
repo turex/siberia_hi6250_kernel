@@ -120,7 +120,7 @@ static struct hifi_om_work_info work_info[] = {
 	{HIFI_OM_WORK_VOICE_3A, "hifi_om_work_voice_3a", hifi_om_show_voice_3a_info, {0}},
 };
 
-static unsigned int dsm_notify_limit = 0x10;
+//static unsigned int dsm_notify_limit = 0x10;
 
 static void hifi_get_time_stamp(char *timestamp_buf, unsigned int len)
 {
@@ -420,7 +420,7 @@ static void hifi_om_show_voice_3a_info(struct work_struct *work)
 			return;
 		}
 		memcpy(&voice_3a_om_info, data, sizeof(voice_3a_om_info));/* unsafe_function_ignore: memcpy */
-		audio_dsm_report_info(AUDIO_CODEC, DSM_SOC_HIFI_3A_ERROR, "3a error type:%d error:%d\n", hifi_msg_type, voice_3a_om_info.recv_msg);
+		//audio_dsm_report_info(AUDIO_CODEC, DSM_SOC_HIFI_3A_ERROR, "3a error type:%d error:%d\n", hifi_msg_type, voice_3a_om_info.recv_msg);
 		break;
 	default:
 		logi("type(%d), not support\n", hifi_msg_type);
@@ -830,10 +830,10 @@ void hifi_om_cpu_load_info_show(struct hifi_om_load_info_stru *hifi_om_info)
 	case HIFI_CPU_LOAD_LACK_PERFORMANCE:
 		logw("DDRFreq: %dM, CpuUtilization:%d%%, Lack of performance!!!\n", hifi_om_info->cpu_load_info.ddr_freq,hifi_om_info->cpu_load_info.cpu_load);
 		/*upload totally 16 times in every 16 times in case of flushing msg*/
-		if (unlikely((dsm_notify_limit % 0x10) == 0)) {/*lint !e730*/
+		/*if (unlikely((dsm_notify_limit % 0x10) == 0)) {
 			audio_dsm_report_info(AUDIO_CODEC, DSM_SOC_HIFI_HIGH_CPU, "DSM_SOC_HIFI_HIGH_CPU\n");
-		}
-		dsm_notify_limit++;
+		} */
+		//dsm_notify_limit++;
 		break;
 
 	default:

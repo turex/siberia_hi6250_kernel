@@ -97,8 +97,8 @@ static void hi64xx_mbhc_dmd_fail_report(int adc)
 	if ((mbhc_type_fail_times >= MBHC_TYPE_FAIL_MAX_TIMES) && (mbhc_type_report_times > 0)) {
 		mbhc_type_fail_times = 0;
 		mbhc_type_report_times --;
-		audio_dsm_report_info(AUDIO_CODEC, DSM_HI6402_MBHC_HS_ERR_TYPE, "abnormal headset type! adc = [%d], total times = [%d]\n", adc,
-							(MBHC_TYPE_REPORT_MAX_TIMES - mbhc_type_report_times)*MBHC_TYPE_FAIL_MAX_TIMES);
+		/*audio_dsm_report_info(AUDIO_CODEC, DSM_HI6402_MBHC_HS_ERR_TYPE, "abnormal headset type! adc = [%d], total times = [%d]\n", adc,
+							(MBHC_TYPE_REPORT_MAX_TIMES - mbhc_type_report_times)*MBHC_TYPE_FAIL_MAX_TIMES); */
 	}
 	return;
 }
