@@ -1832,10 +1832,10 @@ CONFIG_SERIAL_CORE_CONSOLE=y
 #
 # Access Control Module
 #
-CONFIG_ACM=y
-CONFIG_ACM_DSM=y
-CONFIG_ACM_TEST=y
-CONFIG_ACM_DEBUG=y
+# CONFIG_ACM is not set
+# CONFIG_ACM_DSM is not set
+# CONFIG_ACM_TEST is not set
+# CONFIG_ACM_DEBUG is not set
 
 #
 # I2C support
