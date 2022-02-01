@@ -257,7 +257,7 @@ enum AB_PARTITION_TYPE get_device_boot_partition_type(void)
 		return ERROR_VALUE;
 	}
 #else
-	printk(KERN_INFO "Not support AB partition\n");
+	//printk(KERN_INFO "Not support AB partition\n");
 	return NO_SUPPORT_AB;
 #endif
 }
@@ -296,7 +296,7 @@ int set_device_boot_partition_type(char boot_partition_type)
 		return -1;
 	}
 #else
-	printk(KERN_ERR "Not support AB partition writing\n");
+	//printk(KERN_ERR "Not support AB partition writing\n");
 #endif
 
 	return 0;
