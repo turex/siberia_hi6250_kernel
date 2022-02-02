@@ -32,3 +32,23 @@ int _atomic_dec_and_lock(atomic_t *atomic, spinlock_t *lock)
 }
 
 EXPORT_SYMBOL(_atomic_dec_and_lock);
+
+
+ /*
+ * the same, but takes the lock with _irqsave
+ */
+int _atomic_dec_and_lock_irqsave(atomic_t *atomic, spinlock_t *lock,
+		unsigned long *flagsp)
+{
+#ifdef CONFIG_SMP
+	if (atomic_add_unless(atomic, -1, 1))
+		return 0;
+#endif
+	spin_lock_irqsave(lock, *flagsp);
+	if (atomic_dec_and_test(atomic))
+		return 1;
+	spin_unlock_irqrestore(lock, *flagsp);
+	return 0;
+}
+
+EXPORT_SYMBOL(_atomic_dec_and_lock_irqsave);
