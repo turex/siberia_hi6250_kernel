@@ -36,5 +36,7 @@ obj-$(CONFIG_BLK_DEV_BSG)	+= hisi_blk_scsi_kern.o
 obj-$(CONFIG_WBT)      += blk-stat.o
 obj-$(CONFIG_HW_SYSTEM_WR_PROTECT) += software_system_wp.o
 
-obj-$(CONFIG_BLK_INLINE_ENCRYPTION)	+= keyslot-manager.o bio-crypt-ctx.o
+obj-$(CONFIG_BLK_INLINE_ENCRYPTION)	+= keyslot-manager.o bio-crypt-ctx.o \
+					   blk-crypto.o
+obj-$(CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK)	+= blk-crypto-fallback.o
 

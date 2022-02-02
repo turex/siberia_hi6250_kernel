@@ -1792,6 +1792,10 @@ void bio_endio(struct bio *bio)
 	while (bio) {
 		if (unlikely(!bio_remaining_done(bio)))
 			break;
+
+        if (!blk_crypto_endio(bio))
+		return;
+
 		/*
 		 * Need to have a real endio function for chained bios,
 		 * otherwise various corner cases will break (like stacking
