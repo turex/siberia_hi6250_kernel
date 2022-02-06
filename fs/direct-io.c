@@ -394,11 +394,7 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 #ifdef CONFIG_FS_ENCRYPTION
 	struct inode *inode = dio->inode;
 
-	if (fscrypt_has_encryption_key(inode) && S_ISREG(inode->i_mode) &&
-		inode->i_sb->s_cop->is_inline_encrypted &&
-		inode->i_sb->s_cop->is_inline_encrypted(inode)) {
-		bio->ci_key = fscrypt_ci_key(inode);
-		bio->ci_key_len = fscrypt_ci_key_len(inode);
+	if (fscrypt_has_encryption_key(inode) && S_ISREG(inode->i_mode)) {
 		/*lint -save -e704*/
 		bio->index = sdio->logical_offset_in_bio >> sdio->blkbits;
 		/*lint -restore*/

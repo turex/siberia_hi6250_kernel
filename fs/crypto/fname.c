@@ -251,11 +251,6 @@ int fscrypt_fname_alloc_buffer(struct inode *inode,
 {
 	unsigned int olen = fscrypt_fname_encrypted_size(inode, ilen);
 
-	if (ci)
-		padding = 4 << (ci->ci_flags & F2FS_POLICY_FLAGS_PAD_MASK);
-	if (padding < F2FS_CRYPTO_BLOCK_SIZE)
-		padding = F2FS_CRYPTO_BLOCK_SIZE;
-	olen = f2fs_fname_crypto_round_up(ilen, padding);
 	crypto_str->len = olen;
 	if (olen < FS_FNAME_CRYPTO_DIGEST_SIZE * 2)
 		olen = FS_FNAME_CRYPTO_DIGEST_SIZE * 2;
