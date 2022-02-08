@@ -3058,11 +3058,12 @@ struct dentry *mount_subtree(struct vfsmount *mnt, const char *name)
 }
 EXPORT_SYMBOL(mount_subtree);
 
-#ifdef CONFIG_SDCARD_FS
-/* defined in sdcardfs/sdcardd.c */
+/*#ifdef CONFIG_SDCARD_FS
+/* defined in sdcardfs/sdcardd.c
 extern int sdcardfs_ignore_bind_mount(char *, char __user *);
 extern int sdcardfs_do_sdcard_remount(char **, char __user *, char *);
 #endif
+*/
 
 SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
 		char __user *, type, unsigned long, flags, void __user *, data)
@@ -3081,9 +3082,9 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
 	ret = PTR_ERR(kernel_dev);
 	if (IS_ERR(kernel_dev))
 		goto out_dev;
-
+/*
 #ifdef CONFIG_SDCARD_FS
-	/* to support sdcardfs sdcardd mount (bind mount) */
+to support sdcardfs sdcardd mount (bind mount)
 	if (unlikely(flags & MS_BIND)) {
 		if (!sdcardfs_ignore_bind_mount(kernel_dev, dir_name)) {
 			ret = 0;
@@ -3091,13 +3092,14 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
 		}
 	}
 #endif
-
+*/
 	ret = copy_mount_options(data, &data_page);
 	if (ret < 0)
 		goto out_data;
 
+/*
 #ifdef CONFIG_SDCARD_FS
-	/* to support sdcardfs sdcardd mount (remount) */
+	 to support sdcardfs sdcardd mount (remount)
 	if (unlikely(flags & MS_REMOUNT)) {
 		char *orig_dev = kernel_dev;
 		ret = sdcardfs_do_sdcard_remount(&orig_dev,
@@ -3111,13 +3113,15 @@ SYSCALL_DEFINE5(mount, char __user *, dev_name, char __user *, dir_name,
 		}
 	}
 #endif
-
+*/
 	ret = do_mount(kernel_dev, dir_name, kernel_type, flags,
 		(void *) data_page);
 
+/*
 #ifdef CONFIG_SDCARD_FS
 out_freepage:
 #endif
+*/
 	free_page(data_page);
 out_data:
 	kfree(kernel_dev);
