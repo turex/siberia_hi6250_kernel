@@ -1581,6 +1581,116 @@ extern int vfs_unlink(struct inode *, struct dentry *, struct inode **);
 extern int vfs_rename(struct inode *, struct dentry *, struct inode *, struct dentry *, struct inode **, unsigned int);
 extern int vfs_whiteout(struct inode *, struct dentry *);
 
+#include <linux/mount.h>
+#include <linux/sched.h>
+
+static inline int vfs_create2(struct inode *dir, struct dentry *dentry,
+			      int mode, struct nameidata *nd)
+{
+	int ret;
+	struct vfsmount *mnt = nd ? nd->path.mnt : NULL;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_create(dir, dentry, mode, nd);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_mkdir2(struct inode *dir, struct dentry *dentry,
+			     struct vfsmount *mnt, int mode)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_mkdir(dir, dentry, mode);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_mknod2(struct inode *dir, struct dentry *dentry,
+			     struct vfsmount *mnt, int mode, dev_t dev)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_mknod(dir, dentry, mode, dev);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_symlink2(struct inode *dir, struct dentry *dentry,
+			       struct vfsmount *mnt, const char *oldname,
+			       int mode)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_symlink(dir, dentry, oldname, mode);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_link2(struct dentry *old_dentry, struct inode *dir,
+			    struct dentry *new_dentry, struct vfsmount *mnt)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_link(old_dentry, dir, new_dentry);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_rmdir2(struct inode *dir, struct dentry *dentry,
+			     struct vfsmount *mnt)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_rmdir(dir, dentry);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_unlink2(struct inode *dir, struct dentry *dentry,
+			     struct vfsmount *mnt)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_unlink(dir, dentry);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
+static inline int vfs_rename2(struct inode *old_dir, struct dentry *old_dentry,
+			      struct inode *new_dir, struct dentry *new_dentry,
+			      struct vfsmount *mnt)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = vfs_rename(old_dir, old_dentry, new_dir, new_dentry);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
 /*
  * VFS dentry helper functions.
  */
@@ -2287,6 +2397,21 @@ struct filename {
 extern long vfs_truncate(struct path *, loff_t);
 extern int do_truncate(struct dentry *, loff_t start, unsigned int time_attrs,
 		       struct file *filp);
+
+static inline int do_truncate2(struct dentry *dentry, struct vfsmount *mnt,
+			       loff_t length, unsigned int time_attrs,
+			       struct file *filp)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = do_truncate(dentry, length, time_attrs, filp);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
+
 extern int vfs_fallocate(struct file *file, int mode, loff_t offset,
 			loff_t len);
 extern long do_sys_open(int dfd, const char __user *filename, int flags,
@@ -2297,6 +2422,19 @@ extern struct file *file_open_root(struct dentry *, struct vfsmount *,
 				   const char *, int, umode_t);
 extern struct file * dentry_open(const struct path *, int, const struct cred *);
 extern int filp_close(struct file *, fl_owner_t id);
+
+static inline int notify_change2(struct dentry *dentry, struct vfsmount *mnt,
+				 struct iattr *attr)
+{
+	int ret;
+	struct task_struct *task = current;
+	struct vfsmount *prev_mnt = task->last_vfsmount;
+	task->last_vfsmount = mntget(mnt);
+	ret = notify_change(dentry, attr);
+	task->last_vfsmount = prev_mnt;
+	mntput(mnt);
+	return ret;
+}
 
 extern struct filename *getname_flags(const char __user *, int, int *);
 extern struct filename *getname(const char __user *);
