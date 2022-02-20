@@ -1875,8 +1875,8 @@ int coul_ntc_temperature_compensation(struct smartstar_coul_device *di, BATTERY_
             }
         }
     }
-    //hwlog_info("coul_ntc_temperature_compensation: current = %d, temp_without_compensation = %d, temp_with_compensation = %d\n",
-                ichg, temp_without_compensation, temp_with_compensation );
+    /*hwlog_info("coul_ntc_temperature_compensation: current = %d, temp_without_compensation = %d, temp_with_compensation = %d\n",
+                ichg, temp_without_compensation, temp_with_compensation ); */
     return temp_with_compensation;
 }
 /**********************************************************
