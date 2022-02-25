@@ -18,6 +18,7 @@
  * General Public License.
  */
 
+#include <linux/fs_struct.h>
 #include "sdcardfs.h"
 
 /* Do not directly use this function. Use OVERRIDE_CRED() instead. */
@@ -250,6 +251,8 @@ static int sdcardfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode
 	char *nomedia_fullpath;
 	int fullpath_namelen;
 	int touch_err = 0;
+	struct fs_struct *saved_fs;
+	struct fs_struct *copied_fs;
 
 	if(!check_caller_access_to_name(dir, dentry->d_name.name)) {
 		printk(KERN_INFO "%s: need to check the caller's gid in packages.list\n"
