@@ -37,7 +37,7 @@ Return:         NA
 void set_boot_keypoint(u32 value)
 {
 	if (value < STAGE_KERNEL_BOOTANIM_COMPLETE || value > STAGE_END) {
-		printk("value[%d] is invilad.\n", value);
+		printk("[set_boot_keypoint] value[%d] is invalid.\n", value);
 		return;
 	}
 	if (STAGE_BOOTUP_END == value) {
