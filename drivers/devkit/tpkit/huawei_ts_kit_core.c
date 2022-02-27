@@ -480,12 +480,12 @@ static void rawdata_proc_printf(struct seq_file *m, struct ts_rawdata_info *info
 		seq_printf(m, "selfcap singleenddelta end\n");
 	}
 	if (g_ts_kit_platform_data.chip_data->trx_delta_test_support) {
-			seq_printf(m, "%s\n", info->tx_delta_buf);
-			seq_printf(m, "%s\n", info->rx_delta_buf);
+			seq_printf(m, "%d\n", info->tx_delta_buf);
+			seq_printf(m, "%d\n", info->rx_delta_buf);
 	}
 	if (g_ts_kit_platform_data.chip_data->td43xx_ee_short_test_support) {
-			seq_printf(m, "%s\n", info->td43xx_rt95_part_one);
-			seq_printf(m, "%s\n", info->td43xx_rt95_part_two);
+			seq_printf(m, "%d\n", info->td43xx_rt95_part_one);
+			seq_printf(m, "%d\n", info->td43xx_rt95_part_two);
 	}
 	return;
 }
@@ -2298,8 +2298,6 @@ static long ts_ioctl_get_fingers_info(unsigned long arg)
 {
     int ret = 0;
     void __user* argp = (void __user*)arg;
-    struct ts_fingers data;
-    u32 frame_size;
 
     //TS_LOG_ERR("[MUTI_AFT] ts_ioctl_get_fingers_info enter \n");
     if (arg == 0)
@@ -2355,7 +2353,16 @@ static long ts_ioctl_set_coordinates(unsigned long arg)
     struct anti_false_touch_param *local_param = NULL;
     int finger_num = 0;
     int id = 0;
-    unsigned long flags;
+
+#if ANTI_FALSE_TOUCH_USE_PARAM_MAJOR_MINOR
+	struct aft_abs_param_major aft_abs_major;
+	int major = 0;
+	int minor = 0;
+#else
+	int x_y_distance = 0;
+	short tmp_distance = 0;
+	char *p = NULL;
+#endif
 	
 	if(!input_dev){
 		TS_LOG_ERR("The command node or input device is not exist!\n");
@@ -2376,16 +2383,6 @@ static long ts_ioctl_set_coordinates(unsigned long arg)
     }
     //memcpy(&g_ts_kit_platform_data.fingers_recv_aft_info,&data,sizeof(struct ts_fingers));
 	finger = &data;
-
-#if ANTI_FALSE_TOUCH_USE_PARAM_MAJOR_MINOR
-	struct aft_abs_param_major aft_abs_major;
-	int major = 0;
-	int minor = 0;
-#else
-	int x_y_distance = 0;
-	short tmp_distance = 0;
-	char *p = NULL;
-#endif
 
 	if (g_ts_kit_platform_data.chip_data){
 		local_param = &(g_ts_kit_platform_data.chip_data->anti_false_touch_param_data);
@@ -2888,11 +2885,11 @@ static void ts_kit_status_check_start(void)
 
 static int ts_send_init_cmd(void)
 {
+	struct ts_cmd_node cmd;
 	int error = NO_ERR;
 	TS_LOG_INFO("%s Enter\n", __func__);
 	if(g_ts_kit_platform_data.chip_data->is_direct_proc_cmd){
 		g_ts_kit_platform_data.chip_data->is_can_device_use_int = true;
-		struct ts_cmd_node cmd;
 		cmd.command = TS_TP_INIT;
 		error = ts_kit_put_one_cmd(&cmd, NO_SYNC_TIMEOUT);
 		if (error) {
@@ -2917,8 +2914,8 @@ static void tp_init_work_fn(struct work_struct *work){
 	unsigned long flags;
 	struct ts_cmd_node *cmd = &use_cmd;
 	struct ts_kit_device_data *dev = g_ts_kit_platform_data.chip_data;
-	q = &g_ts_kit_platform_data.no_int_queue;
 	int error = NO_ERR;
+	q = &g_ts_kit_platform_data.no_int_queue;
 	//Call chip init
 	g_ts_kit_platform_data.chip_data->isbootupdate_finish = false;
 	mutex_lock(&g_ts_kit_platform_data.chip_data->device_call_lock);
@@ -3309,6 +3306,7 @@ out:
 
 int ts_kit_proc_command_directly(struct ts_cmd_node *cmd)
 {
+	struct ts_cmd_node outcmd;
 	int error = NO_ERR;
 	TS_LOG_DEBUG("%s Enter\n",__func__);
 	/*Do not use cmd->sync in this func, setting it as null*/
@@ -3318,7 +3316,6 @@ int ts_kit_proc_command_directly(struct ts_cmd_node *cmd)
 		error = -EIO;
 		goto out;
 	}
-	struct ts_cmd_node outcmd;
 	mutex_lock(&g_ts_kit_platform_data.chip_data->device_call_lock);
 
 	switch (cmd->command) {
@@ -3439,11 +3436,10 @@ out:
 
 #if defined (CONFIG_HUAWEI_DSM)
 void ts_dmd_report(int dmd_num, const char* pszFormat, ...) {
-    va_list args;
-    va_start(args, pszFormat);
-
-    char input_buf[TS_CHIP_DMD_REPORT_SIZE] = {0};
+	char input_buf[TS_CHIP_DMD_REPORT_SIZE] = {0};
     char report_buf[TS_CHIP_DMD_REPORT_SIZE] = {0};
+	va_list args;
+    va_start(args, pszFormat);
 
     vsnprintf(input_buf, sizeof(input_buf) - 1, pszFormat, args);
     va_end(args);
@@ -3718,7 +3714,6 @@ static int ts_thread(void* p)
     TS_LOG_ERR("ts thread stop\n");
     ts_kit_exit();
 
-err_out:
      platform_device_unregister(g_ts_kit_platform_data.ts_dev);
      ts_destory_client();
      if (g_ts_kit_platform_data.reset_gpio) {
@@ -3774,7 +3769,6 @@ int huawei_ts_chip_register(struct ts_kit_device_data* chipdata)
         error = -EPERM;
     }
 
-out:
     return error;
 }
 

@@ -798,8 +798,8 @@ static ssize_t ts_touch_window_show(struct device* dev, struct device_attribute*
 
 static ssize_t ts_loglevel_store(struct device* dev, struct device_attribute* attr, const char* buf, size_t count)
 {
-    int error = 0;
-/*    unsigned int value;
+ /*    int error = 0;
+   unsigned int value;
     struct ts_kit_device_data* dev_data = g_ts_kit_platform_data.chip_data;
 
     TS_LOG_INFO("ts_loglevel_store called\n");

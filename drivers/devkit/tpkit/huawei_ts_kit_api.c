@@ -264,8 +264,6 @@ void ts_report_pen(struct ts_cmd_node* in_cmd, struct ts_cmd_node* out_cmd)
 {
 	struct ts_pens* pens = NULL;
 	struct input_dev* input = g_ts_kit_platform_data.pen_dev;
-	struct anti_false_touch_param *local_param = NULL;
-	int finger_num = 0;
 	int id = 0;
 	int key_value = 0;
 
@@ -329,12 +327,6 @@ void ts_report_input(struct ts_cmd_node* in_cmd, struct ts_cmd_node* out_cmd)
     struct anti_false_touch_param *local_param = NULL;
     int finger_num = 0;
     int id = 0;
-
-	if(!input_dev || !in_cmd){
-		TS_LOG_ERR("The command node or input device is not exist!\n");
-		return;
-	}
-	finger = &in_cmd->cmd_param.pub_params.report_info;
 #if ANTI_FALSE_TOUCH_USE_PARAM_MAJOR_MINOR
 	struct aft_abs_param_major aft_abs_major;
 	int major = 0;
@@ -344,6 +336,12 @@ void ts_report_input(struct ts_cmd_node* in_cmd, struct ts_cmd_node* out_cmd)
 	short tmp_distance = 0;
 	char *p = NULL;
 #endif
+
+	if(!input_dev || !in_cmd){
+		TS_LOG_ERR("The command node or input device is not exist!\n");
+		return;
+	}
+	finger = &in_cmd->cmd_param.pub_params.report_info;
 
 	if (g_ts_kit_platform_data.chip_data){
 		local_param = &(g_ts_kit_platform_data.chip_data->anti_false_touch_param_data);

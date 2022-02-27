@@ -4608,7 +4608,6 @@ static int atmel_parse_threshold_file_method(const char *buf, uint32_t file_size
 	int index_count = 0, index_count1 = 0, index_count2 = 0;
 	struct mxt_data *data = mxt_core_data;
 	int retval = 0;
-	int index1 = 0;
 	int case_num = 0;
 	int get_even_num = 0;
 	int rx = 0;
