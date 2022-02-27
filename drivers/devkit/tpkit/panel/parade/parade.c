@@ -560,12 +560,12 @@ static int parade_oem_write_nv_data(struct parade_oem_data *parade_oem_data, u8 
 	int offset_end = 0;
 	int rc;
 
-	parade_oem_data->stored_flash_data = NULL;
 	struct parade_hid_output hid_output = {
 		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_WRITE_NV_DATA),
 		.write_length = length + 5 + 8 + 2,
 		.write_buf = write_buf,
 	};
+	   parade_oem_data->stored_flash_data = NULL;
        TS_LOG_INFO("%s enter\n", __func__);
        if(parade_check_oem_parameter(parade_oem_data, offset, length)) {
                  TS_LOG_ERR("%s parameter invalid\n", __func__);
@@ -1403,15 +1403,15 @@ static int validate_diff_result(int diff_threshold)
 
 int parade_hid_output_report_rate_switch_(struct cyttsp5_core_data *cd)
 {
-	if(NULL == cd) {
-		TS_LOG_ERR("%s cd NULL! err!\n", __func__);
-		return -CY_REPORT_RATE_ERR;
-	}
-
 	struct parade_hid_output m_hid_output = {
 		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_REPORT_RATE_SWITCH),
 		.timeout_ms = CY_REPORT_RATE_DELAY,
 	};
+
+	if(NULL == cd) {
+		TS_LOG_ERR("%s cd NULL! err!\n", __func__);
+		return -CY_REPORT_RATE_ERR;
+	}
 	TS_LOG_INFO("%s HID_OUTPUT_REPORT_RATE_SWITCH is 0x%02x", __func__, HID_OUTPUT_REPORT_RATE_SWITCH);
 
 	return parade_hid_send_output_and_wait_(cd, &m_hid_output);
@@ -1935,9 +1935,9 @@ static int parade_get_hid_descriptor_(struct parade_core_data *cd,
 	int rc;
 	u8 cmd[2];
 	int size;
-	TS_LOG_INFO("%s enter\n", __func__);
 	int t;
 
+	TS_LOG_INFO("%s enter\n", __func__);
 	/* Read HID descriptor length and version */
 	mutex_lock(&cd->system_lock);
 	cd->hid_cmd_state = 1;
@@ -4161,17 +4161,17 @@ static int parade_get_calibration_data(struct ts_calibration_data_info *info, st
 	u16 read_length = 100;
 	u8 status = 0;
 	u16 actual_read_len = 0;
+	struct parade_hid_output hid_output = {
+		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_GET_DATA_STRUCTURE),
+		.write_length = 5,
+		.write_buf = write_buf,
+	};
 
 	rc = parade_check_cmd_status();
 
 	if(rc)
 		return rc;
 
-	struct parade_hid_output hid_output = {
-		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_GET_DATA_STRUCTURE),
-		.write_length = 5,
-		.write_buf = write_buf,
-	};
 	TS_LOG_INFO("%s called\n", __func__);
  	write_buf[0] = LOW_BYTE(read_offset);
 	write_buf[1] = HI_BYTE(read_offset);
@@ -4596,11 +4596,11 @@ static int parade_hid_output_read_conf_block_(struct parade_core_data *cd,
 
 static int parade_hid_output_suspend_scanning_(struct parade_core_data *cd)
 {
-
-	TS_LOG_INFO("%s Enter\n", __func__);
 	struct parade_hid_output hid_output = {
 		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_SUSPEND_SCANNING),
 	};
+
+	TS_LOG_INFO("%s Enter\n", __func__);
 
 	return parade_hid_send_output_and_wait_(cd, &hid_output);
 }
@@ -4626,10 +4626,11 @@ static int parade_hid_output_read_conf_ver_(struct parade_core_data *cd,
 
 static int parade_hid_output_resume_scanning_(struct parade_core_data *cd)
 {
-	TS_LOG_INFO("%s Enter\n",__func__);
 	struct parade_hid_output hid_output = {
 		HID_OUTPUT_APP_COMMAND(HID_OUTPUT_RESUME_SCANNING),
 	};
+
+	TS_LOG_INFO("%s Enter\n",__func__);
 
 	return parade_hid_send_output_and_wait_(cd, &hid_output);
 }
@@ -5877,12 +5878,12 @@ void parse_need_set_rst_after_iovcc_flag(struct device_node *core_node)
 
 static int hw_get_dts_value(struct device_node *core_node, char *name)
 {
+	int retval = NO_ERR;
+
 	if(NULL == core_node || NULL == name) {
 		TS_LOG_INFO("%s: param NULL\n", __func__);
 		return -EINVAL;
 	}
-
-	int retval = NO_ERR;
 
 	retval = parade_get_dts_value(core_node , name);
 	if (retval < 0) {
@@ -5971,17 +5972,21 @@ void provide_projectID_for_sensor(struct device_node *core_node, struct ts_kit_d
 }
  int parade_parse_dts(struct device_node *device, struct ts_kit_device_data *chip_data)
  {
-	if(NULL == device || NULL == chip_data) {
-		TS_LOG_INFO("%s: param NULL\n", __func__);
-		return -EINVAL;
-	}
 	int retval = NO_ERR;
 	int value;
 	int rc = NO_ERR;
+	/*project id*/
+	char *tmp_buff = NULL;
 	struct parade_core_platform_data *core_pdata;
 	struct parade_mt_platform_data *mt_pdata;
 	struct parade_loader_platform_data *loader_pdata;
 	struct device_node *core_node = device;
+
+	if(NULL == device || NULL == chip_data) {
+		TS_LOG_INFO("%s: param NULL\n", __func__);
+		return -EINVAL;
+	}
+
 	TS_LOG_INFO("%s, parade parse config called\n", __func__);
 	//memset(tskit_parade_data, 0, sizeof(parade_core_data));
 	core_pdata = kzalloc(sizeof(*core_pdata), GFP_KERNEL);
@@ -6466,8 +6471,6 @@ void provide_projectID_for_sensor(struct device_node *core_node, struct ts_kit_d
 			goto fail_free;
 		}
 	}
-	/*project id*/
-	char *tmp_buff = NULL;
 	rc = of_property_read_string(core_node, "project_id", (const char**)&tmp_buff);
     if (rc)
     {
@@ -7423,12 +7426,12 @@ static int parade_initiate_bl_(struct parade_core_data *cd,
 	u16 write_length = key_size + row_size;
 	u8 *write_buf;
 	int rc;
-	TS_LOG_INFO("%s enter, row_size=%d\n", __func__, row_size);
 	struct parade_hid_output hid_output = {
 		HID_OUTPUT_BL_COMMAND(HID_OUTPUT_BL_INITIATE_BL),
 		.write_length = write_length,
 		.timeout_ms = CY_HID_OUTPUT_BL_INITIATE_BL_TIMEOUT,
 	};
+	TS_LOG_INFO("%s enter, row_size=%d\n", __func__, row_size);
 
 	if(!metadata_row_buf){
 		TS_LOG_INFO("%s metadata_row_buf is NULL\n", __func__);
@@ -8620,14 +8623,14 @@ static void cmcp_get_basic_info(struct test_case_field *field_array, struct conf
 static void cmcp_test_case_field_init(struct test_case_field *test_field_array,
 	struct configuration *configs)
 {
+	u32 CmRangeLimitType = TEST_CASE_TYPE_ONE;
+	u32 *CmRangeLimitRowBuf = &configs->cm_range_limit_row;
+	u32 *CmRangeLimitColBuf = &configs->cm_range_limit_col;
+
 	if(NULL == test_field_array || NULL == configs) {
 		TS_LOG_ERR("%s: param NULL\n", __func__);
 		return;
 	}
-
-	u32 CmRangeLimitType = TEST_CASE_TYPE_ONE;
-	u32 *CmRangeLimitRowBuf = &configs->cm_range_limit_row;
-	u32 *CmRangeLimitColBuf = &configs->cm_range_limit_col;
 
 	if(FLAG_EXIST == tskit_parade_data->cm_delta_lattice_flag){
 		CmRangeLimitType = TEST_CASE_TYPE_MUL_LINES;
@@ -9865,6 +9868,8 @@ static int parade_device_access_probe(struct parade_core_data *cd)
 	struct configuration *configurations;
 	struct cmcp_data *cmcp_info;
 	struct result *result;
+	struct test_case_field *test_case_field_array;
+	struct test_case_search *test_case_search_array;
 
 	int tx_num = MAX_TX_SENSORS;
 	int rx_num = MAX_RX_SENSORS;
@@ -9877,9 +9882,6 @@ static int parade_device_access_probe(struct parade_core_data *cd)
 	mutex_init(&dad->debugfs_lock);
 	dad->heatmap.num_element = 200;
 #endif
-
-	struct test_case_field *test_case_field_array;
-	struct test_case_search *test_case_search_array;
 
 	configurations =
 		kzalloc(sizeof(*configurations), GFP_KERNEL);
@@ -10148,19 +10150,6 @@ out:
 
 static int parade_get_rawdata(struct ts_rawdata_info *info, struct ts_cmd_node *out_cmd)
 {
-	if(NULL == tskit_parade_data) {
-		TS_LOG_ERR("%s: tskit_parade_data is NULL, err!\n", __func__);
-		return -EINVAL;
-	}
-	if(NULL == info) {
-		TS_LOG_ERR("%s: info is NULL, err!\n", __func__);
-		return -EINVAL;
-	}
-	if(NULL == out_cmd) {
-		TS_LOG_ERR("%s: out_cmd is NULL, err!\n", __func__);
-		return -EINVAL;
-	}
-
 	struct parade_core_data *cd = tskit_parade_data;
 	struct cmcp_data *cmcp_info = cd->dad.cmcp_info;
 	struct result *result = cd->dad.result;
@@ -10179,6 +10168,20 @@ static int parade_get_rawdata(struct ts_rawdata_info *info, struct ts_cmd_node *
 	u8 reg_addr = PAR_REG_BASE;
 	u16 size;
 	u8 buf[2];
+
+	if(NULL == tskit_parade_data) {
+		TS_LOG_ERR("%s: tskit_parade_data is NULL, err!\n", __func__);
+		return -EINVAL;
+	}
+	if(NULL == info) {
+		TS_LOG_ERR("%s: info is NULL, err!\n", __func__);
+		return -EINVAL;
+	}
+	if(NULL == out_cmd) {
+		TS_LOG_ERR("%s: out_cmd is NULL, err!\n", __func__);
+		return -EINVAL;
+	}
+
 	TS_LOG_INFO("%s Enter\n", __func__);
 	if ((configuration == NULL) || (cmcp_info == NULL)){
 		TS_LOG_ERR("%s: configuration or cmcp_info is NULL\n", __func__);
