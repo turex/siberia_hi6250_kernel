@@ -486,3 +486,8 @@ config HUAWEI_CAMERA_USE_HI846AGASSI2BACK
     bool "HI846AGASSI2BACK"
     default y
     depends on HUAWEI_CAMERA
+
+config HUAWEI_CAMERA_USE_HI843BLN
+	bool "hi843BLN"
+    default y
+	depends on HUAWEI_CAMERA
