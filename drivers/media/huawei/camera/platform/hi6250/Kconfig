@@ -114,6 +114,21 @@ config HUAWEI_CAMERA_USE_IMX386E3
     default n
 	depends on HUAWEI_CAMERA
 
+config HUAWEI_CAMERA_USE_HI259
+    bool "hi259"
+    default y
+    depends on HUAWEI_CAMERA
+
+config HUAWEI_CAMERA_USE_OV12870
+    bool "ov12870"
+    default y
+    depends on HUAWEI_CAMERA
+
+config HUAWEI_CAMERA_USE_GC2355
+    bool "gc2355"
+    default y
+    depends on HUAWEI_CAMERA
+
 config HUAWEI_CAMERA_USE_OV12870E3
         bool "ov12870E3"
     default n
@@ -484,6 +499,11 @@ config HUAWEI_CAMERA_USE_HI556AGASSI2BACK
 
 config HUAWEI_CAMERA_USE_HI846AGASSI2BACK
     bool "HI846AGASSI2BACK"
+    default y
+    depends on HUAWEI_CAMERA
+
+config HUAWEI_CAMERA_USE_IMX386
+    bool "imx386"
     default y
     depends on HUAWEI_CAMERA
 
