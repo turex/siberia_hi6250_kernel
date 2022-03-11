@@ -28,7 +28,7 @@
 #include "sensor_debug.h"
 #include "sensor_sys_info.h"
 #include "iomcu_power.h"
-#include <sensor_detect.h>
+#include "sensor_detect.h"
 #include <huawei_platform/inputhub/motionhub.h>
 #include <huawei_platform/inputhub/cahub.h>
 #include <huawei_platform/inputhub/sensorhub.h>

@@ -20,7 +20,7 @@
 #include <huawei_platform/log/hw_log.h>
 #include <linux/raid/pq.h>
 #include <linux/power/hisi/coul/hisi_coul_drv.h>
-#include <charging_core.h>
+#include "charging_core.h"
 #ifdef CONFIG_TCPC_CLASS
 #include <huawei_platform/usb/hw_pd_dev.h>
 #endif

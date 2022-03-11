@@ -11,7 +11,7 @@
 *
 */
 
-#include "hisi_fb.h"
+#include "../hisi_fb.h"
 
 
 #define DTS_COMP_HDMI_FAKE_PANEL	"hisilicon,hdmi_fake_panel"

@@ -32,7 +32,7 @@
 
 #include "slimbus_drv.h"
 #include <linux/hisi/hilog.h>
-#include "slimbus.h"
+#include "../../slimbus.h"
 #include <dsm_audio/dsm_audio.h>
 
 /*lint -e715 -e838 -e730 -e578 -e64 -e647 -e514 -e611*/

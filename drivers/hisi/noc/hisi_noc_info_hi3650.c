@@ -14,7 +14,7 @@
 #include <linux/io.h>
 #include <linux/string.h>
 
-#include <hisi_noc_info.h>
+#include "hisi_noc_info.h"
 
 #define CFG_INITFLOW_ARRAY_SIZE			22
 #define CFG_TARGETFLOW_ARRAY_SIZE		33

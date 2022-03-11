@@ -26,7 +26,7 @@
 #include <linux/time.h>
 #include <linux/stat.h>
 #include <linux/hisi/hi64xx/hi6403_dsp_regs.h>
-#include <hi64xx_hifi_interface.h>
+#include "hi64xx_hifi_interface.h"
 
 #include "hi64xx_hifi_om.h"
 #include "hi64xx_hifi_debug.h"

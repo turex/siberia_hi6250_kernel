@@ -35,7 +35,7 @@
 
 #include <linux/power/hisi/coul/hisi_coul_drv.h>
 #include <linux/power/hisi/hisi_bci_battery.h>
-#include <hisi_scharger_v200.h>
+#include "hisi_scharger_v200.h"
 #include <linux/power/hisi_hi6521_charger_power.h>
 #ifdef CONFIG_HUAWEI_OCP
 #include <huawei_platform/ocp/hw_ocp_ext.h>

@@ -11,7 +11,7 @@
 #include <bsp_icc.h>
 #include <drv_comm.h>
 #include <mdrv_sysboot.h>
-#include <loadps.h>
+#include "loadps.h"
 
 #include "osl_types.h"
 #include "osl_sem.h"

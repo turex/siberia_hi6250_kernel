@@ -14,7 +14,7 @@
 #include <linux/io.h>
 #include <linux/string.h>
 
-#include <hisi_noc_info.h>
+#include "hisi_noc_info.h"
 
 #define ERR_CODE_NR  8
 #define OPC_NR      10

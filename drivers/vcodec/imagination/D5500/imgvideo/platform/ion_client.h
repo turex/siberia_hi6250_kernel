@@ -52,7 +52,8 @@
  * IMG_KERNEL_ION_HEADER can be <linux/ion.h>, which expands to <1/ion.h>
  */
 #undef linux
-#include IMG_KERNEL_ION_HEADER
+//#include IMG_KERNEL_ION_HEADER
+#include "../../../../../../drivers/staging/android/ion/ion.h"
 
 extern struct ion_client *get_ion_client(void);
 extern void release_ion_client(void);
