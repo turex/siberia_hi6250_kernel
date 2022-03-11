@@ -103,7 +103,7 @@
 #endif
 
 #ifdef CONFIG_HW_CGROUP_PIDS
-#include <./cgroup_huawei/cgroup_pids.h>
+#include "cgroup_huawei/cgroup_pids.h"
 #endif
 /*
  * Minimum number of threads to boot the kernel

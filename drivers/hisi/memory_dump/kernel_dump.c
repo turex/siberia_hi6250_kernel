@@ -25,7 +25,7 @@
 #include <linux/percpu.h>
 #include <linux/printk.h>
 #include <asm/memory.h>
-#include <kernel_dump.h>
+#include "kernel_dump.h"
 #include <linux/hisi/mntn_dump.h>
 #include <linux/module.h>
 #include <linux/slab.h>

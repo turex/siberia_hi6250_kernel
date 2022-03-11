@@ -1,5 +1,5 @@
 
-#include "u_ether.h"
+#include "../u_ether.h"
 
 atomic_t hisi_uether_enable_flag = ATOMIC_INIT(0);
 extern struct device *create_function_device(char *name);

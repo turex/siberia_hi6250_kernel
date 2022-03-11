@@ -69,7 +69,7 @@
 #include <bsp_ddr.h>
 #include <bsp_psam.h>
 #include <bsp_ipf.h>
-#include <ipf_balong.h>
+#include "ipf_balong.h"
 
 #include <bsp_reset.h>
 /*C核启动(数传允许)标示*/

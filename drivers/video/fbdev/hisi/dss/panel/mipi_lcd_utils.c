@@ -10,7 +10,7 @@
 * GNU General Public License for more details.
 *
 */
-#include "hisi_fb.h"
+#include "../hisi_fb.h"
 #include "mipi_lcd_utils.h"
 uint32_t g_mipi_lcd_name = 0;
 

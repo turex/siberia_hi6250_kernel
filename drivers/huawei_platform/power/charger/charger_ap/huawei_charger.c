@@ -51,7 +51,7 @@
 #include <huawei_platform/power/huawei_charger.h>
 #include <huawei_platform/power/vbat_ovp.h>
 #include <linux/power/hisi/coul/hisi_coul_drv.h>
-#include <charging_core.h>
+#include "charging_core.h"
 #ifdef CONFIG_SWITCH_FSA9685
 #include <huawei_platform/usb/switch/switch_fsa9685.h>
 #endif

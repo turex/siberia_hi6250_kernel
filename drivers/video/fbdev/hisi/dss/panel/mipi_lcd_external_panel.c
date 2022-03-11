@@ -11,7 +11,7 @@
 *
 */
 
-#include "hisi_fb.h"
+#include "../hisi_fb.h"
 
 #define DTS_COMP_MIPI_LCD_EXTERNAL_PANEL "hisilicon,mipi_lcd_external_panel"
 

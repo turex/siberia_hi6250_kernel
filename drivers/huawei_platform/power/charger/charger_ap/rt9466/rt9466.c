@@ -27,7 +27,7 @@
 #include <linux/pm_runtime.h>
 #include <huawei_platform/log/hw_log.h>
 #include <huawei_platform/power/huawei_charger.h>
-#include <../charging_core.h>
+#include "../charging_core.h"
 #include "rt9466.h"
 
 #ifdef CONFIG_RT_REGMAP

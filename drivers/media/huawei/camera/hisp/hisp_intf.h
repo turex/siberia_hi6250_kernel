@@ -21,8 +21,8 @@
 #include <media/videobuf2-core.h>
 #include <linux/clk.h>
 
-#include "hwcam_intf.h"
-#include "cam_log.h"
+#include "../hwcam_intf.h"
+#include "../cam_log.h"
 
 typedef struct _tag_hisp_vtbl hisp_vtbl_t;
 typedef struct _tag_hisp_intf hisp_intf_t;
