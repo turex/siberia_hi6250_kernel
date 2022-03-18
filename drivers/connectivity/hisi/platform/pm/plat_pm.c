@@ -78,9 +78,6 @@ static struct notifier_block pf_suspend_notifier = {
         .priority = INT_MIN,
     };
 
-/*judge whether the wake lock is active or not*/
-extern int wake_lock_active(struct wake_lock *lock);
-
 struct pm_drv_data * pm_drv_data_t = NULL;
 
 struct pm_drv_data * pm_get_drvdata(void)
@@ -324,9 +321,9 @@ void bfg_wake_lock(void)
         return;
     }
 
-    if (0 == wake_lock_active(&pm_data->bfg_wake_lock))
+    if (0 == oal_wakelock_active(&pm_data->bfg_wake_lock))
     {
-        wake_lock(&pm_data->bfg_wake_lock);
+        oal_wake_lock(&pm_data->bfg_wake_lock);
     }
 
 }
@@ -341,9 +338,9 @@ void bfg_wake_unlock(void)
     }
 
     /* 这里不判断其是否active也可以，因为unlock函数内部也会判断，为封装统一，还是加着 */
-    if (wake_lock_active(&pm_data->bfg_wake_lock))
+    if (oal_wakelock_active(&pm_data->bfg_wake_lock))
     {
-        wake_unlock(&pm_data->bfg_wake_lock);
+        oal_wake_unlock(&pm_data->bfg_wake_lock);
     }
 }
 
@@ -500,6 +497,18 @@ void host_send_disallow_msg(struct work_struct *work)
      * 此时uart可能还没有ready,所以这里等待tty resume之后才下发消息 */
     if ((ps_core_d->tty) && (ps_core_d->tty->port))
     {
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
+        while(tty_port_suspended(ps_core_d->tty->port))
+        {
+            if(loop_tty_resume_cnt++ >= MAX_TTYRESUME_LOOPCNT)
+            {
+                PS_PRINT_ERR("tty is not ready, state:%d!\n", tty_port_suspended(ps_core_d->tty->port));
+                break;
+            }
+            msleep(10);
+        }
+        PS_PRINT_INFO("tty state: 0x%x ,loop_tty_resume_cnt:%d\n", tty_port_suspended(ps_core_d->tty->port),  loop_tty_resume_cnt);
+#else
         PS_PRINT_INFO("tty port flag 0x%x\n", (unsigned int)ps_core_d->tty->port->flags);
         while(test_bit(ASYNCB_SUSPENDED, (volatile unsigned long*)&(ps_core_d->tty->port->flags)))
         {
@@ -510,6 +519,7 @@ void host_send_disallow_msg(struct work_struct *work)
             }
             msleep(10);
         }
+#endif
 
 #ifdef CONFIG_INPUTHUB
         if (UART_PCLK_FROM_SENSORHUB == get_uart_pclk_source())
@@ -650,7 +660,7 @@ int32 bfgx_dev_power_on(void)
     }
 
     /*防止Host睡眠*/
-    wake_lock(&pm_data->bfg_wake_lock);
+    oal_wake_lock(&pm_data->bfg_wake_lock);
 
     INIT_COMPLETION(pm_data->dev_bootok_ack_comp);
     atomic_set(&pm_data->bfg_needwait_devboot_flag, NEED_SET_FLAG);
@@ -735,7 +745,7 @@ int32 bfgx_dev_power_on(void)
     return BFGX_POWER_SUCCESS;
 
 bfgx_power_on_fail:
-    wake_unlock(&pm_data->bfg_wake_lock);
+    oal_wake_unlock(&pm_data->bfg_wake_lock);
     return error;
 }
 
@@ -817,9 +827,9 @@ int32 bfgx_dev_power_off(void)
     }
 
     /*if wakelock is active, we should wake unlock*/
-    if (wake_lock_active(&pm_data->bfg_wake_lock))
+    if (oal_wakelock_active(&pm_data->bfg_wake_lock))
     {
-        wake_unlock(&pm_data->bfg_wake_lock);
+        oal_wake_unlock(&pm_data->bfg_wake_lock);
     }
 
 	return error;
@@ -1491,7 +1501,7 @@ STATIC int low_power_remove(void)
     del_timer_sync(&pm_data->dev_ack_timer);
 
     /*destory wake lock*/
-    wake_lock_destroy(&pm_data->bfg_wake_lock);
+    oal_wake_lock_exit(&pm_data->bfg_wake_lock);
 
     /*free platform driver data struct*/
     kfree(pm_data);
@@ -1609,7 +1619,7 @@ STATIC int low_power_probe(void)
     pm_data->bfg_irq = pm_data->board->bfgn_irq;
 
     /*init bfg wake lock */
-    wake_lock_init(&pm_data->bfg_wake_lock, WAKE_LOCK_SUSPEND, BFG_LOCK_NAME);
+    oal_wake_lock_init(&pm_data->bfg_wake_lock, BFG_LOCK_NAME);
 
     /*init mutex*/
     mutex_init(&pm_data->host_mutex);

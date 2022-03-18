@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_mgmt_sta.h
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2013年6月18日
-  最近修改   :
-  功能描述   : hmac_mgmt_sta.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年6月18日
-    作    者   : zhangheng
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_MGMT_STA_H__
 #define __HMAC_MGMT_STA_H__
@@ -166,7 +149,8 @@ extern oal_bool_enum_uint8  hmac_is_support_11grate(oal_uint8 *puc_rates, oal_ui
 extern oal_bool_enum_uint8  hmac_is_support_11brate(oal_uint8 *puc_rates, oal_uint8 uc_rate_num);
 extern oal_uint32 hmac_process_assoc_rsp(hmac_vap_stru *pst_hmac_sta, hmac_user_stru *pst_hmac_user, oal_uint8 *puc_mac_hdr, oal_uint8 *puc_payload, oal_uint16 us_msg_len);
 extern oal_uint8 * hmac_sta_find_ie_in_probe_rsp(mac_vap_stru *pst_mac_vap, oal_uint8 uc_eid, oal_uint16 *pus_index);
-
+extern oal_bool_enum_uint8 hmac_is_ht_mcs_set_valid(oal_uint8 *puc_ht_capability_info);
+extern oal_uint32 hmac_get_frame_body_len(oal_netbuf_stru *net_buf);
 #ifdef __cplusplus
     #if __cplusplus
         }

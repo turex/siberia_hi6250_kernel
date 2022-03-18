@@ -29,6 +29,8 @@
 #define PINMUX_SET_INIT                      (0)
 #define PINMUX_SET_SUCC                      (1)
 
+#define HI11XX_SUBCHIP_NAME_LEN_MAX          (128)
+
 #define DTS_NODE_HI110X                     "hisilicon,hi1102"
 #define DTS_NODE_HI110X_BFGX                "hisilicon,hisi_bfgx"
 #define DTS_NODE_HI110X_WIFI                "hisilicon,hisi_wifi"
@@ -190,6 +192,7 @@ extern BOARD_INFO g_board_info;
 *****************************************************************************/
 extern BOARD_INFO * get_hi110x_board_info(void);
 extern int32 get_uart_pclk_source(void);
+extern int32 get_device_board_version(void);
 extern int32 hi110x_board_init(void);
 extern void hi110x_board_exit(void);
 extern void board_power_on(uint32 subsystem);

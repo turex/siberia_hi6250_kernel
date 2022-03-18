@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : chr_devs.c
-  版 本 号   : 2.0
-  作    者   : k00355907
-  生成日期   : 2016年4月11日
-  最近修改   :
-  功能描述   :
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年4月11日
-    作    者   : k00355907
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifdef __cplusplus
     #if __cplusplus
@@ -86,16 +69,7 @@ static struct miscdevice chr_misc_dev = {
 /*****************************************************************************
   5 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : chr_misc_open
- 功能描述  : 打开设备节点接口
 
- 修改历史      :
-  1.日    期   : 2016年4月9日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 static int32 chr_misc_open(struct inode *fd, struct file *fp)
 {
     if (CHR_LOG_ENABLE != g_log_enable)
@@ -107,16 +81,7 @@ static int32 chr_misc_open(struct inode *fd, struct file *fp)
     return CHR_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : chr_misc_read
- 功能描述  : 读取设备节点接口
 
- 修改历史      :
-  1.日    期   : 2016年4月9日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 static ssize_t chr_misc_read(struct file *fp, int8 __user *buff, size_t count, loff_t *loff)
 {
     int32 ret;
@@ -174,16 +139,7 @@ static ssize_t chr_misc_read(struct file *fp, int8 __user *buff, size_t count, l
 
     return sizeof(uint32);
 }
-/*****************************************************************************
- 函 数 名  : chr_write_errno_to_queue
- 功能描述  : 将异常码写入队列
 
- 修改历史      :
-  1.日    期   : 2016年4月10日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 static int32 chr_write_errno_to_queue(uint32 ul_errno)
 {
     struct sk_buff  *skb   =NULL;
@@ -208,16 +164,7 @@ static int32 chr_write_errno_to_queue(uint32 ul_errno)
     wake_up_interruptible(&g_chr_event.errno_wait);
     return CHR_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : chr_misc_ioctl
- 功能描述  : 控制设备节点接口
 
- 修改历史      :
-  1.日    期   : 2016年4月10日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 static int64 chr_misc_ioctl(struct file* fp, uint32 cmd, uint64 arg)
 {
     uint32 __user   *puser = (uint32 __user *)arg;
@@ -260,16 +207,7 @@ static int64 chr_misc_ioctl(struct file* fp, uint32 cmd, uint64 arg)
     }
     return CHR_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : chr_misc_release
- 功能描述  : 释放节点设备接口
 
- 修改历史      :
-  1.日    期   : 2016年4月10日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 static int32 chr_misc_release(struct inode *fd, struct file* fp)
 {
     if (CHR_LOG_ENABLE != g_log_enable)
@@ -280,34 +218,13 @@ static int32 chr_misc_release(struct inode *fd, struct file* fp)
     CHR_DBG("chr %s release success\n", chr_misc_dev.name);
     return CHR_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : __chr_printLog
- 功能描述  :
 
- 修改历史      :
-  1.日    期   : 2016年4月9日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-  2.日    期   : 2017年9月25日
-    作    者   : xwx404372
-    修改内容   : 注空还函数
-
-*****************************************************************************/
 int32 __chr_printLog(CHR_LOGPRIORITY prio, CHR_DEV_INDEX dev_index, const int8 *fmt,...)
 {
     return CHR_SUCC;
 }
 EXPORT_SYMBOL(__chr_printLog);
-/*****************************************************************************
- 函 数 名  : __chr_exception
- 功能描述  : 内核空间抛异常码接口
 
- 修改历史      :
-  1.日    期   : 2016年4月9日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 int32  __chr_exception(uint32 errno)
 {
     if (CHR_LOG_ENABLE != g_log_enable)
@@ -320,16 +237,7 @@ int32  __chr_exception(uint32 errno)
     return CHR_SUCC;
 }
 EXPORT_SYMBOL(__chr_exception);
-/*****************************************************************************
- 函 数 名  : chr_dev_exception_callback
- 功能描述  : device异常回调接口
 
- 修改历史      :
-  1.日    期   : 2016年4月26日
-    作    者   : k00355907
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void chr_dev_exception_callback(void *buff, uint16 len)
 {
     CHR_DEV_EXCEPTION_STRU* chr_dev_exception = NULL;
@@ -357,15 +265,7 @@ void chr_dev_exception_callback(void *buff, uint16 len)
     CHR_DBG("chr recv device errno = 0x%x\n", chr_dev_exception->errno);
 }
 EXPORT_SYMBOL(chr_dev_exception_callback);
-/*****************************************************************************
- 函 数 名  : chr_miscdevs_init
- 功能描述  :
- 修改历史      :
-  1.日    期   : 2016年4月10日
-    作    者   : k00355907
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 int32 chr_miscdevs_init(void)
 {
     int32 ret = 0;
@@ -392,15 +292,7 @@ int32 chr_miscdevs_init(void)
 
     return CHR_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : chr_miscdevs_exit
- 功能描述  :
- 修改历史      :
-  1.日    期   : 2016年4月10日
-    作    者   : k00355907
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 void chr_miscdevs_exit(void)
 {
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)

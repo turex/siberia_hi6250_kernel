@@ -358,7 +358,7 @@ STATIC void ps_tty_receive(struct tty_struct *tty, const uint8 *data,
         tmp = ps_core_d->curr_time - ps_core_d->pre_time;
         if ((tmp > DBG_FILE_TIME * HZ)||(0 == ps_core_d->pre_time))
         {
-            if (NULL != ps_core_d->rx_data_fp)
+            if (!IS_ERR_OR_NULL(ps_core_d->rx_data_fp))
             {
                 filp_close(ps_core_d->rx_data_fp, NULL);
             }

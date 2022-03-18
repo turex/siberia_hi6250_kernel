@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_ext_if.h
-  版 本 号   : 初稿
-  作    者   : 康国昌
-  生成日期   : 2012年9月20日
-  最近修改   :
-  功能描述   : dmac对外公共接口头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年9月20日
-    作    者   : 康国昌
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __DMAC_EXT_IF_H__
 #define __DMAC_EXT_IF_H__
@@ -55,7 +38,6 @@ extern "C" {
   2 宏定义
 *****************************************************************************/
 #if defined (_PRE_PRODUCT_ID_HI110X_HOST) || defined (_PRE_PRODUCT_ID_HI110X_DEV)
-/* DTS2016071304201:修改创建BA 需要先发10 个帧，规避P2P 6.1.12 认证用例由于执行机执行时间长，协议栈发送ARP 帧使得认证失败问题 */
 #define DMAC_UCAST_FRAME_TX_COMP_TIMES      10         /* 建立BA会话前，需要产生单播帧的发送完成中断 */
 #else
 #define DMAC_UCAST_FRAME_TX_COMP_TIMES      5          /* 建立BA会话前，需要产生单播帧的发送完成中断 */
@@ -1141,7 +1123,7 @@ typedef struct
     oal_uint8               uc_procd_netbuf_nums;         /* 当前MPDU中已处理的netbuf的数目 */
     oal_uint8               uc_procd_msdu_nums_in_mpdu;   /* 当前MPDU中已处理的MSDU数目 */
 
-    oal_uint8               uc_flag;
+    oal_uint8               is_first_buffer;
 }dmac_msdu_proc_state_stru;
 
 /* 每一个MSDU包含的内容的结构体的定义 */
@@ -1458,42 +1440,13 @@ typedef oal_uint8 dmac_rx_frame_ctrl_enum_uint8;
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : dmac_board_get_instance
- 功能描述  : 获取DMAC board对象
- 输入参数  : 无
- 输出参数  : DMAC board对象引用
- 返 回 值  : 物
- 调用函数  : 无
- 被调函数  : 无
 
- 修改历史      :
-  1.日    期   : 2012年11月16日
-    作    者   : 康国昌
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  dmac_board_get_instance(mac_board_stru **ppst_dmac_board)
 {
     *ppst_dmac_board = &g_st_dmac_board;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_free_netbuf_list
- 功能描述  : 从当前的netbuf指针开始，释放后续n个netbuf元素
- 输入参数  : (1)指向netbuf链表头的指针
-             (2)释放的个数
- 输出参数  : 返回下一个要处理的netbuf指针
- 返 回 值  : 期望的netbuf的指针
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月16日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_free_netbuf_list(
                 oal_netbuf_head_stru       *pst_netbuf_hdr,
                 oal_netbuf_stru           **pst_netbuf,
@@ -1537,21 +1490,7 @@ OAL_STATIC OAL_INLINE oal_uint32  dmac_rx_free_netbuf_list(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_bar
- 功能描述  : 判断某个帧是否是bar
- 输入参数  : pst_tx_ctrl CB
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月20日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_bar(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1574,21 +1513,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_bar(mac_tx_ctl_stru *pst_tx_ctrl)
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_bar
- 功能描述  : 设置bar帧
- 输入参数  : pst_tx_ctrl CB
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月20日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_bar(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_bar)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1598,21 +1523,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_bar(mac_tx_ctl_stru *pst_tx_ctrl, o
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_qosdata
- 功能描述  : 判断某个帧是否是bar
- 输入参数  : pst_tx_ctrl CB
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月20日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_qosdata(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1636,21 +1547,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_qosdata(mac_tx_ctl_stru *pst_tx_ct
 
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_qosdata
- 功能描述  : 判断某个帧是否是bar
- 输入参数  : pst_tx_ctrl CB
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月20日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_qosdata(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_en_is_qosdata)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1659,21 +1556,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_qosdata(mac_tx_ctl_stru *pst_tx_ctr
     pst_tx_ctrl->en_is_qosdata = uc_en_is_qosdata;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_rx_cb_mac_hdr
- 功能描述  : 设置mac头的值
- 输入参数  : dmac_rx_ctl_stru *pst_cb_ctrl, oal_uint32 *pul_mac_hdr_start_addr
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_rx_cb_mac_hdr(mac_rx_ctl_stru *pst_cb_ctrl, oal_uint32 *pul_mac_hdr_start_addr)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1683,21 +1566,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_rx_cb_mac_hdr(mac_rx_ctl_stru *pst_cb_ctr
 
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_rx_cb_mac_hdr
- 功能描述  : 获取mac头的值
- 输入参数  : dmac_rx_ctl_stru *pst_cb_ctrl
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint32 *mac_get_rx_cb_mac_hdr(mac_rx_ctl_stru *pst_cb_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1706,21 +1575,7 @@ OAL_STATIC OAL_INLINE oal_uint32 *mac_get_rx_cb_mac_hdr(mac_rx_ctl_stru *pst_cb_
     return pst_cb_ctrl->pul_mac_hdr_start_addr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_tid
- 功能描述  : 获取tid的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_tid(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1730,24 +1585,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_tid(mac_tx_ctl_stru *pst_tx_ctrl)
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_set_cb_tid
- 功能描述  : 设置tid的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-  2.日    期   : 2015年1月21日
-    作    者   : g00306640
-    修改内容   : 修改偏移地址到netbuf->data
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_tid(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_tid)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1758,97 +1596,27 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_tid(mac_tx_ctl_stru *pst_tx_ctrl, oal_
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_amsdu
- 功能描述  : 获取amsdu的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_amsdu(mac_tx_ctl_stru *pst_tx_ctrl)
 {
     return pst_tx_ctrl->en_is_amsdu;
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_amsdu
- 功能描述  : 设置amsdu的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_amsdu(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_amsdu)
 {
     pst_tx_ctrl->en_is_amsdu = uc_amsdu;
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_ack_policy
- 功能描述  : 获取ack_policy的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_ack_policy(mac_tx_ctl_stru *pst_tx_ctrl)
 {
     return pst_tx_ctrl->en_ack_policy;
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_ack_policy
- 功能描述  : 设置ack_policy的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_ack_policy(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_qc_ack_polocy)
 {
     pst_tx_ctrl->en_ack_policy = uc_qc_ack_polocy;
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_seqnum
- 功能描述  : 获取seqnum的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint16 mac_get_cb_seqnum(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1857,21 +1625,7 @@ OAL_STATIC OAL_INLINE oal_uint16 mac_get_cb_seqnum(mac_tx_ctl_stru *pst_tx_ctrl)
     return pst_tx_ctrl->us_seqnum;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_ack_policy
- 功能描述  : 设置ack_policy的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_seqnum(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint16 us_sc_seq_num)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1881,21 +1635,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_seqnum(mac_tx_ctl_stru *pst_tx_ctrl, o
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_set_cb_sub_type
- 功能描述  : 设置subtype的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_subtype
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月5日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_sub_type(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_subtype)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1905,21 +1645,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_sub_type(mac_tx_ctl_stru *pst_tx_ctrl,
     return;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_ac
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE wlan_wme_ac_type_enum_uint8 mac_get_cb_ac(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1931,21 +1657,7 @@ OAL_STATIC OAL_INLINE wlan_wme_ac_type_enum_uint8 mac_get_cb_ac(mac_tx_ctl_stru 
 
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_ac
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_ac(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_wme_ac_type)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1956,21 +1668,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_ac(mac_tx_ctl_stru *pst_tx_ctrl, oal_u
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE wlan_wme_ac_type_enum_uint8 mac_get_cb_is_need_pause_tid(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -1979,21 +1677,7 @@ OAL_STATIC OAL_INLINE wlan_wme_ac_type_enum_uint8 mac_get_cb_is_need_pause_tid(m
     return pst_tx_ctrl->en_need_pause_tid;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_en_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_need_pause_tid(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_en_need_pause_tid)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2003,21 +1687,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_need_pause_tid(mac_tx_ctl_stru *pst
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE mac_ieee80211_frame_stru *mac_get_cb_frame_hdr(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2028,21 +1698,7 @@ OAL_STATIC OAL_INLINE mac_ieee80211_frame_stru *mac_get_cb_frame_hdr(mac_tx_ctl_
     return pst_tx_ctrl->pst_frame_header;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_frame_hdr(mac_tx_ctl_stru *pst_tx_ctrl, mac_ieee80211_frame_stru *pst_mac_hdr_addr)
 {
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV))
@@ -2051,21 +1707,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_frame_hdr(mac_tx_ctl_stru *pst_tx_ctrl
     pst_tx_ctrl->pst_frame_header = pst_mac_hdr_addr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_use_4_addr(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2074,21 +1716,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_use_4_addr(mac_tx_ctl_stru *pst_tx
     return pst_tx_ctrl->en_use_4_addr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_use_4_addr(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_en_is_use_4_addr)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2097,21 +1725,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_use_4_addr(mac_tx_ctl_stru *pst_tx_
     pst_tx_ctrl->en_use_4_addr = uc_en_is_use_4_addr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_bar_dscr
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE hal_tx_dscr_stru *mac_get_cb_bar_dscr(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2120,21 +1734,7 @@ OAL_STATIC OAL_INLINE hal_tx_dscr_stru *mac_get_cb_bar_dscr(mac_tx_ctl_stru *pst
     return pst_tx_ctrl->pst_bar_dscr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_need_pause_tid
- 功能描述  : 设置ac的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_bar_dscr(mac_tx_ctl_stru *pst_tx_ctrl, hal_tx_dscr_stru *pst_bar_dscr)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2143,21 +1743,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_bar_dscr(mac_tx_ctl_stru *pst_tx_ctrl,
     pst_tx_ctrl->pst_bar_dscr = pst_bar_dscr;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_80211_mac_head_type
- 功能描述  : 设置bit_80211_mac_head_type的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_80211_mac_head_type(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2166,21 +1752,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_80211_mac_head_type(mac_tx_ctl_stru *
     return pst_tx_ctrl->bit_80211_mac_head_type;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_80211_mac_head_type
- 功能描述  : 设置bit_80211_mac_head_type的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_80211_mac_head_type(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_80211_mac_head_type)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2190,21 +1762,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_80211_mac_head_type(mac_tx_ctl_stru *p
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_cb_is_seq_ctrl_bypass
- 功能描述  : 获取en_seq_ctrl_bypass的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_seq_ctrl_bypass(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2213,21 +1771,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_is_seq_ctrl_bypass(mac_tx_ctl_stru *p
     return pst_tx_ctrl->en_seq_ctrl_bypass;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_seq_ctrl_bypass
- 功能描述  : 设置bit_80211_mac_head_type的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : L00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_seq_ctrl_bypass(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_en_seq_ctrl_bypass)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2236,21 +1780,7 @@ OAL_STATIC OAL_INLINE oal_void mac_set_cb_is_seq_ctrl_bypass(mac_tx_ctl_stru *ps
     pst_tx_ctrl->en_seq_ctrl_bypass = uc_en_seq_ctrl_bypass;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_get_cb_event_sub_type
- 功能描述  : 获取uc_event_sub_type的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl oal_uint8 uc_tid
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_event_sub_type(mac_tx_ctl_stru *pst_tx_ctrl)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)
@@ -2259,21 +1789,7 @@ OAL_STATIC OAL_INLINE oal_uint8 mac_get_cb_event_sub_type(mac_tx_ctl_stru *pst_t
     return pst_tx_ctrl->uc_event_sub_type;
 #endif
 }
-/*****************************************************************************
- 函 数 名  : mac_set_cb_is_seq_ctrl_bypass
- 功能描述  : 设置bit_80211_mac_head_type的值
- 输入参数  : mac_tx_ctl_stru *pst_tx_ctrl ,wlan_wme_ac_type_enum wlan_wme_ac_type
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月24日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void mac_set_cb_event_sub_type(mac_tx_ctl_stru *pst_tx_ctrl, oal_uint8 uc_en_event_sub_type)
 {
 #if defined(_PRE_PRODUCT_ID_HI110X_DEV)

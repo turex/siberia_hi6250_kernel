@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_bridge.c
-  版 本 号   : 初稿
-  作    者   : c00178899
-  生成日期   : 2012年11月19日
-  最近修改   :
-  功能描述   : WAL linux桥接文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年11月19日
-    作    者   : c00178899
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -69,22 +52,7 @@ extern "C" {
 *****************************************************************************/
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
 
-/*****************************************************************************
- 函 数 名  : wal_vap_start_xmit
- 功能描述  : 挂接到VAP对应net_device结构体下的发送函数
- 输入参数  : pst_buf: SKB结构体,其中data指针指向以太网头
-             pst_dev: net_device结构体
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月6日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_net_dev_tx_enum  wal_vap_start_xmit(oal_netbuf_stru *pst_buf, oal_net_device_stru *pst_dev)
 {
     return hmac_vap_start_xmit(pst_buf, pst_dev);
@@ -92,24 +60,24 @@ oal_net_dev_tx_enum  wal_vap_start_xmit(oal_netbuf_stru *pst_buf, oal_net_device
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_bridge_vap_xmit
- 功能描述  : 挂接到VAP对应net_device结构体下的发送函数
- 输入参数  : pst_buf: SKB结构体,其中data指针指向以太网头
-             pst_dev: net_device结构体
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月6日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
+oal_uint8    g_sk_pacing_shift = 6;
 
-*****************************************************************************/
 oal_net_dev_tx_enum  wal_bridge_vap_xmit(oal_netbuf_stru *pst_buf, oal_net_device_stru *pst_dev)
 {
+#if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
+    if (OAL_UNLIKELY(skb_linearize(pst_buf)))
+    {
+        OAM_WARNING_LOG0(0, OAM_SF_TX, "{wal_bridge_vap_xmit::[GSO] failed at skb_linearize}");
+        oal_netbuf_free(pst_buf);
+        return OAL_NETDEV_TX_OK;
+    }
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0))
+    sk_pacing_shift_update(pst_buf->sk, g_sk_pacing_shift);
+#endif
+#endif /* _PRE_OS_VERSION_LINUX == _PRE_OS_VERSION */
+
     return hmac_bridge_vap_xmit(pst_buf, pst_dev);
 }
 

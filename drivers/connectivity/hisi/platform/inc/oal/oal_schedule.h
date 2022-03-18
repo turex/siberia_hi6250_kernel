@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : oal_schedule.h
-  版 本 号   : 初稿
-  作    者   : t00231215
-  生成日期   : 2012年11月29日
-  最近修改   :
-  功能描述   : oal_types.h 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年11月29日
-    作    者   : t00231215
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __OAL_SCHEDULE_H__
 #define __OAL_SCHEDULE_H__
@@ -123,8 +106,8 @@ extern oal_void oal_dft_print_all_key_info(oal_void);
 
 typedef struct _oal_wakelock_stru_
 {
-#ifdef CONFIG_WAKELOCK
-    struct wake_lock        st_wakelock;        //wakelock锁
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
+    struct wakeup_source        st_wakelock;        //wakelock锁
     oal_spin_lock_stru      lock;    //wakelock锁操作spinlock锁
 #endif
     oal_ulong               lock_count;         //持有wakelock锁的次数
@@ -189,10 +172,10 @@ OAL_STATIC OAL_INLINE oal_void oal_softwdt_exit(oal_void)
 
 OAL_STATIC OAL_INLINE oal_void oal_wake_lock_init(oal_wakelock_stru *pst_wakelock,char* name)
 {
-#ifdef CONFIG_WAKELOCK
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
     oal_memset((oal_void*)pst_wakelock,0,sizeof(oal_wakelock_stru));
 
-    wake_lock_init(&pst_wakelock->st_wakelock, WAKE_LOCK_SUSPEND, name ? name:"wake_lock_null");
+    wakeup_source_init(&pst_wakelock->st_wakelock, name ? name:"wake_lock_null");
     oal_spin_lock_init(&pst_wakelock->lock);
     pst_wakelock->lock_count = 0;
     pst_wakelock->locked_addr = 0;
@@ -201,20 +184,20 @@ OAL_STATIC OAL_INLINE oal_void oal_wake_lock_init(oal_wakelock_stru *pst_wakeloc
 
 OAL_STATIC OAL_INLINE oal_void oal_wake_lock_exit(oal_wakelock_stru *pst_wakelock)
 {
-#ifdef CONFIG_WAKELOCK
-    wake_lock_destroy(&pst_wakelock->st_wakelock);
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
+    wakeup_source_trash(&pst_wakelock->st_wakelock);
 #endif
 }
 
 OAL_STATIC OAL_INLINE void oal_wake_lock(oal_wakelock_stru *pst_wakelock)
 {
-#ifdef CONFIG_WAKELOCK
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
     oal_ulong ul_flags;
 
     oal_spin_lock_irq_save(&pst_wakelock->lock, &ul_flags);
     if(!pst_wakelock->lock_count)
     {
-        wake_lock(&pst_wakelock->st_wakelock);
+        __pm_stay_awake(&pst_wakelock->st_wakelock);
         pst_wakelock->locked_addr = (oal_ulong)_RET_IP_;
     }
     pst_wakelock->lock_count++;
@@ -224,7 +207,7 @@ OAL_STATIC OAL_INLINE void oal_wake_lock(oal_wakelock_stru *pst_wakelock)
 
 OAL_STATIC OAL_INLINE  void oal_wake_unlock(oal_wakelock_stru *pst_wakelock)
 {
-#ifdef CONFIG_WAKELOCK
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
     oal_ulong ul_flags;
 
     oal_spin_lock_irq_save(&pst_wakelock->lock, &ul_flags);
@@ -233,7 +216,7 @@ OAL_STATIC OAL_INLINE  void oal_wake_unlock(oal_wakelock_stru *pst_wakelock)
         pst_wakelock->lock_count--;
         if(!pst_wakelock->lock_count)
         {
-            wake_unlock(&pst_wakelock->st_wakelock);
+            __pm_relax(&pst_wakelock->st_wakelock);
             pst_wakelock->locked_addr = (oal_ulong)0x0;
         }
     }
@@ -243,8 +226,9 @@ OAL_STATIC OAL_INLINE  void oal_wake_unlock(oal_wakelock_stru *pst_wakelock)
 
 OAL_STATIC OAL_INLINE oal_int32 oal_wakelock_active(oal_wakelock_stru *pst_wakelock)
 {
-#ifdef CONFIG_WAKELOCK
-    return wake_lock_active(&pst_wakelock->st_wakelock);
+#if ((LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37)) && (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION) )
+
+    return pst_wakelock->st_wakelock.active;
 #else
     return 0;
 #endif

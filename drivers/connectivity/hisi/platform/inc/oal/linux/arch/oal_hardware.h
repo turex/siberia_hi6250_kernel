@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : oal_hardware.h
-  版 本 号   : 初稿
-  作    者   : t00231215
-  生成日期   : 2012年11月29日
-  最近修改   :
-  功能描述   : 操作系统硬件相关接口封装
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年11月29日
-    作    者   : t00231215
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __OAL_LINUX_HARDWARE_H__
 #define __OAL_LINUX_HARDWARE_H__
@@ -278,82 +261,25 @@ extern oal_uint32 g_aul_irq_save_time[][255];
 /*****************************************************************************
   10 函数声明
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : oal_irq_free
- 功能描述  : 释放中断处理程序
- 输入参数  : st_osdev: 中断设备结构体
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月9日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_free(oal_irq_dev_stru *st_osdev)
 {
     free_irq(st_osdev->ul_irq, st_osdev);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_enable
- 功能描述  : 开启中断
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月10日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_enable(oal_void)
 {
     local_irq_enable();
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_disable
- 功能描述  : 禁止本地中断
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月10日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_disable(oal_void)
 {
     local_irq_disable();
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_interrupt
- 功能描述  : 中断服务程序
- 输入参数  : l_irq: 中断号
-             p_dev: 中断设备
- 输出参数  : 无
- 返 回 值  : IRQ_HANDLED中断程序处理完毕
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月9日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE irqreturn_t  oal_irq_interrupt(oal_int32 l_irq, oal_void *p_dev)
 {
     oal_irq_dev_stru *st_osdev = (oal_irq_dev_stru *)p_dev;
@@ -363,22 +289,7 @@ OAL_STATIC OAL_INLINE irqreturn_t  oal_irq_interrupt(oal_int32 l_irq, oal_void *
     return IRQ_HANDLED;
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_setup
- 功能描述  : 注册中断。
- 输入参数  : st_osdev: 中断设备结构体
-             fn: 中断后想执行的函数地址
- 输出参数  : 无
- 返 回 值  : 成功返回0； 失败返回非零；
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月9日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_irq_setup(oal_irq_dev_stru *st_osdev)
 {
     oal_int32 l_err = 0;
@@ -389,159 +300,47 @@ OAL_STATIC OAL_INLINE oal_int32  oal_irq_setup(oal_irq_dev_stru *st_osdev)
     return l_err;
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_trigger
- 功能描述  : 软件启动目标核的硬件中断
- 输入参数  : mask: 目标核核掩码
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月17日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_trigger(oal_uint8 uc_cpuid)
 {
 
 }
-/*****************************************************************************
- 函 数 名  : oal_gpio_is_valid
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_is_valid(oal_int32 i_number)
 {
     return gpio_is_valid(i_number);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_gpio_request
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_request(oal_uint32 ul_gpio, OAL_CONST oal_int8 *pc_label)
 {
     return gpio_request(ul_gpio, pc_label);
 }
-/*****************************************************************************
- 函 数 名  : oal_gpio_free
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_gpio_free(oal_uint32 ul_gpio)
 {
     gpio_free(ul_gpio);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_gpio_direction_input
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_direction_input(oal_uint32 ul_gpio)
 {
     return gpio_direction_input(ul_gpio);
 
 }
-/*****************************************************************************
- 函 数 名  : oal_gpio_direction_output
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_direction_output(oal_uint32 ul_gpio, oal_int l_level)
 {
     return gpio_direction_output(ul_gpio, l_level);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_gpio_to_irq
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_to_irq(oal_uint32 ul_gpio)
 {
     return gpio_to_irq(ul_gpio);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_request_irq
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_request_irq(oal_uint32             ul_irq,
                                                      oal_irq_handler_t      p_handler,
                                                      oal_uint32             ul_flags,
@@ -553,41 +352,13 @@ OAL_STATIC OAL_INLINE oal_int32  oal_request_irq(oal_uint32             ul_irq,
     return request_irq(ul_irq, p_handler, ul_flags, p_name, p_dev);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_gpio_get_value
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_gpio_get_value(oal_uint32 ul_gpio)
 {
     return gpio_get_value(ul_gpio);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_gpio_set_value
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_gpio_set_value(oal_uint32 ul_gpio,oal_int32 value)
 {
      gpio_set_value(ul_gpio,value);
@@ -595,21 +366,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_gpio_set_value(oal_uint32 ul_gpio,oal_int32 
 }
 
 
-/*****************************************************************************
- 函 数 名  : oal_wifi_reg_on_pull_up
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_up(oal_int32 wifi_gpio_addr)
 {
     if (!oal_gpio_is_valid(wifi_gpio_addr))
@@ -628,21 +385,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_up(oal_int32 wifi_gpio_addr
     oal_mdelay(500);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_wifi_reg_on_pull_down
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_down(oal_int32 wifi_gpio_addr)
 {
     if (!oal_gpio_is_valid(wifi_gpio_addr))
@@ -661,21 +404,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_wifi_reg_on_pull_down(oal_int32 wifi_gpio_ad
     oal_mdelay(500);
 }
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
-/*****************************************************************************
- 函 数 名  : oal_5115timer_get_10ns
- 功能描述  : 获取5115硬件定时器10ns精度时间戳
- 输入参数  : en_timer: 有两个定时器选一个
- 输出参数  : 无
- 返 回 值  : 10ns精度的时间戳
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月26日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 {
     /* 02 待后续实现内容 TBD */
@@ -683,21 +412,7 @@ OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 }
 
 #else
-/*****************************************************************************
- 函 数 名  : oal_5115timer_get_10ns
- 功能描述  : 获取5115硬件定时器10ns精度时间戳
- 输入参数  : en_timer: 有两个定时器选一个
- 输出参数  : 无
- 返 回 值  : 10ns精度的时间戳
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月26日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 {
 #if(_PRE_TARGET_PRODUCT_TYPE_WS835DMB == _PRE_CONFIG_TARGET_PRODUCT) //产品采用了该中断的第二个定时器
@@ -710,21 +425,7 @@ OAL_STATIC OAL_INLINE oal_uint32  oal_5115timer_get_10ns(oal_void)
 #endif
 }
 #endif
-/*****************************************************************************
- 函 数 名  : oal_irq_save
- 功能描述  : 禁止中断,获取中断状态
- 输入参数  : pui_flags: 中断状态寄存器
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年9月21日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_save(oal_uint *pui_flags, oal_uint32 ul_type)
 {
 #ifdef _PRE_DEBUG_MODE
@@ -756,21 +457,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_save(oal_uint *pui_flags, oal_uint32 ul_
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_restore
- 功能描述  : 恢复中断,恢复中断状态
- 输入参数  : *pui_flags: 中断状态地址
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年9月21日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_irq_restore(oal_uint *pui_flags, oal_uint32 ul_type)
 {
 #ifdef _PRE_DEBUG_MODE
@@ -811,22 +498,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_irq_restore(oal_uint *pui_flags, oal_uint32 
     local_irq_restore(*pui_flags);
 }
 
-/*****************************************************************************
- 函 数 名  : oal_irq_set_affinity
- 功能描述  : 将指定的中断号绑定到指定的cpu上执行
- 输入参数  : ul_irq: 中断号
-             mask: cpu掩码
- 输出参数  : 无
- 返 回 值  : 成功返回OAL_SUCC,失败返回OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月10日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_int32  oal_irq_set_affinity(oal_irq_num irq, oal_uint32 ul_cpu)
 {
     oal_int32 l_ret;
@@ -846,21 +518,7 @@ OAL_STATIC OAL_INLINE oal_int32  oal_irq_set_affinity(oal_irq_num irq, oal_uint3
 }
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
 
-/*****************************************************************************
- 函 数 名  : oal_5115timer_init
- 功能描述  : 初始化5115硬件定时器
- 输入参数  : en_timer:要用的定时器
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月25日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_5115timer_init(oal_void)
 {
 #if (_PRE_TARGET_PRODUCT_TYPE_E5 != _PRE_CONFIG_TARGET_PRODUCT)
@@ -901,21 +559,7 @@ OAL_STATIC OAL_INLINE oal_void  oal_5115timer_init(oal_void)
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : oal_5115timer_exit
- 功能描述  : 释放硬件定时器虚拟内存
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月26日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_5115timer_exit(oal_void)
 {
 #if (_PRE_TARGET_PRODUCT_TYPE_E5 != _PRE_CONFIG_TARGET_PRODUCT)
@@ -924,63 +568,20 @@ OAL_STATIC OAL_INLINE oal_void  oal_5115timer_exit(oal_void)
 }
 #else
 
-/*****************************************************************************
- 函 数 名  : oal_5115timer_init
- 功能描述  : 初始化5115硬件定时器
- 输入参数  : en_timer:要用的定时器
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月25日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_5115timer_init(oal_void)
 {
 
 }
 
-/*****************************************************************************
- 函 数 名  : oal_5115timer_exit
- 功能描述  : 释放硬件定时器虚拟内存
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月26日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  oal_5115timer_exit(oal_void)
 {
 }
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : oal_mdrv_timer_start
- 功能描述  : E5平台dbac用硬件定时器相关,定义在:drv_timer.h
- 输入参数  : ul_id:定时器ID；p_func:回调函数;l_arg:无;ul_timer_value:定时值;
-             ul_mode:无;ul_type:单位;(0:表示ms；1:表示us;)
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016 年4 月26 日
-    作    者   : l00347062
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #if (_PRE_CONFIG_TARGET_PRODUCT == _PRE_TARGET_PRODUCT_TYPE_E5)
 OAL_STATIC OAL_INLINE oal_int32 oal_mdrv_timer_start(oal_uint32 ul_id, oal_dbac_isr_func p_func, oal_int32 l_arg, oal_uint32 ul_timer_value, oal_uint32 ul_mode, oal_uint32 ul_type)
 {

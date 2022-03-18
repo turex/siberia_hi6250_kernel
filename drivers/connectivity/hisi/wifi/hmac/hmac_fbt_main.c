@@ -1,26 +1,5 @@
 
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_fbt_main.c
-  版 本 号   : 初稿
-  作    者   : luolingzhi
-  生成日期   : 2015年12月21日
-  最近修改   :
-  功能描述   : fbt功能实现源文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年12月21日
-    作    者   : luolingzhi
-    修改内容   : 创建文件
-
-  2.日    期   : 2016年1月6日
-    作    者   : xiexiaoming
-    修改内容   : 合入fbt禁止连接功能
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -50,23 +29,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : hmac_config_fbt_set_mode
- 功能描述  : 配置快速切换的模式
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             us_len     : 参数长度
-             puc_param  : 参数指针 1表示开启，0表示关闭
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月21日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_fbt_set_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
 
@@ -129,21 +92,7 @@ oal_uint32  hmac_config_fbt_set_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_le
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_scan_report_timeout
- 功能描述  : 侦听非关联用户上报周期
- 输入参数  : hmac_vap_stru *pst_hmac_vap
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月21日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_fbt_scan_report_timeout(oal_void *p_arg)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_mgmt;
@@ -229,22 +178,7 @@ OAL_STATIC oal_uint32  hmac_fbt_scan_report_timeout(oal_void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_start_scan_report_timer
- 功能描述  : 创建FBT的侦听非关联用户的定时器，该定时器用来定时上报已关联用户侦听结果
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint32 ul_period:用来配置定时器的周期
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月21日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_fbt_start_scan_report_timer(mac_vap_stru *pst_mac_vap, oal_uint32 ul_period)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_mgmt;
@@ -288,21 +222,7 @@ oal_uint32  hmac_fbt_start_scan_report_timer(mac_vap_stru *pst_mac_vap, oal_uint
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_stop_scan_report_timer
- 功能描述  : 停止FBT的侦听非关联用户的定时器
- 输入参数  : mac_vap_stru *pst_mac_vap
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月21日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_fbt_stop_scan_report_timer(mac_vap_stru *pst_mac_vap)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_mgmt;
@@ -338,23 +258,7 @@ oal_uint32  hmac_fbt_stop_scan_report_timer(mac_vap_stru *pst_mac_vap)
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_start_scan
- 功能描述  : 配置快速切换侦听未关联用户功能开关
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             us_len     : 参数长度
-             puc_param  : 参数指针 1表示开启，0表示关闭
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月25日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_fbt_start_scan(mac_vap_stru *pst_mac_vap)
 {
 
@@ -400,21 +304,7 @@ oal_uint32  hmac_fbt_start_scan(mac_vap_stru *pst_mac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_init
- 功能描述  : 初始化FBT的各种参数配置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月24日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_fbt_init(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_fbt_mgmt_stru         *pst_hmac_fbt_mgmt;
@@ -459,25 +349,7 @@ oal_uint32  hmac_fbt_init(hmac_vap_stru *pst_hmac_vap)
 
 
 
-/*****************************************************************************
- 函 数 名  : hmac_fbt_notify
- 功能描述  :
- 输入参数  : pst_dev_fbt_mgmt            :Fbt功能管理实体
-             pst_notify                  :要上报的消息
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月18日
-    作    者   : x00226265
-    修改内容   : 创建文件
-  2.日    期   : 2016年1月20日
-    作    者   : l00225940
-    修改内容   : hilink适配修改
-
-*****************************************************************************/
 
 oal_uint32  hmac_fbt_notify(hmac_vap_stru *pst_hmac_vap, hmac_fbt_notify_stru *pst_hmac_fbt_notify)
 {

@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_btcoex.c
-  版 本 号   : 初稿
-  作    者   : c00221210
-  生成日期   : 2014年12月02日
-  最近修改   :
-  功能描述   : WiFi和bt共存特性文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年12月02日
-    作    者   : c00221210
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -36,6 +19,10 @@ extern "C" {
 #include "dmac_auto_adjust_freq.h"
 #include "dmac_device.h"
 #include "dmac_resource.h"
+#include "dmac_scan.h"
+#include "hal_coex_reg.h"
+#include "dmac_tx_bss_comm.h"
+
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_DMAC_BTCOEX_C
 
@@ -55,7 +42,7 @@ extern oal_uint32  dmac_send_sys_event(mac_vap_stru *pst_mac_vap,
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
 extern oal_uint32 dmac_config_set_device_freq(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param);
 #endif
-
+extern oal_uint32 dmac_btcoex_ps_status_handler(frw_event_mem_stru *pst_event_mem);
 OAL_STATIC OAL_INLINE oal_void dmac_btcoex_rx_average_rate_calculate (dmac_user_btcoex_rx_info_stru *pst_btcoex_wifi_rx_rate_info,
                                                                                 oal_uint32 *pul_rx_rate, oal_uint16 *pus_rx_count);
 
@@ -95,22 +82,7 @@ oal_uint32 g_rx_statistics_print = 0;
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_encap_preempt_sta
- 功能描述  : 根据指定的PS位封null data帧
- 输入参数  : oal_uint8 *puc_frame
 
- 输出参数  : 无
- 返 回 值  : OAL_STATIC  OAL_INLINE  void
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年2月10日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void dmac_btcoex_encap_preempt_sta(oal_uint8 *puc_frame,
                                                                oal_uint8 *puc_da,
                                                                oal_uint8 *puc_sa,
@@ -157,22 +129,7 @@ OAL_STATIC oal_void dmac_btcoex_encap_preempt_sta(oal_uint8 *puc_frame,
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_init_preempt
- 功能描述  :
- 输入参数  : pst_dmac_vap
-             pst_dmac_user
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或者其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月10日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_init_preempt(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user, coex_preempt_frame_enum_uint8 en_preempt_type)
 {
     dmac_vap_stru *pst_dmac_vap;
@@ -189,20 +146,7 @@ oal_void dmac_btcoex_init_preempt(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_status_event_handler
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_btcoex_update_ba_size(mac_vap_stru *pst_mac_vap, dmac_user_btcoex_delba_stru *pst_dmac_user_btcoex_delba, hal_btcoex_btble_status_stru *pst_btble_status)
 {
     bt_status_stru *pst_bt_status;
@@ -265,20 +209,130 @@ OAL_STATIC OAL_INLINE oal_void dmac_btcoex_update_ba_size(mac_vap_stru *pst_mac_
     pst_dmac_user_btcoex_delba->uc_ba_size = g_auc_rx_win_size[uc_bt_rx_win_size_grade][pst_dmac_user_btcoex_delba->uc_ba_size_index];
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_bt_transfer_status_handler
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月19日
-    作    者   : c000221210
-    修改内容   : 新生成函数
-*****************************************************************************/
+oal_void dmac_btcoex_ps_stop_check_and_notify(oal_void)
+{
+    mac_device_stru         *pst_mac_device = OAL_PTR_NULL;
+    hal_to_dmac_device_stru *pst_hal_device = OAL_PTR_NULL;
+    mac_vap_stru            *pst_mac_vap    = OAL_PTR_NULL;
+    oal_bool_enum_uint8      en_sco_status  = OAL_FALSE;
+    oal_bool_enum_uint8      en_ps_stop     = OAL_FALSE;  /* 初始是打开ps */
+    oal_uint8                uc_vap_idx;
+    oal_uint8                uc_ap_num     = 0;
+    oal_uint8                uc_sta_num    = 0;
+    oal_uint8                uc_go_num     = 0;
+    oal_uint8                uc_gc_num     = 0;
+
+    pst_mac_device = mac_res_get_dev(0);
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_stop_check_and_notify: mac device is null }");
+        return;
+    }
+    pst_hal_device = pst_mac_device->pst_device_stru;
+    if (OAL_PTR_NULL == pst_hal_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_ps_stop_check_and_notify:pst_hal_device is null");
+        return;
+    }
+
+    /* 1.电话场景 */
+    hal_btcoex_get_bt_sco_status(pst_hal_device, &en_sco_status);
+    if (OAL_TRUE == en_sco_status)
+    {
+        en_ps_stop = OAL_TRUE;
+    }
+
+    /* 2. dbac在运行,直接return */
+    if ((OAL_TRUE == mac_is_dbac_running(pst_mac_device)))
+    {
+        en_ps_stop = OAL_TRUE;
+    }
+
+    for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
+    {
+        pst_mac_vap  = (mac_vap_stru *)mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
+        if (OAL_PTR_NULL == pst_mac_vap)
+        {
+            continue;
+        }
+        if (IS_P2P_GO(pst_mac_vap))
+        {
+            uc_go_num++;
+        }
+        else if (IS_P2P_CL(pst_mac_vap))
+        {
+            uc_gc_num++;
+        }
+        else if (IS_LEGACY_AP(pst_mac_vap))
+        {
+            uc_ap_num++;
+        }
+        else if (IS_LEGACY_STA(pst_mac_vap))
+        {
+            uc_sta_num++;
+        }
+    }
+    if ((0 != uc_go_num) || (0 != uc_ap_num) || (0 != uc_sta_num && 0 != uc_gc_num))
+    {
+        en_ps_stop = OAL_TRUE;
+    }
+
+    /* 刷新ps能力 */
+    GET_HAL_BTCOEX_SW_PREEMPT_PS_STOP(pst_hal_device) = en_ps_stop;
+
+    hal_set_btcoex_soc_gpreg1(en_ps_stop, BTCOEX_WIFI_STATUS_REG1_PS_STATE_MASK, BTCOEX_WIFI_STATUS_REG1_PS_STATE_OFFSET);  //ps禁止状态通知
+
+    hal_coex_sw_irq_set(HAL_COEX_SW_IRQ_BT);
+
+    OAM_WARNING_LOG_ALTER(0, OAM_SF_COEX,
+        "{dmac_btcoex_ps_stop_check_and_notify::ap_num[%d]sta_num[%d]sco_status[%d]dbac_status[%d]ps_stop[%d]!}",
+        5, uc_ap_num, uc_sta_num, en_sco_status,
+        mac_is_dbac_running(pst_mac_device), GET_HAL_BTCOEX_SW_PREEMPT_PS_STOP(pst_hal_device));
+}
+
+
+oal_void dmac_btcoex_ps_pause_check_and_notify(hal_to_dmac_device_stru *pst_hal_device)
+{
+    mac_device_stru      *pst_mac_device = OAL_PTR_NULL;
+    mac_vap_stru         *pst_mac_vap    = OAL_PTR_NULL;
+    oal_bool_enum_uint8   en_ps_pause     = OAL_FALSE;  /* 初始是不暂停ps */
+    oal_uint8             uc_vap_idx;
+
+    if (OAL_PTR_NULL == pst_hal_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_ps_pause_check_and_notify:pst_hal_device is null");
+        return;
+    }
+    pst_mac_device = mac_res_get_dev(pst_hal_device->uc_mac_device_id);
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+        OAM_ERROR_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_pause_check_and_notify: mac device is null ptr. device id:%d}", pst_hal_device->uc_mac_device_id);
+        return;
+    }
+    for (uc_vap_idx = 0; uc_vap_idx < pst_mac_device->uc_vap_num; uc_vap_idx++)
+    {
+        pst_mac_vap  = (mac_vap_stru *)mac_res_get_mac_vap(pst_mac_device->auc_vap_id[uc_vap_idx]);
+        if (OAL_PTR_NULL == pst_mac_vap)
+        {
+            continue;
+        }
+
+        /* 1.处于漫游过程中需要暂停ps */
+        if(MAC_VAP_STATE_ROAMING == pst_mac_vap->en_vap_state)
+        {
+            en_ps_pause = OAL_TRUE;
+        }
+    }
+
+    /* 刷新ps能力 */
+    GET_HAL_BTCOEX_SW_PREEMPT_PS_PAUSE(pst_hal_device) = en_ps_pause;
+
+    OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_pause_check_and_notify::en_ps_pause[%d]!}",
+        GET_HAL_BTCOEX_SW_PREEMPT_PS_PAUSE(pst_hal_device));
+}
+
+
 OAL_STATIC oal_uint32 dmac_bt_transfer_status_handler(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru *pst_event;
@@ -348,20 +402,7 @@ OAL_STATIC oal_uint32 dmac_bt_transfer_status_handler(frw_event_mem_stru *pst_ev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_rx_rate_statistics_flag_callback
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_rx_rate_statistics_flag_callback(oal_void *p_arg)
 {
     mac_device_stru *pst_mac_device;
@@ -426,20 +467,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_rx_rate_statistics_flag_callback(oal_void *p_a
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_sco_rx_rate_statistics_flag_callback
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_sco_rx_rate_statistics_flag_callback(oal_void *p_arg)
 {
     mac_device_stru *pst_mac_device;
@@ -629,7 +657,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_sco_rx_rate_statistics_flag_callback(oal_void 
         if (OAL_TRUE == uc_notify_bt)
         {
             hal_set_btcoex_soc_gpreg1(uc_notify_bt_value, BIT4 | BIT5, 4);
-            hal_coex_sw_irq_set(BIT5);
+            hal_coex_sw_irq_set(HAL_COEX_SW_IRQ_BT);
             OAM_WARNING_LOG4(pst_mac_vap->uc_vap_id, OAM_SF_COEX, "{dmac_btcoex_sco_rx_rate_process::uc_notify_status: %d, uc_stay_status %d, uc_rate: %d, count %d.}",
                                 uc_notify_bt_value, pst_dmac_user_btcoex_sco_rx_rate_status->uc_status, ul_rx_rate, us_rx_count);
         }
@@ -638,32 +666,19 @@ OAL_STATIC oal_uint32 dmac_btcoex_sco_rx_rate_statistics_flag_callback(oal_void 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_status_event_handler
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月19日
-    作    者   : c000221210
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_a2dp_status_handler(frw_event_mem_stru *pst_event_mem)
 {
-    frw_event_stru *pst_event;
-    mac_vap_stru *pst_mac_vap;
-    mac_device_stru *pst_mac_device;
-    hal_to_dmac_device_stru *pst_hal_device;
-    dmac_vap_stru *pst_dmac_vap;
-    dmac_user_stru *pst_dmac_user;
-    hal_btcoex_btble_status_stru *pst_btble_status;
+    frw_event_stru                     *pst_event;
+    mac_vap_stru                       *pst_mac_vap;
+    mac_device_stru                    *pst_mac_device;
+    hal_to_dmac_device_stru            *pst_hal_device;
+    dmac_vap_stru                      *pst_dmac_vap;
+    dmac_user_stru                     *pst_dmac_user;
+    hal_btcoex_btble_status_stru       *pst_btble_status;
     dmac_vap_btcoex_rx_statistics_stru *pst_dmac_vap_btcoex_rx_statistics;
-    dmac_user_btcoex_delba_stru *pst_dmac_user_btcoex_delba;
-    oal_uint8 uc_need_delba;
+    dmac_user_btcoex_delba_stru        *pst_dmac_user_btcoex_delba;
+    oal_uint8                           uc_need_delba;
 
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
     {
@@ -744,20 +759,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_a2dp_status_handler(frw_event_mem_stru *pst_ev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_page_scan_handler
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月13日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_page_scan_handler(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru *pst_event;
@@ -792,20 +794,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_page_scan_handler(frw_event_mem_stru *pst_even
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_sco_status_handler
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月19日
-    作    者   : c000221210
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_sco_status_handler(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru *pst_event;
@@ -848,6 +837,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_sco_status_handler(frw_event_mem_stru *pst_eve
         OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_sco_status_handler::pst_hal_device null.}");
         return OAL_ERR_CODE_PTR_NULL;
     }
+    dmac_btcoex_ps_stop_check_and_notify();
     dmac_btcoex_get_legacy_sta(pst_mac_device, &pst_mac_vap);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_vap))
     {
@@ -939,20 +929,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_sco_status_handler(frw_event_mem_stru *pst_eve
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_register_dmac_misc_event
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月3日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32 dmac_btcoex_register_dmac_misc_event(hal_dmac_misc_sub_type_enum en_event_type, oal_uint32 (*p_func)(frw_event_mem_stru *))
 {
     if(en_event_type >= HAL_EVENT_DMAC_MISC_SUB_TYPE_BUTT || NULL == p_func)
@@ -966,20 +943,7 @@ oal_uint32 dmac_btcoex_register_dmac_misc_event(hal_dmac_misc_sub_type_enum en_e
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_unregister_dmac_misc_event
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月3日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32  dmac_btcoex_unregister_dmac_misc_event(hal_dmac_misc_sub_type_enum en_event_type)
 {
     if(en_event_type >= HAL_EVENT_DMAC_MISC_SUB_TYPE_BUTT)
@@ -992,23 +956,7 @@ oal_uint32  dmac_btcoex_unregister_dmac_misc_event(hal_dmac_misc_sub_type_enum e
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_init()
- 功能描述  : 初始化共存相关的参数
- 输出参数  : 无
- 返 回 值  : oal_err_code_enum_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月02日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-  2.日    期   : 2014年12月25日
-    作    者   : g00306640
-    修改内容   : 修改
-
-*****************************************************************************/
 oal_uint32 dmac_btcoex_init(oal_void)
 {
     if (OAL_SUCC != dmac_btcoex_register_dmac_misc_event(HAL_EVENT_DMAC_BT_A2DP, dmac_btcoex_a2dp_status_handler))
@@ -1041,20 +989,7 @@ oal_uint32 dmac_btcoex_init(oal_void)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_exit()
- 功能描述  : 初始化共存相关的参数
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月02日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_btcoex_exit(oal_void)
 {
     /* init coexit wifi bt param */
@@ -1065,20 +1000,7 @@ oal_uint32 dmac_btcoex_exit(oal_void)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_wlan_priority_set()
- 功能描述  : 软件设定高优先级保护
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月27日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_wlan_priority_set(mac_vap_stru *pst_mac_vap, oal_uint8 uc_value, oal_uint8 uc_timeout_ms)
 {
     dmac_vap_stru *pst_dmac_vap;
@@ -1143,20 +1065,7 @@ oal_void dmac_btcoex_wlan_priority_set(mac_vap_stru *pst_mac_vap, oal_uint8 uc_v
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_wlan_priority_timeout_callback()
- 功能描述  : 软件设定高优先级保护超时函数
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月27日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_btcoex_wlan_priority_timeout_callback(oal_void *p_arg)
 {
     mac_vap_stru *pst_mac_vap = (mac_vap_stru *)p_arg;
@@ -1165,20 +1074,7 @@ oal_uint32 dmac_btcoex_wlan_priority_timeout_callback(oal_void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_change_state_syn
- 功能描述  : 同步dmac vap状态
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月25日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_change_state_syn(mac_vap_stru *pst_mac_vap)
 {
     switch (pst_mac_vap->en_vap_state)
@@ -1197,20 +1093,7 @@ oal_void dmac_btcoex_change_state_syn(mac_vap_stru *pst_mac_vap)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_rx_delba_trigger
- 功能描述  : Change ba size
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月18日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_delba_trigger(mac_vap_stru *pst_mac_vap, oal_uint8 uc_need_delba,oal_uint8 uc_ba_size)
 {
     dmac_to_hmac_btcoex_rx_delba_trigger_event_stru  st_dmac_to_hmac_btcoex_rx_delba;
@@ -1221,20 +1104,7 @@ oal_void dmac_btcoex_delba_trigger(mac_vap_stru *pst_mac_vap, oal_uint8 uc_need_
     dmac_send_sys_event(pst_mac_vap, WLAN_CFGID_BTCOEX_RX_DELBA_TRIGGER, OAL_SIZEOF(dmac_to_hmac_btcoex_rx_delba_trigger_event_stru), (oal_uint8 *)&st_dmac_to_hmac_btcoex_rx_delba);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_vap_up_handle
- 功能描述  : 处理vap_up，给BT发送中断
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月29日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_vap_up_handle(mac_vap_stru *pst_mac_vap)
 {
     oal_uint8 uc_chan_idx;
@@ -1262,7 +1132,7 @@ oal_void dmac_btcoex_vap_up_handle(mac_vap_stru *pst_mac_vap)
     hal_set_btcoex_soc_gpreg0(uc_chan_idx, BIT5 | BIT4 | BIT3 | BIT2 | BIT1, 1);   // 信道
     hal_set_btcoex_soc_gpreg0(pst_mac_vap->st_channel.en_bandwidth, BIT8 | BIT7 | BIT6, 6);   // 带宽
     hal_set_btcoex_soc_gpreg0(OAL_TRUE, BIT13, 13);
-    hal_coex_sw_irq_set(BIT5);
+    hal_coex_sw_irq_set(HAL_COEX_SW_IRQ_BT);
 
     hal_update_btcoex_btble_status(pst_hal_device);
 
@@ -1282,20 +1152,7 @@ oal_void dmac_btcoex_vap_up_handle(mac_vap_stru *pst_mac_vap)
                  pst_bt_status->bit_bt_on);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_vap_down_handle
- 功能描述  : 处理vap_down，给BT发送中断
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月29日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_vap_down_handle(mac_vap_stru *pst_mac_vap)
 {
     mac_device_stru *pst_mac_device;
@@ -1314,24 +1171,12 @@ oal_void dmac_btcoex_vap_down_handle(mac_vap_stru *pst_mac_vap)
         /* 状态上报BT */
         OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_CFG, "{dmac_btcoex_vap_down_handle::Notify BT cancel AFH.}");
         hal_set_btcoex_soc_gpreg1(OAL_FALSE, BIT3, 3);
-        hal_coex_sw_irq_set(BIT5);
+        hal_set_btcoex_soc_gpreg0(OAL_FALSE, BIT13, 13);
+        hal_coex_sw_irq_set(HAL_COEX_SW_IRQ_BT);
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_update_rx_rate_threshold
- 功能描述  : 获取速率门限
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月23日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_update_rx_rate_threshold (mac_vap_stru *pst_mac_vap, dmac_user_btcoex_delba_stru *pst_dmac_user_btcoex_delba)
 {
     oal_uint8 uc_band;
@@ -1354,32 +1199,15 @@ oal_void dmac_btcoex_update_rx_rate_threshold (mac_vap_stru *pst_mac_vap, dmac_u
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_config_btcoex_assoc_state_syn
- 功能描述  : 同步共存下mac的状态
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年01月15日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-  2.日    期   : 2015年07月28日
-    作    者   : g00306640
-    修改内容   : 不区分sta和ap
-
-*****************************************************************************/
 oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
-    dmac_vap_stru *pst_dmac_vap;
-    dmac_user_stru *pst_dmac_user;
-    dmac_vap_btcoex_stru *pst_dmac_vap_btcoex;
-    mac_device_stru *pst_mac_device;
-    hal_to_dmac_device_stru *pst_hal_device;
-    dmac_user_btcoex_delba_stru *pst_dmac_user_btcoex_delba;
+    dmac_vap_stru                *pst_dmac_vap;
+    dmac_user_stru               *pst_dmac_user;
+    dmac_vap_btcoex_stru         *pst_dmac_vap_btcoex;
+    mac_device_stru              *pst_mac_device;
+    hal_to_dmac_device_stru      *pst_hal_device;
+    dmac_user_btcoex_delba_stru  *pst_dmac_user_btcoex_delba;
     hal_btcoex_btble_status_stru *pst_btcoex_btble_status;
     oal_uint8 uc_chan_idx;
     oal_uint8 uc_need_delba;
@@ -1387,7 +1215,7 @@ oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_use
     bt_status_stru *pst_bt_status;
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-    config_device_freq_h2d_stru st_device_freq;
+    config_device_freq_h2d_stru   st_device_freq;
 #endif
 #endif
 
@@ -1397,8 +1225,6 @@ oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_use
     hal_set_btcoex_soc_gpreg0(pst_mac_vap->st_channel.en_bandwidth, BIT8 | BIT7 | BIT6, 6); // 带宽
     hal_set_btcoex_soc_gpreg0(OAL_TRUE, BIT13, 13);
     hal_set_btcoex_soc_gpreg1(OAL_FALSE, BIT2, 2);
-    hal_set_btcoex_soc_gpreg1(OAL_TRUE, BIT3, 3);
-    hal_coex_sw_irq_set(BIT5);
 
     pst_dmac_vap = (dmac_vap_stru *)pst_mac_vap;
 
@@ -1413,14 +1239,24 @@ oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_use
         {
             /* Notify Bt the P2P Connected state */
             hal_set_btcoex_soc_gpreg0(OAL_TRUE, BIT15, 15);
-            hal_coex_sw_irq_set(BIT5);
         }
+        else
+        {
+            /* Notify Bt the AP-Mode connect */
+            hal_set_btcoex_soc_gpreg1(OAL_TRUE, BIT3, 3);
+        }
+        hal_coex_sw_irq_set(BIT5);
         OAM_WARNING_LOG3(0, OAM_SF_COEX, "{dmac_config_btcoex_assoc_state_syn::ba process skip! vap mode is %d, p2p mode is %d, vap_state: %d.}",
             pst_mac_vap->en_vap_mode, pst_mac_vap->en_p2p_mode, pst_mac_vap->en_vap_state);
         return OAL_SUCC;
     }
 
     /* 以上AP STA模式都适用，下面仅对STA */
+
+    /* Notify Bt the Sta-Mode connected state */
+    hal_set_btcoex_soc_gpreg1(OAL_TRUE, BIT3, 3);
+    hal_coex_sw_irq_set(BIT5);
+
     pst_dmac_user = (dmac_user_stru *)pst_mac_user;
 
     pst_dmac_user_btcoex_delba = &(pst_dmac_user->st_dmac_user_btcoex_stru.st_dmac_user_btcoex_delba);
@@ -1447,7 +1283,6 @@ oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_use
     pst_dmac_user_btcoex_delba->uc_ba_size_index = BTCOEX_RX_WINDOW_SIZE_INDEX_3;
     pst_dmac_user_btcoex_delba->uc_ba_size_addba_rsp_index = BTCOEX_RX_WINDOW_SIZE_INDEX_3;
 
-    /* DTS2016010901179 BT无业务时,恢复wifi控制聚合 */
     if (0 == pst_ble_status->bit_bt_transfer && 0 == pst_ble_status->bit_bt_ba)
     {
         dmac_btcoex_delba_trigger(pst_mac_vap, OAL_FALSE, 0);
@@ -1509,21 +1344,7 @@ oal_uint32 dmac_config_btcoex_assoc_state_syn(mac_vap_stru *pst_mac_vap, mac_use
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_config_btcoex_disassoc_state_syn
- 功能描述  : 同步共存下mac的状态
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年04月21日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_config_btcoex_disassoc_state_syn(mac_vap_stru *pst_mac_vap)
 {
     dmac_vap_stru *pst_dmac_vap;
@@ -1536,8 +1357,13 @@ oal_uint32 dmac_config_btcoex_disassoc_state_syn(mac_vap_stru *pst_mac_vap)
         {
             /* Notify Bt the P2P Disconnected state */
             hal_set_btcoex_soc_gpreg0(OAL_FALSE, BIT15, 15);
-            hal_coex_sw_irq_set(BIT5);
         }
+        else
+        {
+            /* Notify Bt the AP-Mode vap disconnected */
+            hal_set_btcoex_soc_gpreg1(OAL_FALSE, BIT3, 3);
+        }
+        hal_coex_sw_irq_set(BIT5);
         OAM_WARNING_LOG2(0, OAM_SF_COEX, "{dmac_config_btcoex_disassoc_state_syn::ba process skip! vap mode is %d, p2p mode is %d.}",
                 pst_mac_vap->en_vap_mode, pst_mac_vap->en_p2p_mode);
         return OAL_SUCC;
@@ -1557,23 +1383,14 @@ oal_uint32 dmac_config_btcoex_disassoc_state_syn(mac_vap_stru *pst_mac_vap)
     FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_dmac_vap_btcoex_occupied->bt_coex_occupied_timer));
     FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_dmac_vap_btcoex_occupied->bt_coex_priority_timer));
 
+    /* Notify Bt the Station-VAP disconnected */
+    hal_set_btcoex_soc_gpreg1(OAL_FALSE, BIT3, 3);
+    hal_coex_sw_irq_set(BIT5);
+
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_sco_rx_average_rate_calculate
- 功能描述  : 统计Wifi的平均速率
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年04月06日
-    作    者   : h00240371
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_btcoex_rx_average_rate_calculate (dmac_user_btcoex_rx_info_stru *pst_btcoex_wifi_rx_rate_info,
                                                                                 oal_uint32 *pul_rx_rate, oal_uint16 *pus_rx_count)
 {
@@ -1592,20 +1409,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_btcoex_rx_average_rate_calculate (dmac_user_
     OAL_MEMZERO(pst_btcoex_wifi_rx_rate_info, OAL_SIZEOF(dmac_user_btcoex_rx_info_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_low_rate_callback
- 功能描述  : 接收降速后处理
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月9日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 dmac_btcoex_low_rate_callback(oal_void *p_arg)
 {
     mac_vap_stru *pst_vap = (mac_vap_stru *)p_arg;
@@ -1687,35 +1491,22 @@ OAL_STATIC oal_uint32 dmac_btcoex_low_rate_callback(oal_void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_bt_low_rate_process
- 功能描述  : 接收降速后处理
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月9日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_bt_low_rate_process (mac_vap_stru *pst_vap,
                                                 hal_to_dmac_device_stru *pst_hal_device)
 {
-    oal_uint32 ul_rx_rate = 0;
-    oal_uint16 us_rx_count = 0;
-    hal_btcoex_btble_status_stru *pst_btcoex_btble_status;
-    dmac_vap_stru *pst_dmac_vap;
-    bt_status_stru *pst_bt_status;
-    oal_uint32 ul_rate_threshold_min;
-    oal_uint32 ul_rate_threshold_max;
-    dmac_user_stru *pst_dmac_user;
-    dmac_device_stru* pst_dmac_device;
+    oal_uint32                          ul_rx_rate = 0;
+    oal_uint16                          us_rx_count = 0;
+    hal_btcoex_btble_status_stru       *pst_btcoex_btble_status;
+    dmac_vap_stru                      *pst_dmac_vap;
+    bt_status_stru                     *pst_bt_status;
+    oal_uint32                          ul_rate_threshold_min;
+    oal_uint32                          ul_rate_threshold_max;
+    dmac_user_stru                     *pst_dmac_user;
+    dmac_device_stru                   *pst_dmac_device;
     dmac_vap_btcoex_rx_statistics_stru *pst_dmac_vap_btcoex_rx_statistics;
-    dmac_user_btcoex_rx_info_stru *pst_dmac_user_btcoex_rx_info;
-    dmac_user_btcoex_delba_stru *pst_dmac_user_btcoex_delba;
+    dmac_user_btcoex_rx_info_stru      *pst_dmac_user_btcoex_rx_info;
+    dmac_user_btcoex_delba_stru        *pst_dmac_user_btcoex_delba;
 
     if (OAL_FALSE == dmac_btcoex_check_legacy_sta(pst_vap))
     {
@@ -1794,8 +1585,9 @@ oal_void dmac_btcoex_bt_low_rate_process (mac_vap_stru *pst_vap,
         ul_rate_threshold_max = pst_dmac_user_btcoex_delba->ul_rx_rate_threshold_max;
 
         /* 5G80M音乐固定2档 */
-        if ((WLAN_BAND_5G == pst_vap->st_channel.en_band) && (pst_vap->st_channel.en_bandwidth > WLAN_BAND_WIDTH_40MINUS)
-                && (pst_bt_status->bit_bt_a2dp))
+        if ((WLAN_BAND_5G == pst_vap->st_channel.en_band) 
+            && (pst_vap->st_channel.en_bandwidth > WLAN_BAND_WIDTH_40MINUS)
+            && (pst_bt_status->bit_bt_a2dp))
         {
             if ((BTCOEX_RX_WINDOW_SIZE_INDEX_3 == pst_dmac_user_btcoex_delba->uc_ba_size_index)
                     && (ul_rx_rate < (ul_rate_threshold_min + (ul_rate_threshold_max >> 1))))
@@ -1875,21 +1667,7 @@ oal_void dmac_btcoex_bt_low_rate_process (mac_vap_stru *pst_vap,
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_release_rx_prot
- 功能描述  : 共存对于关键帧的操作
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月27日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_release_rx_prot(mac_vap_stru *pst_mac_vap, oal_uint8 uc_data_type)
 {
     mac_device_stru *pst_mac_device;
@@ -1919,21 +1697,7 @@ oal_void dmac_btcoex_release_rx_prot(mac_vap_stru *pst_mac_vap, oal_uint8 uc_dat
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_tx_vip_frame
- 功能描述  : 共存对于关键帧的发送保护
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年7月13日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_tx_vip_frame(hal_to_dmac_device_stru *pst_hal_device, mac_vap_stru *pst_mac_vap, oal_dlist_head_stru *pst_tx_dscr_list_hdr)
 {
     oal_dlist_head_stru    *pst_dscr_entry;
@@ -1992,24 +1756,11 @@ oal_void dmac_btcoex_tx_vip_frame(hal_to_dmac_device_stru *pst_hal_device, mac_v
                 uc_coex_data_type = 0;
         }
         hal_set_btcoex_soc_gpreg0(uc_coex_data_type, BIT10 | BIT11 | BIT12, 10);   // 发送关键帧
-        hal_coex_sw_irq_set(BIT5);
+        hal_coex_sw_irq_set(HAL_COEX_SW_IRQ_BT);
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_bt_low_rate_process
- 功能描述  : 接收降速后处理
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月9日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_btcoex_sco_rx_rate_process (mac_vap_stru *pst_vap,
                                                 hal_to_dmac_device_stru *pst_hal_device)
 {
@@ -2054,6 +1805,504 @@ oal_void dmac_btcoex_sco_rx_rate_process (mac_vap_stru *pst_vap,
     }
 
 }
+
+
+oal_void  dmac_btcoex_resume_wifi(mac_device_stru *pst_mac_device)
+{
+    oal_uint8 uc_up_vap_num = 0;
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_resume_wifi:pst_mac_device is null");
+        return;
+    }
+    uc_up_vap_num = mac_device_calc_up_vap_num(pst_mac_device);
+
+    if (0 == uc_up_vap_num)
+    {
+        return;
+    }
+    if (mac_is_dbac_running(pst_mac_device))
+    {
+        /* dbac场景只需恢复dbac，由dbac自行切到工作信道 */
+        dmac_alg_dbac_resume(pst_mac_device);
+        return;
+    }
+    /* 将扫描虚假队列里的帧恢复到硬件队列中去,非DBAC场景下硬件队列的帧是被保持到扫描队列中去的 */
+    dmac_tx_restore_tx_queue(pst_mac_device->pst_device_stru, HAL_TX_FAKE_QUEUE_BGSCAN_ID);
+
+    /* 恢复home信道上被暂停的发送 */
+    dmac_vap_resume_tx_by_chl(pst_mac_device, &(pst_mac_device->st_home_channel));
+}
+
+
+oal_uint32 dmac_btcoex_suspend_wifi(mac_device_stru *pst_mac_device)
+{
+    oal_uint8                    uc_up_vap_num = 0;
+    mac_vap_stru                *pst_mac_vap1  = OAL_PTR_NULL;
+    mac_vap_stru                *pst_mac_vap2  = OAL_PTR_NULL;
+
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_suspend_wifi:pst_mac_device is null");
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    uc_up_vap_num = mac_device_calc_up_vap_num(pst_mac_device);
+
+    if (0 == uc_up_vap_num)
+    {
+        /* 没有work的vap，表示现在处于扫描状态，前面已经被扫描abort了，都处于idle状态，可以直接做切换，不需要vap pause操作 */
+        OAM_WARNING_LOG0(0,OAM_SF_COEX,"dmac_btcoex_suspend_wifi:vap num is 0");
+    }
+    else if (1 == uc_up_vap_num)
+    {
+        mac_device_find_up_vap(pst_mac_device,&pst_mac_vap1);
+        if (OAL_PTR_NULL == pst_mac_vap1)
+        {
+            OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_stop_wifi:pst_mac_vap1 is null");
+            return OAL_ERR_CODE_PTR_NULL;
+        }
+        dmac_switch_same_channel_off(pst_mac_device,pst_mac_vap1,pst_mac_device->st_scan_params.us_scan_time);
+    }
+    else if (2 == uc_up_vap_num)
+    {
+        mac_device_find_2up_vap(pst_mac_device,&pst_mac_vap1,&pst_mac_vap2);
+        if ((OAL_PTR_NULL == pst_mac_vap1) || (OAL_PTR_NULL == pst_mac_vap2))
+        {
+            OAM_ERROR_LOG2(0, OAM_SF_COEX, "dmac_btcoex_stop_wifi:pst_mac_vap1=%x,pst_mac_vap2=%x",pst_mac_vap1,pst_mac_vap2);
+            return OAL_ERR_CODE_PTR_NULL;
+        }
+        dmac_switch_channel_off_enhanced_self_channel(pst_mac_device,pst_mac_vap1,pst_mac_vap2,pst_mac_device->st_scan_params.us_scan_time);
+    }
+    else
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_stop_wifi: cannot support 3 and more vaps!}");
+        return OAL_FAIL;
+    }
+
+    return OAL_SUCC;
+}
+
+
+oal_uint32 dmac_btcoex_pow_save_callback(oal_void *p_arg)
+{
+    hal_to_dmac_device_stru   *pst_h2d_device = OAL_PTR_NULL;
+    mac_device_stru           *pst_mac_device = OAL_PTR_NULL;
+
+    if(OAL_PTR_NULL == p_arg)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_pow_save_callback:p_arg is null");
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+    pst_h2d_device = (hal_to_dmac_device_stru *)p_arg;
+    pst_mac_device = mac_res_get_dev(pst_h2d_device->uc_mac_device_id);
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::pst_mac_device null.}");
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    /* 在scan状态时候，扫描不进入低功耗，此时不用担心低功耗，如果扫描来时 */
+    if (MAC_SCAN_STATE_RUNNING == pst_mac_device->en_curr_scan_state)
+    {
+        switch(GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device))
+        {
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_BEGIN:
+                 OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::scan begin,scan_mode=%d.}",pst_mac_device->st_scan_params.en_scan_mode);
+                /* 如果扫描一开始被ps打断，此时ps来恢复继续扫描 */
+                dmac_scan_begin(pst_mac_device);
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_WAIT:
+                /* 如果扫描临时回home channel继续工作被打断，此时ps来恢复继续回home channel工作 */
+                dmac_scan_switch_home_channel_work(pst_mac_device);
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::dmac_scan_switch_home_channel_work start.}");
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_END:
+                /* 如果扫描结束被打断，此时ps来恢复继续扫描 */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::dmac_scan_handle_switch_channel_back start.}");
+                dmac_scan_end(pst_mac_device);
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_ABORT:
+                /* abort状态一定是，在save状态时候scan baort，类似于ps=0要恢复ps=1的配置，因为scan abort提前resume了，此处不需要处理  */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::scan is already abort and resume.}");
+
+                /* abort已经强制置为恢复，此次不保护，vap已经vap了不需要做操作 */
+                /* 恢复发送和接收 */
+                //dmac_vap_resume_tx_by_chl(pst_mac_device, pst_h2d_device, &(pst_h2d_device->st_wifi_channel_status));
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_IDLE:
+                /* 可能是状态1事件没有及时处理下半部，又来了状态0，此时处于扫描，恢复交给扫描来做即可 */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::HAL_BTCOEX_SW_POWSAVE_IDLE.}");
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_WORK:
+                /* 如果扫描期间来了1又来了0，此时恢复交给扫描自己恢复,ps=0不做处理 */
+                break;
+
+            default:
+                OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::en_sw_preempt_type[%d] error.}",
+                    GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device));
+        }
+    }
+    else
+    {
+        switch(GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device))
+        {
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_BEGIN:
+                if(WLAN_SCAN_MODE_BACKGROUND_CCA == pst_mac_device->st_scan_params.en_scan_mode)
+                {
+                    dmac_btcoex_resume_wifi(pst_mac_device);
+                    dmac_scan_begin(pst_mac_device);
+                }
+                break;
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_END:
+                if(WLAN_SCAN_MODE_BACKGROUND_CCA == pst_mac_device->st_scan_params.en_scan_mode)
+                {
+                    /* 如果扫描结束被打断，此时ps来恢复继续扫描 */
+                    dmac_btcoex_resume_wifi(pst_mac_device);
+                    dmac_scan_end(pst_mac_device);
+                }
+                break;
+            case HAL_BTCOEX_SW_POWSAVE_PSM_END:
+                /* 先执行了低功耗恢复，不要做操作 */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback:: powerdown already resume.}");
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_IDLE:
+                /* 可能是低功耗ps=1事件才开始执行，此时读取寄存器状态=0，当前是0状态，就按照0来处理即可，会连续来两个0的事件处理 */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback:: current is normal!.}");
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_SCAN_ABORT:
+                /* 强制scan abort恢复了，此处不需要恢复 */
+                OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback:: work state scan abort already resume.}");
+                break;
+
+            case HAL_BTCOEX_SW_POWSAVE_WORK:
+                /* 恢复发送和接收 */
+                if(HAL_BTCOEX_SW_POWSAVE_SUB_SCAN == GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device))
+                {
+                    GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_SUB_ACTIVE;
+                    OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback:: work HAL_BTCOEX_SW_POWSAVE_SUB_SCAN.}");
+                }
+                else
+                {
+                    dmac_btcoex_resume_wifi(pst_mac_device);
+                }
+                break;
+
+            default:
+                OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::en_sw_preempt_type[%d] error.}",
+                    GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device));
+        }
+    }
+
+    if(OAL_FALSE == HAL_BTCOEX_CHECK_SW_PREEMPT_REPLY_CTS_ON(pst_h2d_device))
+    {
+        /* 恢复硬件回cts */
+        hal_enable_machw_cts_trans(pst_h2d_device);
+    }
+    /* preempt机制置为NONE形式 */
+    GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_TIMEOUT;
+
+    OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_pow_save_callback::time is up.}");
+
+    return OAL_SUCC;
+}
+
+
+
+oal_void  dmac_btcoex_ps_timeout_update_time(hal_to_dmac_device_stru *pst_hal_device)
+{
+    hal_btcoex_ps_status_enum_uint8 en_ps_status = HAL_BTCOEX_PS_STATUE_BUTT;
+
+    if(OAL_PTR_NULL == pst_hal_device)
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "dmac_btcoex_ps_timeout_update_time:pst_hal_device is null");
+        return;
+    }
+    /* 获取当前ps业务状态 */
+    hal_btcoex_get_ps_service_status(pst_hal_device, &en_ps_status);
+
+    switch(en_ps_status)
+    {
+        case HAL_BTCOEX_PS_STATUE_ACL:
+            pst_hal_device->st_btcoex_sw_preempt.us_timeout_ms = BTCOEX_POWSAVE_TIMEOUT_LEVEL0;
+            break;
+
+        case HAL_BTCOEX_PS_STATUE_LDAC:
+        case HAL_BTCOEX_PS_STATUE_LDAC_ACL:
+        case HAL_BTCOEX_PS_STATUE_PAGE_INQ:
+            pst_hal_device->st_btcoex_sw_preempt.us_timeout_ms = BTCOEX_POWSAVE_TIMEOUT_LEVEL1;
+            break;
+
+        case HAL_BTCOEX_PS_STATUE_PAGE_ACL:
+        case HAL_BTCOEX_PS_STATUE_LDAC_PAGE:
+        case HAL_BTCOEX_PS_STATUE_TRIPLE:
+            pst_hal_device->st_btcoex_sw_preempt.us_timeout_ms = BTCOEX_POWSAVE_TIMEOUT_LEVEL2;
+            break;
+
+        default:
+            OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_timeout_update_time::en_ps_status[%d] error.}", en_ps_status);
+    }
+}
+
+
+
+oal_uint32 dmac_btcoex_ps_status_handler(frw_event_mem_stru *pst_event_mem)
+{
+    frw_event_stru                     *pst_event;
+    hal_to_dmac_device_stru            *pst_h2d_device;
+    mac_device_stru                    *pst_mac_device;
+    oal_bool_enum_uint8                 en_bt_acl_status;
+    oal_uint32                          ul_ps_enqueue_time;
+
+    if (OAL_UNLIKELY(OAL_PTR_NULL == pst_event_mem))
+    {
+        OAM_ERROR_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::pst_event_mem null.}");
+        return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    pst_event = frw_get_event_stru(pst_event_mem);
+
+    hal_get_hal_to_dmac_device(pst_event->st_event_hdr.uc_chip_id, pst_event->st_event_hdr.uc_device_id, &pst_h2d_device);
+
+    /* 记录事件入队时间 */
+    ul_ps_enqueue_time = pst_h2d_device->st_btcoex_sw_preempt.ul_ps_cur_time;
+    pst_h2d_device->st_btcoex_sw_preempt.ul_ps_cur_time = glbcnt_read_low32();
+    if(pst_h2d_device->st_btcoex_sw_preempt.ul_ps_cur_time - ul_ps_enqueue_time > 20)
+    {
+        /* 中断上下半部执行时间差大于20 * 31.25us时，增加维测 */
+        OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::ps start to end time beyond cnt[%d].}",
+            pst_h2d_device->st_btcoex_sw_preempt.ul_ps_cur_time - ul_ps_enqueue_time);
+    }
+
+    /* 事件申请时在上半部处理时已经减为了0，这里要加回去，恢复成1 */
+    oal_atomic_inc(&(pst_h2d_device->st_btcoex_sw_preempt.ul_ps_event_num));
+
+    pst_mac_device = mac_res_get_dev(pst_h2d_device->uc_mac_device_id);
+    if (OAL_PTR_NULL == pst_mac_device)
+    {
+       OAM_ERROR_LOG0(pst_h2d_device->uc_mac_device_id, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler: mac device is null ptr. device id:%d}");
+       return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    /* 1.软件ps未使能 */
+    if (OAL_FALSE == HAL_BTCOEX_CHECK_SW_PREEMPT_ON(pst_h2d_device))
+    {
+        /* 未使能，直接返回 */
+        return OAL_SUCC;
+    }
+
+    /* 2.业务ps stop检查 */
+    if(OAL_TRUE == GET_HAL_BTCOEX_SW_PREEMPT_PS_STOP(pst_h2d_device))
+    {
+        return OAL_SUCC;
+    }
+
+    /* 3.业务ps pause检查 */
+    if(OAL_TRUE == GET_HAL_BTCOEX_SW_PREEMPT_PS_PAUSE(pst_h2d_device))
+    {
+        OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::ps need to pause.}");
+        return OAL_SUCC;
+    }
+
+    /* 当前下半部事件，获取当前ps状态 */
+    hal_btcoex_get_bt_acl_status(pst_h2d_device, &en_bt_acl_status);
+
+    /* 因为低功耗造成连续两个相同的下半部来执行，尽量保证ps状态处理操作是交替执行，直接return, wifi下半部调度得慢，修改info打印
+       上半部采用原子操作之后，这里基本不会再进来了 */
+    if(en_bt_acl_status == pst_h2d_device->st_btcoex_sw_preempt.en_last_acl_status)
+    {
+        OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::en_bt_acl_status is the same.}");
+        return OAL_SUCC;
+    }
+    if (en_bt_acl_status)
+    {
+        /* preempt机制置为软件形式 */
+        GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_WORK;
+
+        /* 在scan状态时候，CCA扫描的时候没有暂停发生队列，PS中断过来时需要对WiFi进行备份 */
+        if (MAC_SCAN_STATE_RUNNING == pst_mac_device->en_curr_scan_state)
+        {
+            /* 在扫描执行过程中，不需要处理，扫描时对端已经处于节能状态并在tx pause状态，扫描结束时需要考虑是不是由ps来恢复，低功耗是200ms，
+             即使扫描由ps来恢复，也来得及，ps等于0肯定在低功耗前来到或者恢复之后，不会被低功耗打断
+            */
+            GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_SUB_SCAN;
+        }
+        else
+        {
+            /* sta模式可能一开始还没关联上，处于非up状态，后续启动成up状态，ps=0时候恢复不生效，直接判断不处理即可 */
+
+            /* 如果处于低功耗状态(主要是work状态下的awake子状态，收到ps中断，仍然对端在睡眠状态)，wifi不需要特殊处理，执行pause 不需要发ps帧，
+            等低功耗自己来处理ps状态 */
+            /* sta vap进行发送pause，并通知对端缓存数据暂停发送数据， 处于idle状态，空发一帧也没关系 */
+
+            /* 1.先默认为active状态，能保证低功耗饿死时，中断ps=1也能唤醒 */
+            GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_SUB_ACTIVE;
+
+            /* 2.刷新fcs业务类型 */
+            if(OAL_TRUE == GET_BTCOEX_BT_LDAC_STATUS(pst_h2d_device))
+            {
+                pst_mac_device->st_fcs_mgr.en_fcs_service_type = HAL_FCS_SERVICE_TYPE_BTCOEX_LDAC;
+            }
+            else
+            {
+                pst_mac_device->st_fcs_mgr.en_fcs_service_type = HAL_FCS_SERVICE_TYPE_BTCOEX_NORMAL;
+            }
+
+            /* 3.停止wifi的业务 */
+            dmac_btcoex_suspend_wifi(pst_mac_device);
+        }
+
+        /* 状态变迁,启动定时器完成ps操作，防止扫描置状态之后，出现wifi不醒来 */
+        if(OAL_TRUE == pst_h2d_device->st_btcoex_powersave_timer.en_is_registerd)
+        {
+            FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_h2d_device->st_btcoex_powersave_timer));
+        }
+
+        /* ps机制启动时，需要根据当前状态，刷新超时定时器时间 */
+        dmac_btcoex_ps_timeout_update_time(pst_h2d_device);
+
+        FRW_TIMER_CREATE_TIMER(&(pst_h2d_device->st_btcoex_powersave_timer),
+                               dmac_btcoex_pow_save_callback,
+                               pst_h2d_device->st_btcoex_sw_preempt.us_timeout_ms,
+                               (oal_void *)pst_h2d_device,
+                               OAL_FALSE,
+                               OAM_MODULE_ID_DMAC,
+                               pst_h2d_device->ul_core_id);
+        
+        if(OAL_FALSE == HAL_BTCOEX_CHECK_SW_PREEMPT_REPLY_CTS_ON(pst_h2d_device))
+        {
+            /* 禁止硬件回cts */
+            hal_disable_machw_cts_trans(pst_h2d_device);
+        }
+    }
+    else
+    {
+        if(OAL_TRUE == pst_h2d_device->st_btcoex_powersave_timer.en_is_registerd)
+        {
+            FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&(pst_h2d_device->st_btcoex_powersave_timer));
+        }
+
+        /* 在scan状态时候，扫描不进入低功耗，此时不用担心低功耗，如果扫描来时 */
+        if (MAC_SCAN_STATE_RUNNING == pst_mac_device->en_curr_scan_state)
+        {
+            switch(GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device))
+            {
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_BEGIN:
+                    /* 如果扫描一开始被ps打断，此时ps来恢复继续扫描 */
+                    dmac_scan_begin(pst_mac_device);
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_WAIT:
+                    /* 如果扫描临时回home channel继续工作被打断，此时ps来恢复继续回home channel工作 */
+                    dmac_scan_switch_home_channel_work(pst_mac_device);
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_END:
+                    /* 如果扫描结束被打断，此时ps来恢复继续扫描 */
+                    dmac_scan_end(pst_mac_device);
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_ABORT:
+                    /* abort状态一定是，在save状态时候scan baort，类似于ps=0要恢复ps=1的配置，因为scan abort提前resume了，此处不需要处理  */
+                    //OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::scan is already abort and resume.}");
+
+                    /* abort已经强制置为恢复，此次不保护，vap已经vap了不需要做操作 */
+                    /* 恢复发送和接收 */
+                    //dmac_vap_resume_tx_by_chl(pst_mac_device, pst_h2d_device, &(pst_h2d_device->st_wifi_channel_status));
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_IDLE:
+                    /* 可能是状态1事件没有及时处理下半部，又来了状态0，此时处于扫描，恢复交给扫描来做即可 */
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_WORK:
+                    /* 如果扫描期间来了1又来了0，此时恢复交给扫描自己恢复,ps=0不做处理 */
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_TIMEOUT:
+                    /* time is up， 或者低功耗已经提前恢复，属于正常 */
+                    break;
+
+                default:
+                    OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::en_sw_preempt_type[%d] error.}",
+                        GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device));
+            }
+        }
+        else
+        {
+            switch(GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device))
+            {
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_BEGIN:
+                    if(WLAN_SCAN_MODE_BACKGROUND_CCA == pst_mac_device->st_scan_params.en_scan_mode)
+                    {
+                        dmac_btcoex_resume_wifi(pst_mac_device);
+                        dmac_scan_begin(pst_mac_device);
+                    }
+                    break;
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_END:
+                    if(WLAN_SCAN_MODE_BACKGROUND_CCA == pst_mac_device->st_scan_params.en_scan_mode)
+                    {
+                        /* 如果扫描结束被打断，此时ps来恢复继续扫描 */
+                        dmac_btcoex_resume_wifi(pst_mac_device);
+                        dmac_scan_end(pst_mac_device);
+                    }
+                    break;
+                case HAL_BTCOEX_SW_POWSAVE_PSM_END:
+                    /* 先执行了低功耗恢复，不要做操作 */
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_IDLE:
+                    /* 可能是低功耗ps=1事件才开始执行，此时读取寄存器状态=0，当前是0状态，就按照0来处理即可，会连续来两个0的事件处理 */
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_SCAN_ABORT:
+                    /* 强制scan abort恢复了，此处不需要恢复 */
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_WORK:
+                    /* 恢复发送和接收 */
+                    if(HAL_BTCOEX_SW_POWSAVE_SUB_SCAN == GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device))
+                    {
+                        GET_HAL_BTCOEX_SW_PREEMPT_SUBTYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_SUB_ACTIVE;
+                        OAM_WARNING_LOG0(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler:: work HAL_BTCOEX_SW_POWSAVE_SUB_SCAN.}");
+                    }
+                    else
+                    {
+                        dmac_btcoex_resume_wifi(pst_mac_device);
+                    }
+                    break;
+
+                case HAL_BTCOEX_SW_POWSAVE_TIMEOUT:
+                    /* time is up， 或者低功耗已经提前恢复，属于正常 */
+                    break;
+                default:
+                    OAM_WARNING_LOG1(0, OAM_SF_COEX, "{dmac_btcoex_ps_status_handler::en_sw_preempt_type[%d] error.}",
+                        GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device));
+            }
+        }
+
+        if(OAL_FALSE == HAL_BTCOEX_CHECK_SW_PREEMPT_REPLY_CTS_ON(pst_h2d_device))
+        {
+            /* 恢复硬件回cts */
+            hal_enable_machw_cts_trans(pst_h2d_device);
+        }
+        /* preempt机制置为IDLE形式 */
+        GET_HAL_BTCOEX_SW_PREEMPT_TYPE(pst_h2d_device) = HAL_BTCOEX_SW_POWSAVE_IDLE;
+    }
+
+    /* 软件记录上一次的acl状态 */
+    pst_h2d_device->st_btcoex_sw_preempt.en_last_acl_status = en_bt_acl_status;
+
+    return OAL_SUCC;
+}
+
 #endif /* end of _PRE_WLAN_FEATURE_COEXIST_BT */
 
 #ifdef __cplusplus

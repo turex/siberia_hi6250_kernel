@@ -1,22 +1,5 @@
 
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_user.c
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   :
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -76,21 +59,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : mac_res_get_hmac_user_init
- 功能描述  : 获取对应HMAC USER索引的内存,由HMAC层强转为自己的内存解析
- 输入参数  : 对应HMAC USER内存索引
- 输出参数  : 无
- 返 回 值  : 对应内存地址
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月3日
-    作    者   : lingxuemeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_user_stru*  mac_res_get_hmac_user_alloc(oal_uint16 us_idx)
 {
     hmac_user_stru *pst_hmac_user;
@@ -111,21 +80,7 @@ hmac_user_stru*  mac_res_get_hmac_user_alloc(oal_uint16 us_idx)
     return pst_hmac_user;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_get_hmac_user
- 功能描述  : 获取对应HMAC USER索引的内存,由HMAC层强转为自己的内存解析
- 输入参数  : 对应HMAC USER内存索引
- 输出参数  : 无
- 返 回 值  : 对应内存地址
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月3日
-    作    者   : lingxuemeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_user_stru*  mac_res_get_hmac_user(oal_uint16 us_idx)
 {
     hmac_user_stru *pst_hmac_user;
@@ -151,21 +106,7 @@ hmac_user_stru*  mac_res_get_hmac_user(oal_uint16 us_idx)
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_user_alloc
- 功能描述  : 创建DMAC用户实体
- 输入参数  : oal_mem_stru **ppst_mem_stru
- 输出参数  : oal_mem_stru **ppst_mem_stru
- 返 回 值  : 成功或失败原因
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月11日
-    作    者   : 康国昌53369
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_alloc(oal_uint16 *pus_user_idx)
 {
     hmac_user_stru *pst_hmac_user;
@@ -206,21 +147,7 @@ oal_uint32  hmac_user_alloc(oal_uint16 *pus_user_idx)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_free
- 功能描述  : 释放对应HMAC USER的内存
- 输入参数  : 对应HMAC USER内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月3日
-    作    者   : lingxuemeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_free(oal_uint16 us_idx)
 {
     hmac_user_stru *pst_hmac_user;
@@ -252,21 +179,7 @@ oal_uint32  hmac_user_free(oal_uint16 us_idx)
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_init
- 功能描述  : 初始化HMAC 用户
- 输入参数  : hmac_user_stru *pst_hmac_user
- 输出参数  : 无
- 返 回 值  : 成功或失败原因
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月19日
-    作    者   : 康国昌53369
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_init(hmac_user_stru *pst_hmac_user)
 {
     oal_uint8        uc_tid_loop;
@@ -331,26 +244,12 @@ oal_uint32  hmac_user_init(hmac_user_stru *pst_hmac_user)
     /* 清除usr统计信息 */
     oam_stats_clear_user_stat_info(pst_hmac_user->st_user_base_info.us_assoc_id);
 #endif
-
+    pst_hmac_user->assoc_ap_up_tx_auth_req = OAL_FALSE;
     pst_hmac_user->ul_first_add_time = (oal_uint32)OAL_TIME_GET_STAMP_MS();
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_user_set_avail_num_space_stream
- 功能描述  : 获取用户和VAP公共可用的空间流数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月16日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_set_avail_num_space_stream(mac_user_stru *pst_mac_user, wlan_nss_enum_uint8 en_vap_nss)
 {
     mac_user_ht_hdl_stru         *pst_mac_ht_hdl;
@@ -450,21 +349,7 @@ oal_uint32  hmac_user_set_avail_num_space_stream(mac_user_stru *pst_mac_user, wl
 }
 
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-/*****************************************************************************
- 函 数 名  : hmac_stop_sa_query_timer
- 功能描述  : 删除sa query timer
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月27日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void hmac_stop_sa_query_timer(hmac_user_stru *pst_hmac_user)
 {
     frw_timeout_stru    *pst_sa_query_interval_timer;
@@ -484,21 +369,7 @@ OAL_STATIC oal_void hmac_stop_sa_query_timer(hmac_user_stru *pst_hmac_user)
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_user_get_wapi_ptr
- 功能描述  : 获取用户的wapi对象指针
- 输入参数  :
- 输出参数  : oal_void
- 返 回 值  : 无
- 调用函数  : 无
- 被调函数  : 无
 
- 修改历史      :
-  1.日    期   : 2015年5月29日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_WAPI
 hmac_wapi_stru * hmac_user_get_wapi_ptr(mac_vap_stru *pst_mac_vap, oal_bool_enum_uint8 en_pairwise, oal_uint16 us_pairwise_idx)
 
@@ -527,21 +398,7 @@ hmac_wapi_stru * hmac_user_get_wapi_ptr(mac_vap_stru *pst_mac_vap, oal_bool_enum
     return &pst_hmac_user->st_wapi;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_compability_ap_tpye_identify
- 功能描述  : 兼容性问题AP识别
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月7日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 mac_ap_type_enum_uint8 hmac_compability_ap_tpye_identify(oal_uint8 *puc_mac_addr)
 {
     if(MAC_IS_GOLDEN_AP(puc_mac_addr))
@@ -551,21 +408,7 @@ mac_ap_type_enum_uint8 hmac_compability_ap_tpye_identify(oal_uint8 *puc_mac_addr
     return MAC_AP_TYPE_NORMAL;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_del_user
- 功能描述  : 删除user
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月1日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_del(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_user)
 {
     oal_uint16                      us_user_index;
@@ -590,12 +433,12 @@ oal_uint32  hmac_user_del(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_us
     oal_uint16                      us_len;
 #endif
 
-    if (OAL_UNLIKELY((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == pst_hmac_user)))
-    {
+    if (OAL_UNLIKELY((OAL_PTR_NULL == pst_mac_vap) || (OAL_PTR_NULL == pst_hmac_user))) {
         OAM_ERROR_LOG2(0, OAM_SF_UM, "{hmac_user_del::param null,%d %d.}", pst_mac_vap, pst_hmac_user);
         return OAL_ERR_CODE_PTR_NULL;
     }
 
+    pst_hmac_user->assoc_ap_up_tx_auth_req = OAL_FALSE;
     pst_mac_user = (mac_user_stru*)(&pst_hmac_user->st_user_base_info);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_user))
     {
@@ -703,7 +546,6 @@ oal_uint32  hmac_user_del(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_us
     if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
     {
 
-        /* DTS2015091705218 host删用户时mac vap下的关联id清零 */
 #ifdef _PRE_WLAN_FEATURE_STA_PM
         mac_vap_set_aid(pst_mac_vap, 0);
 #endif
@@ -754,10 +596,9 @@ oal_uint32  hmac_user_del(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_us
         FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&pst_hmac_user->st_mgmt_timer);
     }
 
-    if (pst_hmac_user->st_defrag_timer.en_is_registerd == OAL_TRUE)
-    {
-        FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&pst_hmac_user->st_defrag_timer);
-    }
+    // 删除user流程中清除user下的分片缓存
+    hmac_user_clear_defrag_res(pst_hmac_user);
+
 #ifdef _PRE_WLAN_FEATURE_WMMAC
 #if defined(_PRE_PRODUCT_ID_HI110X_HOST)
     /*删除user时删除发送addts req超时定时器*/
@@ -808,21 +649,7 @@ oal_uint32  hmac_user_del(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_us
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_add
- 功能描述  : 添加用户配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_add(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_mac_addr, oal_uint16 *pus_user_index)
 {
     hmac_vap_stru                  *pst_hmac_vap;
@@ -901,7 +728,6 @@ oal_uint32  hmac_user_add(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_mac_addr, oa
 
     if (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode)
     {
-	/* DTS2015022704828 P2P作为CL时可以添加2个用户，一个用于发送管理帧，一个用户发送数据帧 */
     #ifdef _PRE_WLAN_FEATURE_P2P
         if (IS_P2P_CL(pst_mac_vap))
         {
@@ -1065,21 +891,7 @@ oal_uint32  hmac_user_add(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_mac_addr, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_config_add_user
- 功能描述  : 配置命令添加用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_add_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_add_user_param_stru    *pst_add_user;
@@ -1175,7 +987,7 @@ oal_uint32  hmac_config_add_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, o
     //hmac_user_add_notify_alg(&pst_hmac_vap->st_vap_base_info, us_user_index);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-    if (IS_LEGACY_VAP(pst_mac_vap)) //DTS2015022604332 添加用户后，对于P2P 不需要修改vap 状态
+    if (IS_LEGACY_VAP(pst_mac_vap))
     {
         mac_vap_state_change(pst_mac_vap, MAC_VAP_STATE_UP);
     }
@@ -1184,21 +996,7 @@ oal_uint32  hmac_config_add_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_config_del_user
- 功能描述  : 配置命令删除用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_del_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_del_user_param_stru    *pst_del_user;
@@ -1254,21 +1052,7 @@ oal_uint32  hmac_config_del_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_add_multi_user
- 功能描述  : hmac层创建组播用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月23日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_add_multi_user(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_user_index)
 {
     oal_uint32      ul_ret;
@@ -1316,21 +1100,7 @@ oal_uint32  hmac_user_add_multi_user(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_
 
 
 
-/*****************************************************************************
- 函 数 名  : hmac_user_del_multi_user
- 功能描述  : hmac层删除multiuser
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_del_multi_user(mac_vap_stru *pst_mac_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_WAPI
@@ -1353,21 +1123,7 @@ oal_uint32  hmac_user_del_multi_user(mac_vap_stru *pst_mac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_is_wapi_connected
- 功能描述  : 判断wapi设备是否关连
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_WAPI
 oal_uint8  hmac_user_is_wapi_connected(oal_uint8 uc_device_id)
 {
@@ -1410,21 +1166,7 @@ oal_uint8  hmac_user_is_wapi_connected(oal_uint8 uc_device_id)
 #endif/* #ifdef _PRE_WLAN_FEATURE_WAPI */
 
 
-/*****************************************************************************
- 函 数 名  : hmac_user_add_notify_alg
- 功能描述  : 抛事件给dmac，让其在dmac挂算法钩子
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年11月25日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_user_add_notify_alg(mac_vap_stru *pst_mac_vap, oal_uint16 us_user_idx)
 {
     frw_event_mem_stru             *pst_event_mem;
@@ -1480,21 +1222,7 @@ oal_uint32  hmac_user_add_notify_alg(mac_vap_stru *pst_mac_vap, oal_uint16 us_us
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_vap_get_hmac_user_by_addr
- 功能描述  : 根据mac地址获取mac_user指针
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月8日
-    作    者   : l00324381
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_user_stru  *mac_vap_get_hmac_user_by_addr(mac_vap_stru *pst_mac_vap, oal_uint8  *puc_mac_addr)
 {
     oal_uint32              ul_ret;
@@ -1521,6 +1249,26 @@ hmac_user_stru  *mac_vap_get_hmac_user_by_addr(mac_vap_stru *pst_mac_vap, oal_ui
         OAM_ERROR_LOG0(0, OAM_SF_ANY, "{mac_vap_get_hmac_user_by_addr::user ptr null.}");
     }
     return pst_hmac_user;
+}
+
+// 清除user下的分片缓存，防止重关联或者rekey流程报文重组攻击
+void hmac_user_clear_defrag_res(hmac_user_stru *hmac_user)
+{
+    if (hmac_user == NULL) {
+        return;
+    }
+    OAM_WARNING_LOG2(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+        "{hmac_user_clear_defrag_res :: timer[%d] netbuf NULL[%d] .}",
+        hmac_user->st_defrag_timer.en_is_registerd, (hmac_user->pst_defrag_netbuf == NULL));
+
+    if (hmac_user->st_defrag_timer.en_is_registerd == OAL_TRUE) {
+        FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&hmac_user->st_defrag_timer);
+    }
+
+    if (hmac_user->pst_defrag_netbuf != NULL) {
+        oal_netbuf_free(hmac_user->pst_defrag_netbuf);
+        hmac_user->pst_defrag_netbuf = NULL;
+    }
 }
 
 /*lint -e19*/

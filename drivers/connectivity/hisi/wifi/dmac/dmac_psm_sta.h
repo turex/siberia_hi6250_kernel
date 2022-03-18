@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_psm_sta.h
-  版 本 号   : 初稿
-  作    者   : l00280485
-  生成日期   : 2014年11月25日
-  最近修改   :
-  功能描述   : dmac_psm_sta.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年11月25日
-    作    者   : l00280485
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __DMAC_PSM_STA_H__
 #define __DMAC_PSM_STA_H__
@@ -100,79 +83,23 @@ typedef struct dmac_tim_ie dmac_tim_ie_stru;
 /*****************************************************************************
   9 OTHERS定义
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : dmac_psm_sta_incr_activity_cnt
- 功能描述  : activity_cnt++
- 输入参数  : pst_sta_pm_handle:状态机结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_psm_sta_incr_activity_cnt(mac_sta_pm_handler_stru *pst_sta_pm_handle)
 {
     pst_sta_pm_handle->ul_tx_rx_activity_cnt++;
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_get_more_data_sta
- 功能描述  : 检查是否有moredata
- 输入参数  : pst_sta_pm_handle:状态机结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_psm_get_more_data_sta(mac_ieee80211_frame_stru *pst_frame_hdr)
 {
     return (oal_uint8)(pst_frame_hdr->st_frame_control.bit_more_data);
 
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_sta_reset_activity_cnt
- 功能描述  : reset activity cnt
- 输入参数  : pst_sta_pm_handle:状态机结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_psm_sta_reset_activity_cnt(mac_sta_pm_handler_stru *pst_sta_pm_handle)
 {
     pst_sta_pm_handle->ul_tx_rx_activity_cnt = 0;
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_sta_is_activity_cnt_zero
- 功能描述  : 判断 activity cnt 是否为0
- 输入参数  : pst_sta_pm_handle:状态机结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_psm_sta_is_activity_cnt_zero(mac_sta_pm_handler_stru *pst_sta_pm_handle)
 {
     if (0 == pst_sta_pm_handle->ul_tx_rx_activity_cnt)
@@ -181,21 +108,7 @@ OAL_STATIC OAL_INLINE oal_uint8 dmac_psm_sta_is_activity_cnt_zero(mac_sta_pm_han
     }
     return OAL_FALSE;
 }
-/*****************************************************************************
- 函 数 名  : dmac_is_legacy_ac_present
- 功能描述  : sta下判断四种是否有传统的ac
- 输入参数  : pst_dmac_vap:dmac_vap 结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_is_legacy_ac_present(dmac_vap_stru *pst_dmac_vap)
 {
     oal_uint8               uc_ac;
@@ -214,21 +127,7 @@ OAL_STATIC OAL_INLINE oal_uint8 dmac_is_legacy_ac_present(dmac_vap_stru *pst_dma
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_is_any_legacy_ac_present
- 功能描述  : checks if any legacy AC is present for the STA
- 输入参数  : pst_dmac_vap:dmac_vap 结构体 pst_netbuf:netbuf结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月20日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_is_any_legacy_ac_present(dmac_vap_stru *pst_dmac_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -253,21 +152,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_set_ps_poll_rsp_pending(dmac_vap_stru *pst_d
     pst_dmac_vap->uc_ps_poll_pending = uc_val;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_process_rx_process_data_sta_prot
- 功能描述  : 基于其他协议处理接收帧(uapsd p2p节能等)
- 输入参数  : pst_dmac_vap:dmac_vap 结构体 pst_netbuf:netbuf结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月20日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_process_rx_process_data_sta_prot(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_buf)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -282,21 +167,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_process_rx_process_data_sta_prot(dmac_vap_st
 #endif
 
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_process_tx_process_data_sta_prot
- 功能描述  : 基于其他协议处理发送帧(uapsd p2p节能等)
- 输入参数  : pst_dmac_vap:dmac_vap 结构体 pst_tx_ctl:tx cb结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月20日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_psm_process_tx_process_data_sta_prot(dmac_vap_stru *pst_dmac_vap, mac_tx_ctl_stru *pst_tx_ctl)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -308,21 +179,7 @@ OAL_STATIC OAL_INLINE oal_uint8 dmac_psm_process_tx_process_data_sta_prot(dmac_v
 
     return STA_PWR_SAVE_STATE_ACTIVE;
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_process_tx_complete_sta_prot
- 功能描述  : 基于其他协议处理发送完成中断(uapsd p2p节能等)
- 输入参数  : pst_dmac_vap:dmac_vap 结构体 pst_tx_ctl:tx cb结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月20日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_psm_process_tx_complete_sta_prot(dmac_vap_stru *pst_dmac_vap, oal_uint8  uc_dscr_status, oal_netbuf_stru *pst_netbuf)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -332,21 +189,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_psm_process_tx_complete_sta_prot(dmac_vap_st
     }
 #endif /* _PRE_WLAN_FEATURE_STA_UAPSD */
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_process_tx_complete_sta_prot
- 功能描述  : handles TIM set event for STA mode based on the protocol
- 输入参数  : pst_dmac_vap:dmac_vap 结构体 pst_tx_ctl:tx cb结构体
- 输出参数  : OAL_TRUE/OAL_FALSE
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月20日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_psm_process_tim_set_sta_prot(dmac_vap_stru *pst_dmac_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -356,21 +199,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_psm_process_tim_set_sta_prot(dmac_vap_stru *
     }
 #endif /* _PRE_WLAN_FEATURE_STA_UAPSD */
 }
-/*****************************************************************************
- 函 数 名  : dmac_is_sta_fast_ps_enabled
- 功能描述  : 是否开启fast ps 节能模式
- 输入参数  : pst_dmac_vap dmac_vap 结构体
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月19日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 dmac_is_sta_fast_ps_enabled(mac_sta_pm_handler_stru  *pst_sta_pm_handle)
 {
     if((oal_uint8)(pst_sta_pm_handle->uc_vap_ps_mode)  >= (oal_uint8)MIN_PSPOLL_PS)
@@ -382,21 +211,7 @@ OAL_STATIC OAL_INLINE oal_uint8 dmac_is_sta_fast_ps_enabled(mac_sta_pm_handler_s
         return OAL_TRUE;
     }
 }
-/*****************************************************************************
- 函 数 名  : dmac_can_sta_doze_prot
- 功能描述  : This function checks if the STA can doze based on the protocol defined
- 输入参数  : pst_dmac_vap dmac_vap 结构体
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月1日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE  oal_uint8 dmac_can_sta_doze_prot(dmac_vap_stru *pst_dmac_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
@@ -417,21 +232,7 @@ OAL_STATIC OAL_INLINE  oal_uint8 dmac_can_sta_doze_prot(dmac_vap_stru *pst_dmac_
 #endif /* _PRE_WLAN_FEATURE_STA_UAPSD */
     return OAL_TRUE;
 }
-/*****************************************************************************
- 函 数 名  : dmac_send_ps_poll_to_AP_prot
- 功能描述  : Set the P2P PS Poll pending flag whenever a PS-Poll frame is sent to AP
- 输入参数  : pst_dmac_vap dmac_vap 结构体
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月1日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_send_ps_poll_to_ap_prot(dmac_vap_stru *pst_dmac_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_P2P
@@ -439,21 +240,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_send_ps_poll_to_ap_prot(dmac_vap_stru *pst_d
 #endif /* #if  defined(_PRE_WLAN_FEATURE_P2P)*/
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_rx_inc_pkt_cnt
- 功能描述  : 低功耗在active状态下收包报文统计数加1, 在所有的帧过滤处理完后再调用，仅统计需要真正处理的业务包个数。
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月25日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  dmac_psm_rx_inc_pkt_cnt(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_buf)
 {
     mac_sta_pm_handler_stru  *pst_mac_sta_pm_handle;

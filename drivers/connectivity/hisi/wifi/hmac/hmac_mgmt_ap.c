@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_mgmt_ap.c
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2013年6月18日
-  最近修改   :
-  功能描述   : AP侧管理面处理
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年6月18日
-    作    者   : zhangheng
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -35,6 +18,7 @@ extern "C" {
 #include "hmac_encap_frame.h"
 #include "hmac_encap_frame_ap.h"
 #include "hmac_mgmt_bss_comm.h"
+#include "hmac_mgmt_sta.h"
 #include "mac_frame.h"
 #include "hmac_rx_data.h"
 #include "hmac_uapsd.h"
@@ -84,23 +68,7 @@ OAL_STATIC oal_uint32 hmac_ap_prepare_assoc_req(hmac_user_stru *pst_hmac_user, o
   3 函数实现
 *****************************************************************************/
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-/*****************************************************************************
- 函 数 名  : hmac_set_pmf_cap
- 功能描述  : 根据ap sta两端的pmf能力设置这条连接pmf使能状态
- 输入参数  : pst_mac_vap
-             pst_mac_user
-             puc_rsn_ie   :存储user rsn能力的指针
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月20日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_set_pmf_cap(mac_user_stru  *pst_mac_user, mac_vap_stru  *pst_mac_vap, const oal_uint8  *puc_rsn_ie)
 {
     oal_uint16                          us_rsn_capability;
@@ -126,21 +94,7 @@ oal_void hmac_set_pmf_cap(mac_user_stru  *pst_mac_user, mac_vap_stru  *pst_mac_v
 
 }
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_handle_disconnect_rsp_ap
- 功能描述  : AP(驱动)上报去关联某个STA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月9日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  hmac_handle_disconnect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user)
 
 {
@@ -186,21 +140,7 @@ oal_void  hmac_handle_disconnect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hmac_user_s
 
 
 
-/*****************************************************************************
- 函 数 名  : hmac_handle_connect_rsp_ap
- 功能描述  : AP(驱动)上报新关联上某个STA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月9日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_handle_connect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user)
 {
     mac_device_stru     *pst_mac_device;
@@ -258,21 +198,7 @@ OAL_STATIC oal_void  hmac_handle_connect_rsp_ap(hmac_vap_stru *pst_hmac_vap, hma
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_update_auth_mib
- 功能描述  : 更新认证mib 打印调测信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月4日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_mgmt_update_auth_mib(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_auth_rsp)
 {
     oal_uint16  us_status = 0;
@@ -313,21 +239,7 @@ OAL_STATIC oal_void  hmac_mgmt_update_auth_mib(hmac_vap_stru *pst_hmac_vap, oal_
     }
 
 }
-/*****************************************************************************
- 函 数 名  : hmac_ap_rx_auth_req
- 功能描述  : 处理认证请求帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月1日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_rx_auth_req(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_auth_req, dmac_wlan_crx_event_stru   *pst_mgmt_rx_event)
 {
     oal_netbuf_stru  *pst_auth_rsp      = OAL_PTR_NULL;
@@ -388,22 +300,7 @@ OAL_STATIC oal_void  hmac_ap_rx_auth_req(hmac_vap_stru *pst_hmac_vap, oal_netbuf
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_is_olbc_present
- 功能描述  : 判断obss中是否存在non_ERP站点存在
- 输入参数  : puc_payload    : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len : beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : OAL_TRUE: obss中存在non ERP站点，  OAL_FALSE: 不存在
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum hmac_ap_is_olbc_present(oal_uint8 *puc_payload, oal_uint32 ul_payload_len)
 {
     oal_uint8               uc_num_rates = 0;
@@ -453,23 +350,7 @@ OAL_STATIC oal_bool_enum hmac_ap_is_olbc_present(oal_uint8 *puc_payload, oal_uin
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_process_obss_erp_ie
- 功能描述  : 处理obss来的beacon帧/probe response帧中的ERP信息元素
- 输入参数  : pst_hmac_vap   : hmac vap指针
-             puc_payload    : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len : beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_ap_process_obss_erp_ie(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                      *puc_payload,
@@ -485,22 +366,7 @@ OAL_STATIC oal_uint32 hmac_ap_process_obss_erp_ie(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_is_obss_non_ht_present
- 功能描述  : 判断obss中是否存在non_ht站点存在
- 输入参数  : puc_payload    : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len : beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : OAL_TRUE: obss中存在non ht站点，  OAL_FALSE: 不存在
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum hmac_ap_is_obss_non_ht_present(oal_uint8 *puc_payload, oal_uint32 ul_payload_len)
 {
     mac_ht_opern_stru      *pst_ht_opern;
@@ -537,23 +403,7 @@ OAL_STATIC oal_bool_enum hmac_ap_is_obss_non_ht_present(oal_uint8 *puc_payload, 
     return OAL_TRUE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_process_obss_ht_operation_ie
- 功能描述  : 处理obss来的beacon帧/probe response帧中的ERP信息元素
- 输入参数  : pst_hmac_vap   : hmac vap指针
-             puc_payload    : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len : beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_ap_process_obss_ht_operation_ie(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                      *puc_payload,
@@ -569,23 +419,7 @@ OAL_STATIC oal_uint32 hmac_ap_process_obss_ht_operation_ie(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_rx_obss_beacon
- 功能描述  : 处理obss来的beacon帧/probe response帧
- 输入参数  : pst_hmac_vap   : hmac vap指针
-             puc_payload    : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len : beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_ap_rx_obss_beacon(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                      *puc_payload,
@@ -606,21 +440,7 @@ oal_uint32  hmac_ap_rx_obss_beacon(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_rx_deauth_req
- 功能描述  : 处理接收去认证帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月1日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_ap_rx_deauth_req(hmac_vap_stru *pst_hmac_vap, oal_uint8 *puc_mac_hdr, oal_bool_enum_uint8 en_is_protected)
 {
     oal_uint8      *puc_sa          = OAL_PTR_NULL;
@@ -681,21 +501,7 @@ OAL_STATIC oal_uint32 hmac_ap_rx_deauth_req(hmac_vap_stru *pst_hmac_vap, oal_uin
     return OAL_SUCC;
 
 }
-/*****************************************************************************
- 函 数 名  : hmac_user_sort_op_rates
- 功能描述  : 按一定顺序将user中速率重新排序
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月9日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_user_sort_op_rates(hmac_user_stru *pst_hmac_user)
 {
     oal_uint8  uc_loop;
@@ -731,24 +537,7 @@ OAL_STATIC oal_void  hmac_user_sort_op_rates(hmac_user_stru *pst_hmac_user)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_update_sta_cap_info
- 功能描述  : AP侧设置STA的能力信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月3日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-  2.日    期   : 2013年7月8日
-    作    者   : zhangyu
-    修改内容   : 添加函数检查内容
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum_uint8  hmac_ap_up_update_sta_cap_info(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint16                      us_cap_info,
@@ -791,21 +580,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_ap_up_update_sta_cap_info(
     return OAL_TRUE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_check_update_exp_rate
- 功能描述  : 检查并更新扩展速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月9日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_user_check_update_exp_rate(hmac_user_stru *pst_hmac_user, oal_uint8 *pst_params, oal_uint8 *puc_erp_rates_num)
 {
 
@@ -837,26 +612,7 @@ OAL_STATIC oal_uint32  hmac_user_check_update_exp_rate(hmac_user_stru *pst_hmac_
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_update_sta_sup_rates
- 功能描述  : 检查更新AP侧关联STA的速率信息
- 输入参数  : oal_uint8                     *puc_payload    -- 关联帧帧体内容指针
-             oal_uint32                     ul_msg_len     -- 关联帧帧体长度
-             hmac_user_stru                *pst_hmac_user  -- 关联用户的结构体指针
-             oal_uint16                    *pus_msg_idx    -- 关联帧帧体偏移索引
- 输出参数  : wlan_status_code_enum_uint16  *pen_status_code-- 关联状态码
-             oal_uint8                     *puc_num_rates  -- 关联用户的速率个数
-             oal_uint16                    *pus_msg_idx    -- 关联帧帧体偏移索引
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月10日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_ap_up_update_sta_sup_rates(
                 oal_uint8                      *puc_payload,
                 hmac_user_stru                 *pst_hmac_user,
@@ -939,7 +695,6 @@ OAL_STATIC oal_uint32  hmac_ap_up_update_sta_sup_rates(
     puc_ext_sup_rates_ie = mac_find_ie(MAC_EID_XRATES, puc_payload + us_offset, (oal_int32)(ul_msg_len - us_offset));
     if (OAL_PTR_NULL == puc_ext_sup_rates_ie)
     {
-        /* DTS2015030301708，5G不存在扩展速率，这里要区分 */
         if(WLAN_BAND_2G == pst_mac_vap->st_channel.en_band)
         {
             OAM_WARNING_LOG0(pst_mac_user->uc_vap_id, OAM_SF_ANY,
@@ -998,26 +753,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_update_sta_sup_rates(
 }
 
 #if defined(_PRE_WLAN_FEATURE_WPA) || defined(_PRE_WLAN_FEATURE_WPA2)
-/*****************************************************************************
- 函 数 名  : hmac_check_assoc_req_security_cap_common
- 功能描述  : AP 检测STA 关联请求帧中的安全相关公共信息
- 输入参数  : mac_vap_stru                * pst_mac_vap
-             oal_uint8                   * puc_ie
-             oal_uint32                    ul_msg_len
-             oal_uint8                     uc_80211i_mode
-             oal_uint8                     uc_offset
-             mac_status_code_enum_uint16 * pen_status_code
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月17日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_common(mac_vap_stru                * pst_mac_vap,
                                                     oal_uint8                   * puc_ie,
                                                     oal_uint32                    ul_msg_len,
@@ -1055,7 +791,6 @@ OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_common(mac_vap_stru     
     /* 忽略版本信息 */
     uc_index += 2;
 
-    /* 检测组播OUI 信息 DTS2015052702477 此判断不再返回错误，只输出打印 */
     if (0 != oal_memcmp(puc_oui, puc_ie + uc_index, MAC_OUI_LEN))
     {
 // *pen_status_code = MAC_INVALID_INFO_ELMNT;
@@ -1144,27 +879,7 @@ OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_common(mac_vap_stru     
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_check_assoc_req_sec_authenticator
- 功能描述  : AP 检查接收到的ASOC REQ消息中的SECURITY参数.如出错,则返回对应的错
-             误码
- 输入参数  : hmac_vap_stru               *pst_hmac_vap
-             oal_uint8                   *puc_mac_hdr
-             oal_uint8                   *puc_payload
-             oal_uint32                   ul_msg_len
-             hmac_user_stru               pst_hmac_user
-             mac_status_code_enum_uint16 *pen_status_code
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月31日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_authenticator(hmac_vap_stru               *pst_hmac_vap,
                              oal_uint8                   *puc_mac_hdr,
                              oal_uint8                   *puc_payload,
@@ -1210,7 +925,6 @@ OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_authenticator(hmac_vap_s
     puc_rsn_ie = mac_find_ie(MAC_EID_RSN, puc_payload + uc_offset, (oal_int32)(ul_msg_len - uc_offset));
     puc_wpa_ie = mac_find_vendor_ie(MAC_WLAN_OUI_MICROSOFT, MAC_OUITYPE_WPA, puc_payload + uc_offset, (oal_int32)(ul_msg_len - uc_offset));
 
-    /* DTS2015080407959 此处流程为了兼容有些sta进行wps关联时不携带wps IE信息 */
     if ((OAL_PTR_NULL == puc_rsn_ie) && (OAL_PTR_NULL == puc_wpa_ie))
     {
         /* 加密方式不是WPA/WPA2， 则判断是否为WEP */
@@ -1297,22 +1011,7 @@ OAL_STATIC oal_uint32 hmac_check_assoc_req_security_cap_authenticator(hmac_vap_s
 }
 #endif /*(_PRE_WLAN_FEATURE_WPA) || defined(_PRE_WLAN_FEATURE_WPA2)*/
 
-/*****************************************************************************
- 函 数 名  : hmac_is_erp_sta
- 功能描述  : 查看sta是否属于erp站点
- 输入参数  : mac_user_stru               pst_mac_user
- 输出参数  : 无
- 返 回 值  : OAL_TRUE: sta为erp站点
-            OAL_FALSE:sta为非erp站点(11b站点)
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月26日
-    作    者   : 曹海彬
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_is_erp_sta(hmac_user_stru *pst_hmac_user)
 {
     oal_uint32            ul_loop        = 0;
@@ -1343,23 +1042,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_is_erp_sta(hmac_user_stru *pst_hm
     return en_is_erp_sta;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_update_legacy_capability
- 功能描述  : AP处理assoc req 中的capability info
- 输入参数  : pst_hmac_vap   : hmac vap结构体指针
-             pst_hmac_user  : hmac user结构体指针
-             us_cap_info    : 帧体中cap info信息
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月9日
-    作    者   : caohaibin
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_ap_up_update_legacy_capability(
                 hmac_vap_stru                  *pst_hmac_vap,
                 hmac_user_stru                 *pst_hmac_user,
@@ -1466,21 +1149,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_update_legacy_capability(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_update_asoc_entry_prot
- 功能描述  : 更新ASOC关联实体中的UAPSD信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月9日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_ap_up_update_asoc_entry_prot(
                 oal_uint8                      *puc_mac_hdr,
                 oal_uint8                       uc_sub_type,
@@ -1497,24 +1166,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_update_asoc_entry_prot(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_update_sta_user
- 功能描述  : AP侧更新STA信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月3日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-  2.日    期   : 2013年8月27日
-    作    者   : 段开勇
-    修改内容   : 修改函数，添加安全相关的信息
-
-*****************************************************************************/
 OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                      *puc_mac_hdr,
@@ -1752,23 +1404,7 @@ OAL_STATIC   oal_uint32  hmac_ap_up_update_sta_user(
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_prepare_assoc_req
- 功能描述  : AP 保存STA 的关联请求帧信息，以备上报内核
- 输入参数  : hmac_user_stru *pst_hmac_user
-             oal_uint8 *puc_payload
-             oal_uint8 *us_len
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月2日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_ap_prepare_assoc_req(hmac_user_stru *pst_hmac_user, oal_uint8 *puc_payload, oal_uint32 ul_payload_len, oal_uint8 uc_mgmt_frm_type)
 {
     oal_uint32 ul_payload_size;
@@ -1812,23 +1448,7 @@ OAL_STATIC oal_uint32 hmac_ap_prepare_assoc_req(hmac_user_stru *pst_hmac_user, o
 }
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : hmac_ap_set_is_wavetest_sta
- 功能描述  : Wavetest STA识别
- 输入参数  : hmac_vap_stru *pst_hmac_vap
-             oal_uint8 *auc_sta_addr
 
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2015年9月17日
-    作    者   : ywx282918
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_ap_set_is_wavetest_sta(hmac_vap_stru *pst_hmac_vap, oal_uint8 *auc_sta_addr)
 {
     mac_device_stru             *pst_mac_device;
@@ -1848,21 +1468,42 @@ OAL_STATIC oal_uint32 hmac_ap_set_is_wavetest_sta(hmac_vap_stru *pst_hmac_vap, o
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_asoc_req
- 功能描述  : AP侧接收到对应STA的关联请求消息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
+#if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
+OAL_STATIC oal_uint32 hmac_ap_up_rx_asoc_req_pmf_process(hmac_vap_stru *hmac_vap,
+    hmac_user_stru *hmac_user, mac_status_code_enum_uint16 *status_code)
+{
+    oal_uint32 rslt;
 
- 修改历史      :
-  1.日    期   : 2013年7月2日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
+    if ((OAL_TRUE != hmac_user->st_sa_query_info.st_sa_query_interval_timer.en_is_enabled) &&
+        (MAC_USER_STATE_ASSOC == hmac_user->st_user_base_info.en_user_asoc_state) &&
+        (OAL_TRUE == hmac_user->st_user_base_info.st_cap_info.bit_pmf_active)) {
+        OAM_INFO_LOG0(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                       "{hmac_ap_up_rx_asoc_req_pmf_process::AP rx STA assoc req ,and start sa query process.}");
+        rslt = hmac_start_sa_query(&hmac_vap->st_vap_base_info, hmac_user, hmac_user->st_user_base_info.st_cap_info.bit_pmf_active);
+        if (OAL_SUCC != rslt) {
+             OAM_ERROR_LOG1(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                       "{hmac_ap_up_rx_asoc_req_pmf_process::hmac_start_sa_query failed[%d].}", rslt);
+             return rslt;
+        }
+        OAM_INFO_LOG0(hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                       "{hmac_ap_up_rx_asoc_req_pmf_process::set status_code is MAC_REJECT_TEMP.}");
+        *status_code = MAC_REJECT_TEMP;
+    }
+    return OAL_SUCC;
+}
+#endif
 
-*****************************************************************************/
+OAL_STATIC void hmac_ap_up_rx_asoc_req_change_user_state_to_auth(hmac_vap_stru *hmac_vap, hmac_user_stru *hmac_user)
+{
+    if (hmac_user->assoc_ap_up_tx_auth_req) {
+        OAM_WARNING_LOG0(hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
+                         "{hmac_ap_up_rx_asoc_req::RX (re)assoc req, change user to auth.}");
+        hmac_user->assoc_ap_up_tx_auth_req = OAL_FALSE;
+        hmac_user_set_asoc_state(&(hmac_vap->st_vap_base_info), &hmac_user->st_user_base_info,
+            MAC_USER_STATE_AUTH_COMPLETE);
+    }
+}
+
 OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                       uc_mgmt_frm_type,
@@ -1892,8 +1533,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
     mac_get_address2(puc_mac_hdr, auc_sta_addr);
 
     ul_rslt = mac_vap_find_user_by_macaddr(&(pst_hmac_vap->st_vap_base_info), auc_sta_addr, &us_user_idx);
-    if (OAL_SUCC != ul_rslt)
-    {
+    if (OAL_SUCC != ul_rslt) {
         OAM_WARNING_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                          "{hmac_ap_up_rx_asoc_req::mac_vap_find_user_by_macaddr failed[%d].}", ul_rslt);
         OAM_WARNING_LOG4(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
@@ -1909,10 +1549,8 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
     pst_hmac_user = (hmac_user_stru *)mac_res_get_hmac_user(us_user_idx);
 
-    if (OAL_PTR_NULL == pst_hmac_user)
-    {
-        OAM_ERROR_LOG0(0, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::pst_hmac_user null.}");
+    if (OAL_PTR_NULL == pst_hmac_user) {
+        OAM_ERROR_LOG0(0, OAM_SF_ASSOC, "{hmac_ap_up_rx_asoc_req::pst_hmac_user null.}");
 
         /* 没有查到对应的USER,发送去认证消息 */
         hmac_mgmt_send_deauth_frame(&(pst_hmac_vap->st_vap_base_info), auc_sta_addr, MAC_ASOC_NOT_AUTH, OAL_FALSE);
@@ -1920,43 +1558,33 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    if (pst_hmac_user->st_mgmt_timer.en_is_registerd == OAL_TRUE)
-    {
+    if (pst_hmac_user->st_mgmt_timer.en_is_registerd == OAL_TRUE) {
         FRW_TIMER_IMMEDIATE_DESTROY_TIMER(&pst_hmac_user->st_mgmt_timer);
     }
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
     uc_user_prev_smpsmode = (oal_uint8)pst_hmac_user->st_user_base_info.st_ht_hdl.bit_sm_power_save;
 #endif
+    hmac_ap_up_rx_asoc_req_change_user_state_to_auth(pst_hmac_vap, pst_hmac_user);
     en_status_code = MAC_SUCCESSFUL_STATUSCODE;
 
     /* 是否符合触发SA query流程的条件 */
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-    if ((OAL_TRUE != pst_hmac_user->st_sa_query_info.st_sa_query_interval_timer.en_is_enabled) &&
-        (MAC_USER_STATE_ASSOC == pst_hmac_user->st_user_base_info.en_user_asoc_state) &&
-        (OAL_TRUE == pst_hmac_user->st_user_base_info.st_cap_info.bit_pmf_active))
-    {
-        OAM_INFO_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::AP rx STA assoc req ,and start sa query process.}");
-        ul_rslt = hmac_start_sa_query(&pst_hmac_vap->st_vap_base_info, pst_hmac_user, pst_hmac_user->st_user_base_info.st_cap_info.bit_pmf_active);
-        if (OAL_SUCC != ul_rslt)
-        {
-             OAM_ERROR_LOG1(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::hmac_start_sa_query failed[%d].}", ul_rslt);
-             return ul_rslt;
-        }
-        OAM_INFO_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
-                       "{hmac_ap_up_rx_asoc_req::set en_status_code is MAC_REJECT_TEMP.}");
-        en_status_code = MAC_REJECT_TEMP;
+    ul_rslt = hmac_ap_up_rx_asoc_req_pmf_process(pst_hmac_vap, pst_hmac_user, &en_status_code);
+    if (ul_rslt != OAL_SUCC) {
+        return ul_rslt;
     }
 #endif
 
-    if (MAC_REJECT_TEMP != en_status_code)
-    {
+    if (MAC_REJECT_TEMP != en_status_code) {
         /* 当可以查找到用户时,说明当前USER的状态为已关联或已认证完成 */
+        if (pst_hmac_user->st_user_base_info.en_user_asoc_state == MAC_USER_STATE_ASSOC) {
+            OAM_WARNING_LOG0(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
+                             "{hmac_ap_up_rx_asoc_req::user associated, unexpected (re)assoc req no handle!}");
+            return OAL_FAIL;
+        }
         ul_rslt = hmac_ap_up_update_sta_user(pst_hmac_vap, puc_mac_hdr, puc_payload, ul_payload_len, pst_hmac_user, &en_status_code);
-        if (MAC_SUCCESSFUL_STATUSCODE != en_status_code)
-        {
+        if (MAC_SUCCESSFUL_STATUSCODE != en_status_code) {
             OAM_WARNING_LOG1(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
                        "{hmac_ap_up_rx_asoc_req::hmac_ap_up_update_sta_user failed[%d].}", en_status_code);
         #ifdef _PRE_DEBUG_MODE_USER_TRACK
@@ -1978,17 +1606,14 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
         /* 根据用户支持带宽能力，协商出当前带宽，dmac offload架构下，同步带宽信息到device */
         ul_rslt = hmac_config_user_info_syn(&(pst_hmac_vap->st_vap_base_info), &pst_hmac_user->st_user_base_info);
-        if (OAL_SUCC != ul_rslt)
-        {
+        if (OAL_SUCC != ul_rslt) {
             OAM_ERROR_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                         "{hmac_ap_up_rx_asoc_req::usr_info_syn failed[%d].}", ul_rslt);
         }
 
-        if (MAC_SUCCESSFUL_STATUSCODE == en_status_code)
-        {
+        if (MAC_SUCCESSFUL_STATUSCODE == en_status_code) {
             ul_rslt = hmac_init_security(&(pst_hmac_vap->st_vap_base_info),auc_sta_addr);
-            if (OAL_SUCC != ul_rslt)
-            {
+            if (OAL_SUCC != ul_rslt) {
                 OAM_ERROR_LOG2(pst_hmac_user->st_user_base_info.uc_vap_id, OAM_SF_ASSOC,
                                 "{hmac_ap_up_rx_asoc_req::hmac_init_security failed[%d] status_code[%d].}", ul_rslt, MAC_UNSPEC_FAIL);
                 en_status_code = MAC_UNSPEC_FAIL;
@@ -1996,17 +1621,14 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
 
         #if defined (_PRE_WLAN_FEATURE_WPA) || defined(_PRE_WLAN_FEATURE_WPA2)
             ul_rslt = hmac_init_user_security_port(&(pst_hmac_vap->st_vap_base_info), &(pst_hmac_user->st_user_base_info));
-            if (OAL_SUCC != ul_rslt)
-            {
+            if (OAL_SUCC != ul_rslt) {
                 OAM_ERROR_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ASSOC,
                                "{hmac_ap_up_rx_asoc_req::hmac_init_user_security_port failed[%d].}", ul_rslt);
             }
         #endif /* defined(_PRE_WLAN_FEATURE_WPA) ||　defined(_PRE_WLAN_FEATURE_WPA2) */
         }
 
-        if ((OAL_SUCC != ul_rslt)
-         || (MAC_SUCCESSFUL_STATUSCODE != en_status_code))
-        {
+        if ((OAL_SUCC != ul_rslt) || (MAC_SUCCESSFUL_STATUSCODE != en_status_code)) {
             OAM_WARNING_LOG2(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_CFG,
                              "{hmac_ap_up_rx_asoc_req::hmac_ap_up_update_sta_user fail rslt[%d] status_code[%d].", ul_rslt, en_status_code);
         #ifdef _PRE_DEBUG_MODE_USER_TRACK
@@ -2063,6 +1685,8 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
                                                       en_status_code,
                                                       OAL_NETBUF_HEADER(pst_asoc_rsp),
                                                       WLAN_FC0_SUBTYPE_REASSOC_RSP);
+        // 重关联流程中清除user下的分片缓存，防止重关联或者rekey流程报文重组攻击
+        hmac_user_clear_defrag_res(pst_hmac_user);
     }
 
     if (0 == ul_asoc_rsp_len)
@@ -2201,21 +1825,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_asoc_req(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_disasoc
- 功能描述  : AP侧接收到对应STA的去关联请求消息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月2日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_ap_up_rx_disasoc(
                 hmac_vap_stru                  *pst_hmac_vap,
                 oal_uint8                      *puc_mac_hdr,
@@ -2304,22 +1914,7 @@ OAL_STATIC oal_uint32  hmac_ap_up_rx_disasoc(
     return OAL_SUCC;
 }
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_2040_coext
- 功能描述  : AP在UP状态下的接收"20/40共存管理帧"的处理
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针
-             pst_netbuf  : "20/40共存管理帧"所在的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月21日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_up_rx_2040_coext(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     mac_device_stru    *pst_mac_device;
@@ -2430,23 +2025,7 @@ OAL_STATIC oal_void  hmac_ap_up_rx_2040_coext(hmac_vap_stru *pst_hmac_vap, oal_n
         }
     }
 }
-/*****************************************************************************
- 函 数 名  : hmac_ap_is_40MHz_intol_bit_set
- 功能描述  : 解析收到帧中的HT Capabilities IE，检测"40MHz不允许"是否被置位
- 输入参数  : puc_payload   : 帧体指针
-             us_payload_len: 帧体长度
- 输出参数  : 无
- 返 回 值  : OAL_TRUE : "40MHz不允许"被置1
-             OAL_FALSE: "40MHz不允许"没有被置1
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC  oal_bool_enum_uint8  hmac_ap_is_40MHz_intol_bit_set(oal_uint8 *puc_payload, oal_uint16 us_payload_len)
 {
     oal_uint16   us_ht_cap_info = 0;
@@ -2476,26 +2055,7 @@ OAL_STATIC  oal_bool_enum_uint8  hmac_ap_is_40MHz_intol_bit_set(oal_uint8 *puc_p
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_update_2040_chan_info
- 功能描述  : 从obss Beacon/Probe Response帧中更新信道扫描信息(供后续AP信道选择用)
- 输入参数  : pst_mac_device:
-             pst_mac_vap:
-             puc_payload
-             us_payload_len
-             uc_pri_chan_idx
-             en_sec_ch_offset
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum_uint8  hmac_ap_update_2040_chan_info(
                 mac_device_stru             *pst_mac_device,
                 mac_vap_stru                *pst_mac_vap,
@@ -2559,23 +2119,7 @@ OAL_STATIC oal_bool_enum_uint8  hmac_ap_update_2040_chan_info(
     return en_status_change;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_process_obss_40mhz_intol
- 功能描述  : 处理obss beacon/probe response帧中的"40"
- 输入参数  : pst_hmac_vap  : HMAC VAP指针
-             puc_payload   : beacon/probe response帧体指针 (不包括phy head和mac head)
-             ul_payload_len: beacon/probe response帧体长度
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月24日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_process_obss_40mhz_intol(hmac_vap_stru *pst_hmac_vap, oal_uint8 *puc_payload, oal_uint16 us_payload_len)
 {
     mac_device_stru   *pst_mac_device;
@@ -2616,22 +2160,7 @@ OAL_STATIC oal_void  hmac_ap_process_obss_40mhz_intol(hmac_vap_stru *pst_hmac_va
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_obss_beacon
- 功能描述  : 处理obss来的beacon帧/probe response帧
- 输入参数  : pst_hmac_vap: MAC VAP结构体指针
-             pst_netbuf  : 包含overlapping BBS帧的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月19日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_up_rx_obss_beacon(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     dmac_rx_ctl_stru         *pst_rx_ctrl = (dmac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
@@ -2675,22 +2204,7 @@ OAL_STATIC oal_void  hmac_ap_up_rx_obss_beacon(hmac_vap_stru *pst_hmac_vap, oal_
 
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_smps_frame
- 功能描述  : AP在UP状态下处理"SMPS"帧
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针
-             pst_netbuf  : "SMPS帧"所在的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月9日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_up_rx_smps_frame(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     mac_user_stru         *pst_mac_user;
@@ -2762,31 +2276,20 @@ OAL_STATIC oal_void  hmac_ap_up_rx_smps_frame(hmac_vap_stru *pst_hmac_vap, oal_n
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_action
- 功能描述  : AP在UP状态下的接收ACTION帧处理
- 输入参数  : pst_hmac_vap: HMAC VAP指针
-             pst_netbuf  : 管理帧所在的sk_buff
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月21日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf, oal_bool_enum_uint8 en_is_protected)
 {
     dmac_rx_ctl_stru               *pst_rx_ctrl;
     oal_uint8                      *puc_data;
     mac_ieee80211_frame_stru       *pst_frame_hdr;          /* 保存mac帧的指针 */
     hmac_user_stru                 *pst_hmac_user;
+    oal_uint32                      frame_body_len = hmac_get_frame_body_len(pst_netbuf);
 
     pst_rx_ctrl = (dmac_rx_ctl_stru *)oal_netbuf_cb(pst_netbuf);
-
+    if (frame_body_len < MAC_ACTION_CATEGORY_AND_CODE_LEN) {
+        OAM_WARNING_LOG1(0, OAM_SF_RX, "{ap_up::frame len too short[%d].}", pst_rx_ctrl->st_rx_info.us_frame_len);
+        return;
+    }
     /* 获取帧头信息 */
     pst_frame_hdr = (mac_ieee80211_frame_stru *)pst_rx_ctrl->st_rx_info.pul_mac_hdr_start_addr;
 
@@ -2809,15 +2312,15 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
             switch(puc_data[MAC_ACTION_OFFSET_ACTION])
             {
                 case MAC_BA_ACTION_ADDBA_REQ:
-                    hmac_mgmt_rx_addba_req(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_addba_req(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 case MAC_BA_ACTION_ADDBA_RSP:
-                    hmac_mgmt_rx_addba_rsp(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_addba_rsp(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 case MAC_BA_ACTION_DELBA:
-                    hmac_mgmt_rx_delba(pst_hmac_vap, pst_hmac_user, puc_data);
+                    hmac_mgmt_rx_delba(pst_hmac_vap, pst_hmac_user, puc_data, frame_body_len);
                     break;
 
                 default:
@@ -2836,8 +2339,12 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
                     hmac_ap_up_rx_2040_coext(pst_hmac_vap, pst_netbuf);
                     break;
             #endif  /* _PRE_WLAN_FEATURE_20_40_80_COEXIST */
-			    case MAC_PUB_VENDOR_SPECIFIC:
-			    {
+                case MAC_PUB_VENDOR_SPECIFIC:
+                {
+                    if (frame_body_len <= MAC_ACTION_CATEGORY_AND_CODE_LEN + MAC_OUI_LEN) {
+                        OAM_WARNING_LOG1(0, OAM_SF_RX, "{hmac_action_category_public::frame_body_len %d.}", frame_body_len);
+                        return;
+                    }
             #ifdef _PRE_WLAN_FEATURE_P2P
                     /*查找OUI-OUI type值为 50 6F 9A - 09 (WFA P2P v1.0)  */
                     /* 并用hmac_rx_mgmt_send_to_host接口上报 */
@@ -2911,6 +2418,10 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
 
         case MAC_ACTION_CATEGORY_VENDOR:
         {
+            if (frame_body_len <= MAC_ACTION_CATEGORY_AND_CODE_LEN + MAC_OUI_LEN) {
+                OAM_WARNING_LOG1(0, OAM_SF_RX, "{hmac_action_category_vendor::frame_body_len %d.}", frame_body_len);
+                return;
+            }
     #ifdef _PRE_WLAN_FEATURE_P2P
         /*查找OUI-OUI type值为 50 6F 9A - 09 (WFA P2P v1.0)  */
         /* 并用hmac_rx_mgmt_send_to_host接口上报 */
@@ -2946,22 +2457,7 @@ OAL_STATIC oal_void  hmac_ap_up_rx_action(hmac_vap_stru *pst_hmac_vap, oal_netbu
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_probe_req
- 功能描述  : AP在UP状态下的接收WPS probe req帧处理
- 输入参数  : pst_hmac_vap: HMAC VAP指针
-             pst_netbuf  : 管理帧所在的sk_buff
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月17日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_up_rx_probe_req(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     dmac_rx_ctl_stru           *pst_rx_ctrl;
@@ -2992,21 +2488,7 @@ OAL_STATIC oal_void  hmac_ap_up_rx_probe_req(hmac_vap_stru *pst_hmac_vap, oal_ne
     hmac_send_mgmt_to_host(pst_hmac_vap, pst_netbuf, pst_rx_info->us_frame_len, l_freq);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_rx_mgmt
- 功能描述  : AP在UP状态下的接收管理帧处理
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月24日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_ap_up_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     dmac_wlan_crx_event_stru   *pst_mgmt_rx_event;
@@ -3060,12 +2542,15 @@ oal_uint32  hmac_ap_up_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
     uc_mgmt_frm_type = mac_get_frame_sub_type(puc_mac_hdr);
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
+#ifdef _PRE_WLAN_WAKEUP_SRC_PARSE
     if(OAL_TRUE == g_ul_print_wakeup_mgmt)
     {
         g_ul_print_wakeup_mgmt = OAL_FALSE;
         OAM_WARNING_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_RX, "{hmac_ap_up_rx_mgmt::wakeup mgmt type[0x%x]}",uc_mgmt_frm_type);
     }
 #endif
+#endif
+
 #ifdef _PRE_WLAN_FEATURE_HILINK
     pst_fbt_mgmt = &(pst_hmac_vap->st_fbt_mgmt);
 
@@ -3142,22 +2627,7 @@ oal_uint32  hmac_ap_up_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_store_network
- 功能描述  : 采集收到的帧所包含的BSSID
- 输入参数  : pst_mac_device: MAC DEVICE结构体指针
-             pst_netbuf    : 包含报文的netbuf指针
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_store_network(mac_device_stru *pst_mac_device, oal_netbuf_stru *pst_netbuf)
 {
     mac_bss_id_list_stru   *pst_bss_id_list = &pst_mac_device->st_bss_id_list;
@@ -3193,25 +2663,7 @@ OAL_STATIC oal_void  hmac_ap_store_network(mac_device_stru *pst_mac_device, oal_
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_get_chan_idx_of_network
- 功能描述  : 获取当前BSS所属的信道索引
- 输入参数  : pst_mac_vap      : MAC VAP结构体指针
-             puc_payload      : 帧体
-             us_payload_len   : 帧体长度
-             uc_curr_chan_idx : 当前正在扫描的信道索引
- 输出参数  : puc_chan_idx     : 信道索引
-             pen_sec_ch_offset: 次信道偏移量
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_ap_get_chan_idx_of_network(
                 mac_vap_stru                *pst_mac_vap,
                 oal_uint8                   *puc_payload,
@@ -3297,23 +2749,7 @@ OAL_STATIC oal_uint32  hmac_ap_get_chan_idx_of_network(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_wait_start_rx_obss_beacon
- 功能描述  : AP在WAIT START状态下，处理obss来的Beacon帧/Probe Response帧
- 输入参数  : pst_mac_device: MAC DEVICE结构体指针
-             pst_mac_vap   : MAC VAP结构体指针
-             pst_netbuf    : 包含overlapping BBS帧的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_ap_wait_start_rx_obss_beacon(
                 mac_device_stru   *pst_mac_device,
                 mac_vap_stru      *pst_mac_vap,
@@ -3357,22 +2793,7 @@ OAL_STATIC oal_void  hmac_ap_wait_start_rx_obss_beacon(
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_wait_start_rx_mgmt
- 功能描述  : AP在WAIT START状态下接收管理帧处理
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针
-             p_param     :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_ap_wait_start_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     mac_device_stru            *pst_mac_device;
@@ -3418,21 +2839,7 @@ oal_uint32  hmac_ap_wait_start_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_timeout_fn
- 功能描述  : 管理帧超时处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月1日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_mgmt_timeout_ap(oal_void *p_param)
 {
     hmac_vap_stru                *pst_hmac_vap;
@@ -3468,22 +2875,7 @@ oal_uint32  hmac_mgmt_timeout_ap(oal_void *p_param)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_wait_start_misc
- 功能描述  : AP在WAIT START状态下的misc事件处理
- 输入参数  : pst_hmac_vap: HMAC VAP指针
-             p_param     : hmac_misc_input_stru类型指针
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_ap_wait_start_misc(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_misc_input_stru   *pst_misc_input;
@@ -3511,22 +2903,7 @@ oal_uint32  hmac_ap_wait_start_misc(hmac_vap_stru *pst_hmac_vap, oal_void *p_par
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ap_up_misc
- 功能描述  : AP在UP状态下的misc事件处理
- 输入参数  : pst_hmac_vap: HMAC VAP指针
-             p_param     : hmac_misc_input_stru类型指针
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月20日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_ap_up_misc(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_misc_input_stru   *pst_misc_input;
@@ -3554,21 +2931,7 @@ oal_uint32  hmac_ap_up_misc(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_ap_clean_bss
- 功能描述  : 清除BSS下所有关联用户
- 输入参数  : hmac_vap_stru *pst_hmac_vap,
 
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年5月24日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32 hmac_ap_clean_bss(hmac_vap_stru *pst_hmac_vap)
 {
     oal_dlist_head_stru                 *pst_user_list_head;

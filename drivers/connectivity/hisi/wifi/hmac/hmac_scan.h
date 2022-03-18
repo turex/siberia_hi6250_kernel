@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_scan.h
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2014年11月26日
-  最近修改   :
-  功能描述   : hmac_scan.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年11月26日
-    作    者   : zhangheng
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_SCAN_H__
 #define __HMAC_SCAN_H__
@@ -97,6 +80,7 @@ extern oal_void hmac_scan_print_scanned_bss_info(oal_uint8 uc_device_id);
 extern mac_bss_dscr_stru *hmac_scan_find_scanned_bss_dscr_by_index(oal_uint8  uc_device_id,
                                                                                 oal_uint32 ul_bss_index);
 extern hmac_scanned_bss_info *hmac_scan_find_scanned_bss_by_bssid(hmac_bss_mgmt_stru *pst_bss_mgmt, oal_uint8 *puc_bssid);
+extern oal_void hmac_scan_clean_scan_record(hmac_scan_record_stru  *pst_scan_record);
 extern oal_uint32 hmac_scan_proc_scanned_bss(frw_event_mem_stru *pst_event_mem);
 extern oal_uint32  hmac_scan_proc_scan_comp_event(frw_event_mem_stru *pst_event_mem);
 extern oal_uint32  hmac_scan_proc_scan_req_event_exception(hmac_vap_stru *pst_hmac_vap, oal_void *p_params);

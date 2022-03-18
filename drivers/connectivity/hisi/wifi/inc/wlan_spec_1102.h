@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wlan_spec.h
-  版 本 号   : 初稿
-  作    者   : 张志明
-  生成日期   : 2014年10月10日
-  最近修改   :
-  功能描述   : 1102 wlan产品规格宏定义
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年10月10日
-    作    者   : 张志明
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __WLAN_SPEC_1102_H__
 #define __WLAN_SPEC_1102_H__
@@ -756,6 +739,7 @@ extern oal_uint32   g_ul_wlan_vap_max_num_per_device;
 #define BT_PREEMPT_MAX_TIMES                (1)
 #define BT_POSTPREEMPT_TIMEOUT_US           (150)
 #define BT_ABORT_RETRY_TIMES_MAX            (10)
+#define BT_TX_PRE_N_SLOT_NUM                (1)
 
 #define BT_PREEMPT_TIMEOUT_US               (50)
 #define BLE_PREEMPT_TIMEOUT_US              (10)

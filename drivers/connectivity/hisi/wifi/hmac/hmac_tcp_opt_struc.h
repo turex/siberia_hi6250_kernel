@@ -1,20 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_tcp_opt_struc.h
-  版 本 号   : 初稿
-  作    者   : zengjun
-  生成日期   : 2015年5月16日
-  最近修改   :
-  功能描述   : hmac_dfs.c 的头文件
-  函数列表   :
-  修改历史   :
-1.日    期   : 2015年5月16日
-  作    者   : zengjun
-  修改内容   : 创建文件
-******************************************************************************/
 
 #ifndef __HMAC_TCP_OPT_STRUC_H__
 #define __HMAC_TCP_OPT_STRUC_H__
@@ -137,6 +121,17 @@ struct wlan_perform_tcp_list
     oal_dlist_head_stru     tcp_list;
 };
 
+/* TCP ACK 优化门限 参数 */
+typedef struct
+{
+    oal_int32                  l_on_threshold;  /* 0:不修改tcp ack 优化标识(默认开启tcp ack 优化)；
+                                                    <0 关闭tcp ack 优化；
+                                                    >0 开启tcp ack 优化门限 */
+    oal_int32                  l_off_threshold; /* 关闭tcp ack 优化门限 */
+    oal_uint32                 ul_pre_time;     /* 记录前一次时间 */
+    oal_uint32                 ul_total_count;  /* 记录总的数据包数量 */
+
+}hmac_tcp_ack_opt_th_params;
 
 /*****************************************************************************
   8 UNION定义

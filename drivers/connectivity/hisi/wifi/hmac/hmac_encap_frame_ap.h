@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_encap_frame_ap.h
-  版 本 号   : 初稿
-  作    者   : y00184180
-  生成日期   : 2013年6月28日
-  最近修改   :
-  功能描述   : hmac_encap_frame_ap.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年6月28日
-    作    者   : y00184180
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_ENCAP_FRAME_AP_H__
 #define __HMAC_ENCAP_FRAME_AP_H__
@@ -100,7 +83,7 @@ typedef hmac_ap_auth_process_code_enum_uint8 (*hmac_auth_rsp_fun)(
                                                     mac_vap_stru *pst_mac_vap,\
                                                     hmac_auth_rsp_param_stru *pst_auth_rsp_param, \
                                                     oal_uint8 *puc_code, \
-                                                    mac_user_asoc_state_enum_uint8 *pst_usr_ass_stat);
+                                                    hmac_user_stru *hmac_user_sta);
 
 typedef struct tag_hmac_auth_rsp_handle_stru
 {
@@ -115,21 +98,7 @@ typedef struct tag_hmac_auth_rsp_handle_stru
 /*****************************************************************************
   9 OTHERS定义
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_encap_chtxt
- 功能描述  : 封装chtxt
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月18日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void hmac_mgmt_encap_chtxt(oal_uint8 *puc_frame,
                                                                oal_uint8 *puc_chtxt,
                                                                oal_uint16 *pus_auth_rsp_len,

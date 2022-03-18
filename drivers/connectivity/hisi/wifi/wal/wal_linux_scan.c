@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_scan.c
-  版 本 号   : 初稿
-  作    者   : y00184180
-  生成日期   : 2013年8月26日
-  最近修改   :
-  功能描述   : 与内核接口相关的scan功能函数
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年8月26日
-    作    者   : y00184180
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -67,21 +50,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : wal_inform_bss_frame
- 功能描述  : 逐个上报ssid消息给内核
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月29日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  wal_inform_bss_frame(wal_scanned_bss_info_stru *pst_scanned_bss_info, oal_void *p_data)
 {
     oal_cfg80211_bss_stru        *pst_cfg80211_bss;
@@ -139,23 +108,7 @@ OAL_STATIC oal_void  wal_inform_bss_frame(wal_scanned_bss_info_stru *pst_scanned
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_update_bss
- 功能描述  : 更新指定bssid 的bss 信息
- 输入参数  : oal_wiphy_stru  *pst_wiphy
-             hmac_bss_mgmt_stru  *pst_bss_mgmt
-             oal_uint8   *puc_bssid
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年6月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void wal_update_bss(oal_wiphy_stru      *pst_wiphy,
                         hmac_bss_mgmt_stru  *pst_bss_mgmt,
                         oal_uint8           *puc_bssid)
@@ -252,23 +205,7 @@ oal_void wal_update_bss(oal_wiphy_stru      *pst_wiphy,
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_inform_all_bss
- 功能描述  : 上报所有的bss到内核
- 输入参数  : oal_wiphy_stru  *pst_wiphy,
-             hmac_bss_mgmt_stru  *pst_bss_mgmt,
-             oal_uint8   uc_vap_id
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  wal_inform_all_bss(oal_wiphy_stru  *pst_wiphy, hmac_bss_mgmt_stru  *pst_bss_mgmt, oal_uint8   uc_vap_id)
 {
     mac_bss_dscr_stru              *pst_bss_dscr;
@@ -353,21 +290,7 @@ oal_void  wal_inform_all_bss(oal_wiphy_stru  *pst_wiphy, hmac_bss_mgmt_stru  *ps
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : free_scan_param_resource
- 功能描述  : 释放申请的信道信息资源
- 输入参数  : mac_cfg80211_scan_param_stru *
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void free_scan_param_resource(mac_cfg80211_scan_param_stru *pst_scan_param)
 {
     if (pst_scan_param->pul_channels_2G != OAL_PTR_NULL)
@@ -382,21 +305,7 @@ OAL_STATIC oal_void free_scan_param_resource(mac_cfg80211_scan_param_stru *pst_s
     }
 }
 
-/*****************************************************************************
- 函 数 名  : wal_set_scan_channel
- 功能描述  : 提取内核下发扫描信道相关参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_set_scan_channel(
                     oal_cfg80211_scan_request_stru    *pst_request,
                     mac_cfg80211_scan_param_stru      *pst_scan_param)
@@ -474,21 +383,7 @@ OAL_STATIC oal_uint32  wal_set_scan_channel(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_set_scan_ssid
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月28日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void wal_set_scan_ssid(oal_cfg80211_scan_request_stru *pst_request, mac_cfg80211_scan_param_stru *pst_scan_param)
 {
     oal_int32   l_loop;
@@ -535,21 +430,7 @@ OAL_STATIC oal_void wal_set_scan_ssid(oal_cfg80211_scan_request_stru *pst_reques
 	}
 }
 
-/*****************************************************************************
- 函 数 名  : wal_wait_for_scan_complete_time_out
- 功能描述  : 等待扫描完成超时处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_wait_for_scan_timeout_fn(void *p_arg)
 {
     hmac_vap_stru                  *pst_hmac_vap = (hmac_vap_stru *)p_arg;
@@ -609,21 +490,7 @@ OAL_STATIC oal_uint32  wal_wait_for_scan_timeout_fn(void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_start_timer_for_scan_timeout
- 功能描述  : 启动扫描定时器做扫描超时保护处理
- 输入参数  : oal_uint8   uc_vap_id, 发起扫描的vap id
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  wal_start_timer_for_scan_timeout(oal_uint8   uc_vap_id)
 {
     hmac_vap_stru               *pst_hmac_vap = OAL_PTR_NULL;
@@ -661,21 +528,7 @@ OAL_STATIC oal_void  wal_start_timer_for_scan_timeout(oal_uint8   uc_vap_id)
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_scan_work_func
- 功能描述  : 解析内核下发扫描命令相关参数，启动扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_scan_work_func(hmac_scan_stru                     *pst_scan_mgmt,
                                   oal_net_device_stru                   *pst_netdev,
                                   oal_cfg80211_scan_request_stru        *pst_request)
@@ -747,21 +600,7 @@ oal_uint32 wal_scan_work_func(hmac_scan_stru                     *pst_scan_mgmt,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_send_scan_abort_msg
- 功能描述  : 终止扫描
- 输入参数  : oal_net_device_stru   *pst_net_dev
- 输出参数  : 无
- 返 回 值  : oal_int32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 wal_send_scan_abort_msg(oal_net_device_stru   *pst_net_dev)
 {
     wal_msg_write_stru              st_write_msg;
@@ -795,22 +634,7 @@ oal_int32 wal_send_scan_abort_msg(oal_net_device_stru   *pst_net_dev)
     return l_ret;
 }
 
-/*************** **************************************************************
- 函 数 名  : wal_force_scan_complete
- 功能描述  : 通知扫描完成
- 输入参数  : oal_net_device_stru   *pst_net_dev,
-             oal_bool_enum          en_is_aborted
- 输出参数  : 无
- 返 回 值  : oal_int32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 wal_force_scan_complete(oal_net_device_stru   *pst_net_dev,
                                          oal_bool_enum          en_is_aborted)
 {
@@ -867,7 +691,6 @@ oal_int32 wal_force_scan_complete(oal_net_device_stru   *pst_net_dev,
     oal_spin_lock(&(pst_scan_mgmt->st_scan_request_spinlock));
 
     /* 如果是上层下发的扫描请求，则通知内核扫描结束，内部扫描不需通知 */
-    /* DTS2017021709078: 停止本vap 发起的扫描 */
     if ((OAL_PTR_NULL != pst_scan_mgmt->pst_request)
         && (pst_net_dev->ieee80211_ptr == pst_scan_mgmt->pst_request->wdev))
     {
@@ -909,21 +732,7 @@ oal_int32 wal_force_scan_complete(oal_net_device_stru   *pst_net_dev,
     return OAL_SUCC;
 }
 
-/*************** **************************************************************
- 函 数 名  : wal_stop_sched_scan
- 功能描述  : 通知PNO扫描完成
- 输入参数  : oal_net_device_stru   *pst_net_dev,
- 输出参数  : 无
- 返 回 值  : oal_int32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 wal_stop_sched_scan(oal_net_device_stru *pst_netdev)
 {
     hmac_device_stru               *pst_hmac_device;
@@ -944,7 +753,6 @@ oal_int32 wal_stop_sched_scan(oal_net_device_stru *pst_netdev)
     pst_mac_vap = OAL_NET_DEV_PRIV(pst_netdev);
     if(OAL_PTR_NULL == pst_mac_vap)
     {
-        /* DTS2016091805471 dfr会删除netdev对应的vap并在恢复时重新创建 */
         OAM_WARNING_LOG0(0, OAM_SF_SCAN, "{wal_stop_sched_scan:: pst_mac_vap is null!}");
         return -OAL_EINVAL;
     }

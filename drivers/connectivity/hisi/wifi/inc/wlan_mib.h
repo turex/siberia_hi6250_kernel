@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wlan_mib.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月18日
-  最近修改   :
-  功能描述   : 定义所有MIB元素结构及其对应枚举 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月18日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __WLAN_MIB_H__
 #define __WLAN_MIB_H__
@@ -946,7 +929,6 @@ typedef enum
     WLAN_CFGID_SET_STA_PM_ON                = 232,      /* STA低功耗开关接口 */
 #endif
 
-    WLAN_CFGID_PACKET_XMIT                  = 240,      /* 发指定个数的报文 */
     WLAN_CFGID_DUMP_BA_BITMAP               = 241,      /* 发指定个数的报文 */
     WLAN_CFGID_VAP_PKT_STAT                 = 242,      /* vap统计信息 */
     WLAN_CFGID_TIMER_START                  = 244,
@@ -1291,6 +1273,9 @@ typedef enum
 
 #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE
     /* HISI-CUSTOMIZE */
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+    WLAN_CFGID_SET_BTCOEX_PS_SWITCH       = 599,      /* 配置BTCOEX模式下是否开启PS机制 */
+#endif
     WLAN_CFGID_SET_LINKLOSS_THRESHOLD   = 600,      /* 配置linkloss门限 */
     WLAN_CFGID_SET_ALL_LOG_LEVEL,                   /* 配置所有vap log level */
     WLAN_CFGID_SET_D2H_HCC_ASSEMBLE_CNT,            /* 配置D2H SDIO聚合参数 */
@@ -1346,7 +1331,7 @@ typedef enum
 #endif
 #endif
 
-    WLAN_CFGID_PCIE_PM_LEVEL                = 643,
+    WLAN_CFGID_RX_FILTER_FRAG               = 643,
 
 #ifdef _PRE_WLAN_FEATURE_11K
     WLAN_CFGID_SEND_NEIGHBOR_REQ            = 644,
@@ -1384,6 +1369,7 @@ typedef enum
 #ifdef _PRE_WLAN_DOWNLOAD_PM
     WLAN_CFGID_SET_CUS_DOWNLOAD_RATE_LIMIT,           /* 限流参数定制化 */
 #endif
+    WLAN_CFIGD_MCS_SET_CHECK_ENABLE,                  /* 是否检查mcs 速率集 */
 
     /************************************************************************
         第三段 非MIB的内部数据同步，需要严格受控

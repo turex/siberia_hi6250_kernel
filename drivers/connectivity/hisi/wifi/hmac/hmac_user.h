@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_user.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   : hmac_user.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_USER_H__
 #define __HMAC_USER_H__
@@ -333,7 +316,8 @@ typedef struct
     oal_uint32                      ul_assoc_req_ie_len;
     oal_uint8                      *puc_assoc_req_ie_buff;
     oal_bool_enum_uint8             en_user_bw_limit;                       /* 该用是否有限速 */
-    oal_uint8                       auc_resv1[3];
+    oal_bool_enum_uint8             assoc_ap_up_tx_auth_req;                /* APUT下关联user是否在关联状态下回复过auth */
+    oal_uint8                       auc_resv1[2];
 
 #ifdef _PRE_WLAN_FEATURE_EDCA_OPT_AP
     oal_uint32                      aaul_txrx_data_stat[WLAN_WME_AC_BUTT][WLAN_TXRX_DATA_BUTT];       /* 发送/接收 tcp/udp be,bk,vi,vo报文 */
@@ -412,21 +396,7 @@ typedef struct
 /*****************************************************************************
   9 OTHERS定义
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_user_ht_support
- 功能描述  : 是否为HT用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_TRUE是，OAL_FALSE不是
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_user_ht_support(hmac_user_stru *pst_hmac_user)
 {
     if (OAL_TRUE == pst_hmac_user->st_user_base_info.st_ht_hdl.en_ht_capable)
@@ -437,21 +407,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_user_ht_support(hmac_user_stru *p
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_vht_support
- 功能描述  : 是否为VHT用户
- 输入参数  : hmac_user_stru *pst_hmac_user
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月12日,星期四
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_user_vht_support(hmac_user_stru *pst_hmac_user)
 {
     if (OAL_TRUE == pst_hmac_user->st_user_base_info.st_vht_hdl.en_vht_capable)
@@ -462,21 +418,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_user_vht_support(hmac_user_stru *
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_user_xht_support
- 功能描述  : 是否支持ht/vht聚合
- 输入参数  : hmac_user_stru *pst_hmac_user
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月12日,星期四
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_user_xht_support(hmac_user_stru *pst_hmac_user)
 {
     if ((pst_hmac_user->st_user_base_info.en_cur_protocol_mode >= WLAN_HT_MODE)
@@ -505,7 +447,7 @@ extern oal_void hmac_tid_clear(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hm
 extern hmac_user_stru*  mac_res_get_hmac_user_alloc(oal_uint16 us_idx);
 extern hmac_user_stru*  mac_res_get_hmac_user(oal_uint16 us_idx);
 extern hmac_user_stru  *mac_vap_get_hmac_user_by_addr(mac_vap_stru *pst_mac_vap, oal_uint8  *puc_mac_addr);
-
+void hmac_user_clear_defrag_res(hmac_user_stru *hmac_user);
 
 #ifdef _PRE_WLAN_FEATURE_WAPI
 extern hmac_wapi_stru *hmac_user_get_wapi_ptr(mac_vap_stru *pst_mac_vap, oal_bool_enum_uint8 en_pairwise, oal_uint16 us_pairwise_idx);

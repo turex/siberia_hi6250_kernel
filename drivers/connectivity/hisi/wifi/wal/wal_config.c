@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_config.c
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2012年11月6日
-  最近修改   :
-  功能描述   : WAL配置操作
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年11月6日
-    作    者   : zhangheng
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -231,7 +214,7 @@ OAL_STATIC oal_uint32  wal_config_set_bw(mac_vap_stru *pst_mac_vap, oal_uint16 u
 OAL_STATIC oal_uint32 wal_config_always_tx_1102(mac_vap_stru * pst_mac_vap, oal_uint16 us_len, oal_uint8 * puc_param);
 #endif
 OAL_STATIC oal_uint32  wal_config_always_rx(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
-OAL_STATIC oal_uint32  wal_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
+OAL_STATIC oal_uint32  wal_config_rx_filter_frag(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 OAL_STATIC oal_uint32  wal_config_reg_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST))
@@ -320,6 +303,9 @@ OAL_STATIC oal_uint32  wal_config_set_ft_ies(mac_vap_stru *pst_mac_vap, oal_uint
 OAL_STATIC oal_uint32  wal_config_get_lauch_cap(mac_vap_stru *pst_mac_vap, oal_uint16 *us_len, oal_uint8 *puc_param);
 OAL_STATIC oal_uint32  wal_config_set_linkloss_threshold(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 OAL_STATIC oal_uint32  wal_config_set_all_log_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+OAL_STATIC oal_uint32  wal_config_set_btcoex_ps_switch(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
+#endif
 OAL_STATIC oal_uint32  wal_config_set_d2h_hcc_assemble_cnt(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 OAL_STATIC oal_uint32  wal_config_set_chn_est_ctrl(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 OAL_STATIC oal_uint32  wal_config_set_power_ref(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
@@ -482,7 +468,7 @@ OAL_STATIC OAL_CONST wal_wid_op_stru g_ast_board_wid_op[] =
     {WLAN_CFGID_SET_ALWAYS_TX_1102,     OAL_FALSE,  {0},    OAL_PTR_NULL,            wal_config_always_tx_1102},
 #endif
     {WLAN_CFGID_SET_ALWAYS_RX,          OAL_FALSE,  {0},    OAL_PTR_NULL,            wal_config_always_rx},
-    {WLAN_CFGID_PCIE_PM_LEVEL,          OAL_FALSE,  {0},    OAL_PTR_NULL,            wal_config_pcie_pm_level},
+    {WLAN_CFGID_RX_FILTER_FRAG,         OAL_FALSE,  {0},    OAL_PTR_NULL,            wal_config_rx_filter_frag},
 
     {WLAN_CFGID_REG_INFO,               OAL_FALSE,  {0},    OAL_PTR_NULL,            wal_config_reg_info},
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST))
@@ -608,6 +594,9 @@ OAL_STATIC OAL_CONST wal_wid_op_stru g_ast_board_wid_op[] =
 #endif
 
 #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+    {WLAN_CFGID_SET_BTCOEX_PS_SWITCH,      OAL_FALSE,  {0},  OAL_PTR_NULL, wal_config_set_btcoex_ps_switch},
+#endif
     {WLAN_CFGID_LAUCH_CAP,                 OAL_FALSE,  {0},  wal_config_get_lauch_cap, OAL_PTR_NULL},
     {WLAN_CFGID_SET_LINKLOSS_THRESHOLD,    OAL_FALSE,  {0},  OAL_PTR_NULL,        wal_config_set_linkloss_threshold},
     {WLAN_CFGID_SET_ALL_LOG_LEVEL,         OAL_FALSE,  {0},  OAL_PTR_NULL,        wal_config_set_all_log_level},
@@ -649,23 +638,7 @@ OAL_STATIC OAL_CONST wal_wid_op_stru g_ast_board_wid_op[] =
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : wal_config_add_vap
- 功能描述  : 创建VAP
- 输入参数  : pst_mac_vap  : 指向mac_vap的指针
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月14日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_add_vap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32 ul_ret;
@@ -683,23 +656,7 @@ OAL_STATIC oal_uint32  wal_config_add_vap(mac_vap_stru *pst_mac_vap, oal_uint16 
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_config_del_vap
- 功能描述  : 删除vap
- 输入参数  : pst_mac_vap  : 指向mac_vap的指针
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月14日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_del_vap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32         ul_ret;
@@ -720,23 +677,7 @@ OAL_STATIC oal_uint32  wal_config_del_vap(mac_vap_stru *pst_mac_vap, oal_uint16 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_start_vap
- 功能描述  : 启动VAP
- 输入参数  : pst_mac_vap : 指向vap
-             us_len      : 参数长度
-             puc_param   : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月14日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_start_vap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32  ul_ret;
@@ -756,23 +697,7 @@ OAL_STATIC oal_uint32  wal_config_start_vap(mac_vap_stru *pst_mac_vap, oal_uint1
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_config_down_vap
- 功能描述  : 停用vap
- 输入参数  : pst_mac_vap : 指向vap
-             us_len      : 参数长度
-             puc_param   : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月13日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_down_vap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32    ul_ret;
@@ -793,110 +718,30 @@ OAL_STATIC oal_uint32  wal_config_down_vap(mac_vap_stru *pst_mac_vap, oal_uint16
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_bss_type
- 功能描述  : 设置bss type
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_bss_type(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_bss_type(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_bss_type
- 功能描述  : 读取bss type
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_bss_type(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_bss_type(pst_mac_vap, pus_len,  puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_mode
- 功能描述  : 设置模式
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_mode(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_mode(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_mode
- 功能描述  : 设置模式
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_mode(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_set_mode
- 功能描述  : 设置模式
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangxiang 00285102
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_bandwidth(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_mode_param_stru    *pst_prot_param;
@@ -909,23 +754,7 @@ OAL_STATIC oal_uint32  wal_config_set_bandwidth(mac_vap_stru *pst_mac_vap, oal_u
     return hmac_config_set_mode(pst_mac_vap, us_len, (oal_uint8 *)pst_prot_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_mac_addr
- 功能描述  : 设置mac地址
- 输入参数  : pst_mac_vap: 指向vap的指针
-             ul_len     : 参数长度
-             puc_param  : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月25日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_mac_addr(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                     ul_ret;
@@ -946,23 +775,7 @@ OAL_STATIC oal_uint32  wal_config_set_mac_addr(mac_vap_stru *pst_mac_vap, oal_ui
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_concurrent
- 功能描述  : 设置设备并发用户数
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月25日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_concurrent(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                      ul_ret;
@@ -983,689 +796,196 @@ OAL_STATIC oal_uint32  wal_config_set_concurrent(mac_vap_stru *pst_mac_vap, oal_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_concurrent
- 功能描述  : 设置ssid
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月15日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_concurrent(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_concurrent(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_ssid
- 功能描述  : 设置ssid
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月15日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_ssid(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_ssid(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_ssid
- 功能描述  : 设置ssid
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月15日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_ssid(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_ssid(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_shpreamble
- 功能描述  : 设置前导码能力位
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_shpreamble(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_shpreamble(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_shpreamble
- 功能描述  : 读取前导码能力位
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_shpreamble(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_shpreamble(pst_mac_vap, pus_len, puc_param);
 }
 #ifdef _PRE_WLAN_FEATURE_MONITOR
-/*****************************************************************************
- 函 数 名  : wal_config_set_addr_filter
- 功能描述  : 设置地址过滤能力位
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_addr_filter(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_addr_filter(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_addr_filter
- 功能描述  : 读取前地址过滤能力位
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_addr_filter(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_addr_filter(pst_mac_vap, pus_len, puc_param);
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_shortgi20
- 功能描述  : 设置shortgi
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_shortgi20(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_shortgi20(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_shortgi40
- 功能描述  : 设置shortgi
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_shortgi40(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_shortgi40(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_shortgi80
- 功能描述  : 设置shortgi
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_shortgi80(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_shortgi80(pst_mac_vap, us_len, puc_param);
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_shortgi20
- 功能描述  : 读取shortgi
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_shortgi20(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_shortgi20(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_shortgi40
- 功能描述  : 读取shortgi
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_shortgi40(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_shortgi40(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_shortgi80
- 功能描述  : 读取shortgi
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_shortgi80(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_shortgi80(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_prot_mode
- 功能描述  : 设置保护模式
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_prot_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_prot_mode(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_prot_mode
- 功能描述  : 读取保护模式
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_prot_mode(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_prot_mode(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_auth_mode
- 功能描述  : 设置认证模式
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_auth_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_auth_mode(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_auth_mode
- 功能描述  : 读取认证模式
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_auth_mode(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_auth_mode(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_bintval
- 功能描述  : 设置beacon interval
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_bintval(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_bintval(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_bintval
- 功能描述  : 读取beacon interval
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_bintval(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_bintval(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_dtimperiod
- 功能描述  : 设置dtim_period
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月17日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_dtimperiod(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_dtimperiod(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_dtimperiod
- 功能描述  : 读取dtim_period
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月17日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_dtimperiod(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_dtimperiod(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_nobeacon
- 功能描述  : 设置隐式beacon
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_nobeacon(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_nobeacon(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_nobeacon
- 功能描述  : 读取隐式beacon
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_nobeacon(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_nobeacon(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_txchain
- 功能描述  : 设置发送通道
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_txchain(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_txchain(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_txchain
- 功能描述  : 读取发送通道
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_txchain(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_txchain(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_rxchain
- 功能描述  : 设置接收通道
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_rxchain(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_rxchain(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_rxchain
- 功能描述  : 读取接收通道
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_rxchain(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_rxchain(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_txpower
- 功能描述  : 设置发射功率
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月23日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_txpower(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_txpower(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_txpower
- 功能描述  : 读取发射功率
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_txpower(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_txpower(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_freq
- 功能描述  : 设置频点/信道
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月23日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_freq(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_freq(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_freq
- 功能描述  : 读取频点/信道
- 输入参数  : pst_event_hdr: 事件头
- 输出参数  : pus_len      : 参数长度
-             puc_param    : 参数
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_freq(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_freq(pst_mac_vap, pus_len, puc_param);
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_cwmin
- 功能描述  : 设置EDCA竞争窗口参数
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月23日
-    作    者   : 康国昌
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_wmm_params(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
 
@@ -1674,23 +994,7 @@ OAL_STATIC oal_uint32  wal_config_set_wmm_params(mac_vap_stru *pst_mac_vap, oal_
 
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_wmm_params
- 功能描述  : 设置EDCA竞争窗口参数
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年1月23日
-    作    者   : 康国昌
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_config_get_wmm_params(oal_net_device_stru *pst_net_dev, oal_uint8 *puc_param)
 {
     mac_vap_stru               *pst_vap;
@@ -1706,67 +1010,19 @@ oal_uint32  wal_config_get_wmm_params(oal_net_device_stru *pst_net_dev, oal_uint
 }
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
-/*****************************************************************************
- 函 数 名  : wal_config_set_smps_mode
- 功能描述  : 设置smps模式
- 输入参数  : pst_mac_vap  : vap
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月9日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_smps_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_smps_mode(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_smps_mode
- 功能描述  : 获取smps模式
- 输入参数  : pst_mac_vap  : vap
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月9日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_smps_mode(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_smps_mode(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_smps_en
- 功能描述  : 获取smps模式
- 输入参数  : pst_mac_vap  : vap
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月9日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_smps_en(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_smps_en(pst_mac_vap, pus_len, puc_param);
@@ -1776,45 +1032,13 @@ OAL_STATIC oal_uint32  wal_config_get_smps_en(mac_vap_stru *pst_mac_vap, oal_uin
 
 #ifdef _PRE_WLAN_FEATURE_UAPSD
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_uapsd_en
- 功能描述  : 设置vap uapsd使能
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月18日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_uapsd_en(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_uapsden(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_uapsd_en
- 功能描述  : 获取vap uapsd使能
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月18日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_uapsd_en(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
 
@@ -1824,45 +1048,13 @@ OAL_STATIC oal_uint32  wal_config_get_uapsd_en(mac_vap_stru *pst_mac_vap, oal_ui
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_channel
- 功能描述  : 设置信道信息，包括频段，信道号，带宽
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月26日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_channel(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_channel(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_beacon
- 功能描述  : 设置设备物理参数，包括RTS 门限值，分片门限值
- 输入参数  : pst_event_hdr: 事件头
-             us_len       : 参数长度
-             puc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月24日
-    作    者   : zex287476
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_beacon(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                          ul_ret;
@@ -1879,42 +1071,14 @@ OAL_STATIC oal_uint32  wal_config_set_beacon(mac_vap_stru *pst_mac_vap, oal_uint
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_vap_info
- 功能描述  : 打印vap参数信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月28日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_vap_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_vap_info(pst_mac_vap, us_len, puc_param);
 }
 
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
-/*****************************************************************************
- 函 数 名  : wal_config_print_btcoex_status
- 功能描述  : 打印共存维测信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月17日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_print_btcoex_status(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_print_btcoex_status(pst_mac_vap, us_len, puc_param);
@@ -1922,21 +1086,7 @@ OAL_STATIC oal_uint32 wal_config_print_btcoex_status(mac_vap_stru *pst_mac_vap, 
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_LTECOEX
-/*****************************************************************************
- 函 数 名  : wal_config_ltecoex_mode_set
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月19日
-    作    者   : z00196432
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_ltecoex_mode_set(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_ltecoex_mode_set(pst_mac_vap, us_len, puc_param);
@@ -1945,60 +1095,18 @@ OAL_STATIC oal_uint32 wal_config_ltecoex_mode_set(mac_vap_stru *pst_mac_vap, oal
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
 
-/*****************************************************************************
- 函 数 名  : wal_config_wfa_cfg_aifsn
- 功能描述  : 配置aifsn固定值
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月23日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_wfa_cfg_aifsn(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_wfa_cfg_aifsn(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_wfa_cfg_cw
- 功能描述  : 配置cw固定值
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月23日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_wfa_cfg_cw(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_wfa_cfg_cw(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_lte_gpio_mode
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月20日
-    作    者   : z00285102
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_lte_gpio_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_lte_gpio_mode(pst_mac_vap, us_len, puc_param);
@@ -2006,286 +1114,85 @@ OAL_STATIC oal_uint32 wal_config_lte_gpio_mode(mac_vap_stru *pst_mac_vap, oal_ui
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_random_mac_addr_scan
- 功能描述  : 设置随机mac addr扫描开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月18日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_random_mac_addr_scan(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_random_mac_addr_scan(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_random_mac_oui
- 功能描述  : 设置随机mac oui
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月7日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_random_mac_oui(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_random_mac_oui(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_add_user
- 功能描述  : 添加用户配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_add_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_add_user(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_del_user
- 功能描述  : 删除用户配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_del_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_del_user(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_sta_list
- 功能描述  : 取得关联sta list
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月22日
-    作    者   : xiaoyuren
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_sta_list(mac_vap_stru *pst_mac_vap, oal_uint16 *us_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_sta_list(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_rd_pwr
- 功能描述  : 设置管制域功率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_rd_pwr(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_regdomain_pwr(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_reduce_sar
- 功能描述  : 降SAR
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月27日
-    作    者   : huchikun
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_reduce_sar(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_reduce_sar(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_dump_all_rx_dscr
- 功能描述  : 打印所有接收描述符
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月8日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_config_dump_all_rx_dscr(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_dump_all_rx_dscr(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_cfg80211_start_sched_scan
- 功能描述  : 启动PNO调度扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月9日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_cfg80211_start_sched_scan(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_cfg80211_start_sched_scan(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_cfg80211_stop_sched_scan
- 功能描述  : 停止PNO调度扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月9日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_cfg80211_stop_sched_scan(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_cfg80211_stop_sched_scan(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_scan_abort
- 功能描述  : 扫描终止
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月9日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_scan_abort(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_scan_abort(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_cfg80211_start_scan
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月30日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_cfg80211_start_scan(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_cfg80211_start_scan_sta(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_cfg80211_start_join
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月30日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-  2.日    期   : 2013年10月24日
-    作    者   : l00218984
-    修改内容   : 增加加密认证相关的处理
-  3.日    期   : 2015年5月5日
-    作    者   : g00260350
-    修改内容   : 处理逻辑挪到hmac
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_cfg80211_start_join(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_connect(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_create_packet
- 功能描述  : 随便组一个报文
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月22日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_netbuf_stru*  wal_config_create_packet_sta(oal_uint32 ul_size,
                                                 oal_int32 l_reserve,
                                                 oal_uint32 ul_put_len,
@@ -2355,21 +1262,7 @@ oal_netbuf_stru*  wal_config_create_packet_sta(oal_uint32 ul_size,
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_frag_threshold
- 功能描述  : 设置分片门限
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月28日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_frag_threshold(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_frag_threshold_stru *pst_frag_threshold;
@@ -2394,21 +1287,7 @@ OAL_STATIC oal_uint32  wal_config_frag_threshold(mac_vap_stru *pst_mac_vap, oal_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_rts_threshold
- 功能描述  : 设置分片门限
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月20日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_rts_threshold(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_rts_threshold_stru *pst_rts_threshold;
@@ -2445,180 +1324,55 @@ OAL_STATIC oal_uint32  wal_config_double_ant_switch(mac_vap_stru *pst_mac_vap, o
     return hmac_config_double_ant_switch(pst_mac_vap, us_len, puc_param);
 }
 #endif
-/*****************************************************************************
- 函 数 名  : wal_config_kick_user
- 功能描述  : 去关联1个用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_kick_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_kick_user(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_country
- 功能描述  : 设置国家码
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月18日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_country(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_country(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_country_for_dfs
- 功能描述  : 设置国家码中的dfs信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月18日
-    作    者   : zhangxiang
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_country_for_dfs(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_country_for_dfs(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_country
- 功能描述  : 获取国家码
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月18日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_country(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_country(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_tid
- 功能描述  : 获取最新数据帧的tid
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月18日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_tid(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_tid(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_user_info
- 功能描述  : 打印user信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月29日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_user_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
    return hmac_config_user_info(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_dscr_param
- 功能描述  : 打印user信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月29日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_dscr_param(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
    return hmac_config_set_dscr_param(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_log_level
- 功能描述  : 设置日志级别，事件抛向hmac
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月21日
-    作    者   : jwx222439
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_set_log_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_log_level(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_green_ap_en
- 功能描述  : 设置green ap使能
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月21日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_GREEN_AP
 OAL_STATIC oal_uint32 wal_config_set_green_ap_en(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -2723,21 +1477,7 @@ OAL_STATIC oal_uint32  wal_config_get_ant(mac_vap_stru *pst_mac_vap, oal_uint16 
 }
 
 #endif
-/*****************************************************************************
- 函 数 名  : wal_config_set_rate
- 功能描述  : 设置non-HT速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 //#ifdef    _PRE_WLAN_CHIP_TEST
 OAL_STATIC oal_uint32  wal_config_set_rate(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -2771,21 +1511,7 @@ OAL_STATIC oal_uint32  wal_config_set_rate(mac_vap_stru *pst_mac_vap, oal_uint16
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_mcs
- 功能描述  : 设置HT速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_mcs(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32  ul_ret;
@@ -2808,21 +1534,7 @@ OAL_STATIC oal_uint32  wal_config_set_mcs(mac_vap_stru *pst_mac_vap, oal_uint16 
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_mcsac
- 功能描述  : 设置VHT速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_mcsac(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32  ul_ret;
@@ -2844,21 +1556,7 @@ OAL_STATIC oal_uint32  wal_config_set_mcsac(mac_vap_stru *pst_mac_vap, oal_uint1
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_bw
- 功能描述  : 设置带宽
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_bw(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32  ul_ret;
@@ -2881,21 +1579,7 @@ OAL_STATIC oal_uint32  wal_config_set_bw(mac_vap_stru *pst_mac_vap, oal_uint16 u
 }
 
 #ifdef _PRE_WLAN_FEATURE_ALWAYS_TX
-/*****************************************************************************
- 函 数 名  : wal_config_always_tx
- 功能描述  : 广播数据包
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_always_tx_1102(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                      ul_ret;
@@ -2919,21 +1603,7 @@ OAL_STATIC oal_uint32  wal_config_always_tx_1102(mac_vap_stru *pst_mac_vap, oal_
 #endif /* #ifdef _PRE_WLAN_FEATURE_ALWAYS_TX */
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_always_rx
- 功能描述  : 配置长收模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_always_rx(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                      ul_ret;
@@ -2954,75 +1624,33 @@ OAL_STATIC oal_uint32  wal_config_always_rx(mac_vap_stru *pst_mac_vap, oal_uint1
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_pcie_pm_level
- 功能描述  : 设置PCIE低功耗模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月27日
-    作    者   : h00212953
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-OAL_STATIC oal_uint32  wal_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
+OAL_STATIC oal_uint32  wal_config_rx_filter_frag(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                      ul_ret;
 
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_vap || OAL_PTR_NULL == puc_param))
     {
-        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_config_pcie_pm_level::pst_mac_vap/puc_param is null ptr!}\r\n");
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{wal_config_rx_filter_frag::pst_mac_vap/puc_param is null ptr!}\r\n");
         return OAL_ERR_CODE_PTR_NULL;
     }
 
-    ul_ret = hmac_config_pcie_pm_level(pst_mac_vap, us_len, puc_param);
+    ul_ret = hmac_config_rx_filter_frag(pst_mac_vap, us_len, puc_param);
     if (OAL_UNLIKELY(OAL_SUCC != ul_ret))
     {
-        OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{wal_config_pcie_pm_level::hmac_config_set_freq_skew failed!}\r\n");
+        OAM_WARNING_LOG0(pst_mac_vap->uc_vap_id, OAM_SF_ANY, "{wal_config_rx_filter_frag::hmac_config_set_freq_skew failed!}\r\n");
         return ul_ret;
     }
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_config_reg_info
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月31日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_reg_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
      return hmac_config_reg_info(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_reg_write
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月6日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_reg_write(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_reg_write(pst_mac_vap, us_len, puc_param);
@@ -3030,42 +1658,14 @@ OAL_STATIC oal_uint32  wal_config_reg_write(mac_vap_stru *pst_mac_vap, oal_uint1
 
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST))
 
-/*****************************************************************************
- 函 数 名  : wal_config_sdio_flowctrl
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月30日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_sdio_flowctrl(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_sdio_flowctrl(pst_mac_vap, us_len, puc_param);
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_alg_param
- 功能描述  : 算法命令示例
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_alg_param(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
 
@@ -3073,83 +1673,27 @@ OAL_STATIC oal_uint32  wal_config_alg_param(mac_vap_stru *pst_mac_vap, oal_uint1
 }
 
 #if 0
-/*****************************************************************************
- 函 数 名  : wal_config_tdls_prohibited
- 功能描述  : TDLS禁用开关
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月26日
-    作    者   : daihu 00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_tdls_prohibited(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_tdls_prohibited(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_tdls_channel_switch_prohibited
- 功能描述  : TDLS信道切换禁用开关
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月26日
-    作    者   : daihu 00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_tdls_channel_switch_prohibited(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_tdls_channel_switch_prohibited(pst_mac_vap, us_len, puc_param);
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_rx_fcs_info
- 功能描述  : 打印接收帧的FCS信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月8日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_rx_fcs_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_rx_fcs_info(pst_mac_vap, us_len, puc_param);
 }
 
 #ifdef _PRE_WLAN_FEATURE_DFS
-/*****************************************************************************
- 函 数 名  : wal_config_dfs_radartool
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月5日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_dfs_radartool(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_dfs_radartool(pst_mac_vap, us_len, puc_param);
@@ -3176,24 +1720,7 @@ OAL_STATIC wal_wid_op_stru* wal_config_get_wid_map(wal_wid_op_stru* pst_wid_map,
     return NULL;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_process_query
- 功能描述  : 处理配置查询请求
- 输入参数  : pst_event_hdr   : 事件头
-             puc_req_msg     : 请求消息
-             us_req_msg_len  : 请求消息长度
- 输出参数  : puc_rsp_msg     : 返回消息
-             pus_rsp_msg_len : 返回消息长度
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月9日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_process_query(
                 mac_vap_stru       *pst_mac_vap,
                 oal_uint8          *puc_req_msg,
@@ -3299,25 +1826,7 @@ OAL_STATIC oal_uint32  wal_config_process_query(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_process_write
- 功能描述  : 处理配置设置请求
- 输入参数  : pst_event_hdr: 事件头
-             puc_req_msg  : 请求消息
-             us_msg_len   : 请求消息长度
- 输出参数  : OAL_SUCC或其它错误码
-             puc_rsp_msg     : 返回消息
-             pus_rsp_msg_len : 返回消息长度
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月13日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_process_write(
                 mac_vap_stru    *pst_mac_vap,
                 oal_uint8       *puc_req_msg,
@@ -3418,21 +1927,7 @@ OAL_STATIC oal_uint32  wal_config_process_write(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_process_pkt
- 功能描述  : 配置包事件处理
- 输入参数  : pst_event: 事件
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月6日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_config_process_pkt(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru         *pst_event;
@@ -3549,83 +2044,26 @@ oal_uint32  wal_config_process_pkt(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_add_key
- 功能描述  : WAL第二层,调用hmac层实现配置密钥
- 输入参数  :
- 输出参数  : oal_uint32
- 返 回 值  : 0:成功,其他:失败
- 调用函数  : 无
- 被调函数  : 无
 
-
-修改历史      :
-  1.日    期   : 2013年12月26日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_add_key(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_11i_add_key(pst_mac_vap, us_len, puc_param);
 }
- /*****************************************************************************
- 函 数 名  : wal_config_get_key
- 功能描述  : WAL第二层,调用hmac层实现
- 输入参数  : frw_event_mem_stru *pst_event_mem
- 输出参数  : oal_uint32
- 返 回 值  : 0:成功,其他:失败
- 调用函数  : 无
- 被调函数  : 无
-
- 修改历史      :
-  1.日    期   : 2014年1月4日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
+ 
 OAL_STATIC oal_uint32 wal_config_get_key(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     /*通过函数调用，hmac具体实现*/
     return (hmac_config_11i_get_key(pst_mac_vap, us_len, puc_param));
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_remove_key
- 功能描述  : WAL第二层，抛事件到HMAC
- 输入参数  : frw_event_mem_stru *pst_event_mem
- 输出参数  : oal_uint32
- 返 回 值  : 0:成功,其他:失败
- 调用函数  : 无
- 被调函数  : 无
 
- 修改历史      :
-  1.日    期   : 2014年1月4日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_remove_key(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     /*通过函数调用，hmac具体实现*/
     return (hmac_config_11i_remove_key(pst_mac_vap, us_len, puc_param));
 }
 
-/*****************************************************************************
- 函 数 名  : wal_set_default_key
- 功能描述  : WAL第二层，调用HMAC
- 输入参数  : frw_event_mem_stru *pst_event_mem
- 输出参数  : oal_uint32
- 返 回 值  : 0:成功,其他:失败
- 调用函数  : 无
- 被调函数  : 无
 
- 修改历史      :
-  1.日    期   : 2014年1月4日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_set_default_key(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     /*通过函数调用，hmac具体实现*/
@@ -3633,109 +2071,33 @@ OAL_STATIC oal_uint32 wal_config_set_default_key(mac_vap_stru *pst_mac_vap, oal_
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_assoc_req_ie
- 功能描述  : AP 获取STA 关联请求IE 信息
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 *pus_len
-             oal_uint8 *puc_param
- 输出参数  : oal_uint32
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年11月30日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_config_get_assoc_req_ie(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_assoc_req_ie(pst_mac_vap, pus_len, puc_param);
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_wps_ie
- 功能描述  : AP 设置WPS 信息元素到VAP 结构中
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 *pus_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月16日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_config_set_wps_ie(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_wps_ie(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_wps_p2p_ie
- 功能描述  : AP 设置WPS 信息元素到VAP 结构中
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 *pus_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月26日
-    作    者   : xiaoyuren x00305155
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_config_set_wps_p2p_ie(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_wps_p2p_ie(pst_mac_vap, us_len, puc_param);
 }
 
 #ifdef _PRE_WLAN_FEATURE_EDCA_OPT_AP
-/*****************************************************************************
- 函 数 名  : wal_config_set_edca_opt_switch_sta
- 功能描述  : 设置edca调整开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月2日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_edca_opt_switch_sta(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_edca_opt_switch_sta(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_edca_opt_weight_sta
- 功能描述  : 调整STA的edca参数调整权重
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月2日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_edca_opt_weight_sta(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_edca_opt_weight_sta(pst_mac_vap, us_len, puc_param);
@@ -3743,41 +2105,13 @@ OAL_STATIC oal_uint32  wal_config_set_edca_opt_weight_sta(mac_vap_stru *pst_mac_
 
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_edca_opt_switch_ap
- 功能描述  : 设置edca调整开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月2日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_edca_opt_switch_ap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_edca_opt_switch_ap(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_edca_opt_cycle
- 功能描述  : 设置edca调整周期
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月2日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_edca_opt_cycle_ap(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_edca_opt_cycle_ap(pst_mac_vap, us_len, puc_param);
@@ -3785,21 +2119,7 @@ OAL_STATIC oal_uint32  wal_config_set_edca_opt_cycle_ap(mac_vap_stru *pst_mac_va
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_open_wmm
- 功能描述  : 测试命令，打开/关闭WMM
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_open_wmm(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_mac_vap || OAL_PTR_NULL == puc_param))
@@ -3818,21 +2138,7 @@ OAL_STATIC oal_uint32  wal_config_open_wmm(mac_vap_stru *pst_mac_vap, oal_uint16
     return hmac_config_sync_cmd_common(pst_mac_vap, WLAN_CFGID_WMM_SWITCH, us_len, puc_param);
 }
 #ifdef _PRE_WLAN_FEATURE_VOWIFI
-/*****************************************************************************
- 函 数 名  : wal_config_vowifi_info
- 功能描述  : 设置VoWiFi相关参数
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : oal_int32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月19日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_vowifi_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_vowifi_info(pst_mac_vap, us_len, puc_param);
@@ -3840,44 +2146,14 @@ OAL_STATIC oal_uint32  wal_config_vowifi_info(mac_vap_stru *pst_mac_vap, oal_uin
 
 #endif /* _PRE_WLAN_FEATURE_VOWIFI */
 #ifdef _PRE_WLAN_FEATURE_IP_FILTER
-/*****************************************************************************
- 函 数 名  : wal_config_set_rx_filter
- 功能描述  : 配置rx ip数据包过滤的参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年4月17日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_update_ip_filter(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_update_ip_filter(pst_mac_vap, us_len, puc_param);
 }
 
 #endif //_PRE_WLAN_FEATURE_IP_FILTER
-/*****************************************************************************
- 函 数 名  : wal_config_get_version
- 功能描述  : 获取版本
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             us_len     : 参数长度
-             puc_param  : 参数指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月28日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_get_version(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_version(pst_mac_vap, us_len, puc_param);
@@ -3887,105 +2163,32 @@ OAL_STATIC oal_uint32  wal_config_get_version(mac_vap_stru *pst_mac_vap, oal_uin
 
 #ifdef _PRE_WLAN_FEATURE_CUSTOM_SECURITY
 
-/*****************************************************************************
- 函 数 名  : wal_config_blacklist_add
- 功能描述  : 增加黑名单
- 输入参数  : pst_net_dev: net device
-             p_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月17日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_blacklist_add(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_blacklist_add(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_blacklist_add_only
- 功能描述  : 增加黑名单
- 输入参数  : pst_net_dev: net device
-             p_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年08月18日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_blacklist_add_only(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_blacklist_add_only(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_blacklist_del
- 功能描述  : 设置mac地址
- 输入参数  : pst_dev: 网络设备
-             p_addr : 地址
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_blacklist_del(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_blacklist_del(pst_mac_vap, us_len, puc_param);
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_blacklist_mode
- 功能描述  : 配置黑名单模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月27日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_blacklist_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_blacklist_mode(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_blacklist_show
- 功能描述  : 黑名单信息打印
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月27日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_blacklist_show(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_show_blacklist(pst_mac_vap, us_len, puc_param);
@@ -3993,21 +2196,7 @@ OAL_STATIC oal_uint32  wal_config_blacklist_show(mac_vap_stru *pst_mac_vap, oal_
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_PROXY_ARP
-/*****************************************************************************
- 函 数 名  : wal_config_proxyarp_en
- 功能描述  : 打开proxyarp特性开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月8日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_proxyarp_en(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_proxyarp_en_stru *pst_proxyarp_en_param;
@@ -4020,21 +2209,7 @@ OAL_STATIC oal_uint32  wal_config_proxyarp_en(mac_vap_stru *pst_mac_vap, oal_uin
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_recv_config_cmd
- 功能描述  : 注册到sdt的配置命令回调函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  : SDT调用
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月21日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  wal_recv_config_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
 {
     oal_int8                ac_vap_name[OAL_IF_NAME_SIZE];
@@ -4074,6 +2249,11 @@ oal_int32  wal_recv_config_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
     {
         OAM_ERROR_LOG0(0, OAM_SF_ANY, "{wal_recv_config_cmd::OAL_NET_DEV_PRIV(pst_net_dev) is null ptr.}\r\n");
         return OAL_ERR_CODE_PTR_NULL;
+    }
+
+    if (us_msg_size < OAL_IF_NAME_SIZE) { // 确保大于0为合法值，防止减下溢，导致后续申请内存以及拷贝发生堆溢出
+        OAM_ERROR_LOG1(0, OAM_SF_ANY, "{wal_recv_config_cmd_etc::msg_size[%d] overrun!}", us_msg_size);
+        return OAL_FAIL;
     }
 
     us_msg_size -= OAL_IF_NAME_SIZE;
@@ -4187,21 +2367,7 @@ oal_int32  wal_recv_config_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_recv_memory_cmd
- 功能描述  : 接收到SDT读取或者写内存的命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 成功或者错误码
- 调用函数  : SDT调用
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月30日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  wal_recv_memory_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
 {
     oal_netbuf_stru            *pst_netbuf;
@@ -4259,21 +2425,7 @@ oal_int32  wal_recv_memory_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_parse_global_var_cmd
- 功能描述  : 解析全局变量读写命令函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月30日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  wal_parse_global_var_cmd(
                 wal_sdt_global_var_stru    *pst_global_frame,
                 oal_uint                   ul_global_var_addr)
@@ -4313,21 +2465,7 @@ oal_int32  wal_parse_global_var_cmd(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_recv_global_var_cmd
- 功能描述  : 接收读写全局变量命令总入口
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  : SDT调用
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月26日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  wal_recv_global_var_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
 {
     wal_sdt_global_var_stru        *pst_global_frame;
@@ -4356,23 +2494,7 @@ oal_int32  wal_recv_global_var_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
     return wal_parse_global_var_cmd(pst_global_frame, ul_global_var_addr);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_recv_reg_cmd
- 功能描述  : 收到SDT下发的读写寄存器命令，如果是读寄存器，则需要将读出来的结
-             果通过回调返回给SDT，如果是写寄存器，则把命令一层层发下去到hal
-             层写就可以
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 成功或者错误码
- 调用函数  : SDT调用
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月31日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  wal_recv_reg_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
 {
     oal_int8                     ac_vap_name[OAL_IF_NAME_SIZE];
@@ -4426,7 +2548,6 @@ oal_int32  wal_recv_reg_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
                                                      (OAL_TRUE == pst_cfg_priv->en_wait_ack_for_sdt_reg),
                                                      2 * OAL_TIME_HZ);
         /*lint +e730*/
-        /*lint -e774*//* 规避WIN32版本下的PC LINT错误 */
         if (0 == l_ret)
         {
             /* 超时 */
@@ -4464,20 +2585,7 @@ oal_int32  wal_recv_reg_cmd(oal_uint8 *puc_buf, oal_uint16 us_len)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_drv_cfg_func_hook_init
- 功能描述  : wal对外钩子函数初始化
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日,星期四
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void wal_drv_cfg_func_hook_init(oal_void)
 {
     g_st_wal_drv_func_hook.p_wal_recv_cfg_data_func     = wal_recv_config_cmd;
@@ -4486,20 +2594,7 @@ oal_void wal_drv_cfg_func_hook_init(oal_void)
     g_st_wal_drv_func_hook.p_wal_recv_global_var_func   = wal_recv_global_var_cmd;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_drv_cfg_func_hook_deinit
- 功能描述  : wal对外钩子函数去初始化
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月13日,星期四
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void wal_drv_cfg_func_hook_deinit(oal_void)
 {
     g_st_wal_drv_func_hook.p_wal_recv_cfg_data_func     = OAL_PTR_NULL;
@@ -4509,127 +2604,34 @@ oal_void wal_drv_cfg_func_hook_deinit(oal_void)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_pmksa
- 功能描述  : 添加一条pmksa
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
- 修改历史  :
-  1.日    期   : 2016年4月8日
-    作    者   : g00260350
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_pmksa(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_pmksa(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_del_pmksa
- 功能描述  : 添加一条pmksa
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
- 修改历史  :
-  1.日    期   : 2016年4月8日
-    作    者   : g00260350
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_del_pmksa(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_del_pmksa(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_flush_pmksa
- 功能描述  : 添加一条pmksa
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
- 修改历史  :
-  1.日    期   : 2016年4月8日
-    作    者   : g00260350
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_flush_pmksa(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_flush_pmksa(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_remain_on_channel
- 功能描述  : 保持在指定信道
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月22日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_remain_on_channel(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_remain_on_channel(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_cancel_remain_on_channel
- 功能描述  : 停止保持在指定信道
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月22日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_cancel_remain_on_channel(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_cancel_remain_on_channel(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_set_sta_pm_mode
- 功能描述  : 设置sta节能的模式
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月5日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_STA_PM
 OAL_STATIC oal_uint32  wal_config_set_sta_pm_mode(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -4640,23 +2642,7 @@ OAL_STATIC oal_uint32  wal_config_set_sta_pm_mode(mac_vap_stru *pst_mac_vap, oal
 
     return hmac_config_set_sta_pm_mode(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_show_pm_info
- 功能描述  : sta psm的统计维测信息
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月16日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_PSM_DEBUG_MODE
 OAL_STATIC oal_uint32  wal_config_show_pm_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -4671,23 +2657,7 @@ OAL_STATIC oal_uint32  wal_config_set_auto_freq_value(mac_vap_stru *pst_mac_vap,
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_sta_pm_on
- 功能描述  : 打开sta device 低功耗
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月13日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_sta_pm_on(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     hmac_vap_stru                *pst_hmac_vap;
@@ -4719,23 +2689,7 @@ OAL_STATIC oal_uint32  wal_config_set_sta_pm_on(mac_vap_stru *pst_mac_vap, oal_u
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_uapsd_para
- 功能描述  : 设置sta uapsd的参数
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月5日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_STA_UAPSD
 OAL_STATIC oal_uint32 wal_config_set_uapsd_para(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -4747,102 +2701,32 @@ OAL_STATIC oal_uint32 wal_config_set_uapsd_para(mac_vap_stru *pst_mac_vap, oal_u
     return hmac_config_set_uapsd_para(pst_mac_vap, us_len, puc_param);
 }
 #endif
-/*****************************************************************************
- 函 数 名  : wal_config_mgmt_tx
- 功能描述  : 发送管理帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月30日
-    作    者   : xiaoyuren
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_mgmt_tx(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_wpas_mgmt_tx(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_query_station_stats
- 功能描述  : 查询station的信息
- 输入参数  : mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月3日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_query_station_stats(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_query_station_info(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_query_rssi
- 功能描述  : 查询用户的rssi
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_query_rssi(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_query_rssi(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_query_rate
- 功能描述  : 查询dmac用户当前的tx rx phy rate
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_query_rate(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_query_rate(pst_mac_vap, us_len, puc_param);
 }
 
 #ifdef _PRE_WLAN_DFT_STAT
-/*****************************************************************************
- 函 数 名  : wal_config_query_ani
- 功能描述  : 查询dmac vap的抗干扰参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月15日
-    作    者   : heyinjun
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_query_ani(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_query_ani(pst_mac_vap, us_len, puc_param);
@@ -4850,21 +2734,7 @@ OAL_STATIC oal_uint32  wal_config_query_ani(mac_vap_stru *pst_mac_vap, oal_uint1
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_HS20
-/*****************************************************************************
- 函 数 名  : wal_config_set_qos_map
- 功能描述  : 设置QoSMap参数
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月11日
-    作    者   : w00346925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_qos_map(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_qos_map(pst_mac_vap, us_len, puc_param);
@@ -4872,45 +2742,13 @@ OAL_STATIC oal_uint32  wal_config_set_qos_map(mac_vap_stru *pst_mac_vap, oal_uin
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_P2P
-/*****************************************************************************
- 函 数 名  : wal_config_set_p2p_ps_ops
- 功能描述  : 设置P2P OPS 节能
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_p2p_ps_ops(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_p2p_ps_ops(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_p2p_ps_noa
- 功能描述  : 设置P2P NOA 节能
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_p2p_ps_noa(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_p2p_ps_noa(pst_mac_vap, us_len, puc_param);
@@ -4922,41 +2760,13 @@ OAL_STATIC oal_uint32 wal_config_cfg_vap_h2d(mac_vap_stru *pst_mac_vap, oal_uint
 {
     return hmac_config_cfg_vap_h2d(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_host_dev_init
- 功能描述  : 初始化host device_struc结构体，目前用于上下电
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月24日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_host_dev_init(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_host_dev_init(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_host_dev_exit
- 功能描述  : 去初始化host device_struc结构体，目前用于上下电
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月26日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_host_dev_exit(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_host_dev_exit(pst_mac_vap);
@@ -4989,22 +2799,7 @@ oal_uint32 wal_send_cali_data(oal_net_device_stru *pst_net_dev)
 
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_config_set_max_user
- 功能描述  : 设置最大用户数
- 输入参数  : pst_net_dev: net device
-             p_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月22日
-    作    者   : xiaoyuren
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_set_max_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32          ul_max_user;
@@ -5021,23 +2816,7 @@ OAL_STATIC oal_uint32 wal_config_set_max_user(mac_vap_stru *pst_mac_vap, oal_uin
 }
 
 #ifdef _PRE_WLAN_FEATURE_11R
-/*****************************************************************************
- 函 数 名  : wal_config_set_ft_ies
- 功能描述  : 设置ft ies
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_ft_ies(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_ft_ies(pst_mac_vap, us_len, puc_param);
@@ -5045,23 +2824,7 @@ OAL_STATIC oal_uint32  wal_config_set_ft_ies(mac_vap_stru *pst_mac_vap, oal_uint
 #endif //_PRE_WLAN_FEATURE_11R
 
 #ifdef _PRE_WLAN_RF_CALI
-/*****************************************************************************
- 函 数 名  : wal_config_auto_cali
- 功能描述  : 校准自动化启动入口函数
- 输入参数  : mac_vap_stru *pst_mac_vap,
-             oal_uint16 us_len,
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : W00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_auto_cali(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     hmac_config_auto_cali(pst_mac_vap, us_len, puc_param);
@@ -5069,23 +2832,7 @@ OAL_STATIC oal_uint32  wal_config_auto_cali(mac_vap_stru *pst_mac_vap, oal_uint1
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_auto_cali
- 功能描述  : 校准自动化启动入口函数
- 输入参数  : mac_vap_stru *pst_mac_vap,
-             oal_uint16 us_len,
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : W00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_cali_vref(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     hmac_config_set_cali_vref(pst_mac_vap, us_len, puc_param);
@@ -5094,157 +2841,50 @@ OAL_STATIC oal_uint32  wal_config_set_cali_vref(mac_vap_stru *pst_mac_vap, oal_u
 }
 #endif
 #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE
-/*****************************************************************************
- 函 数 名  : wal_config_get_lauch_cap
- 功能描述  : 实际发射能力查询
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 us_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月27日,星期五
-    作    者   : w00346925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_config_get_lauch_cap(mac_vap_stru *pst_mac_vap, oal_uint16 *us_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_lauch_cap(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_linkloss_threshold(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_linkloss_threshold(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_all_log_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_all_log_level(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
+OAL_STATIC oal_uint32  wal_config_set_btcoex_ps_switch(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
+{
+    return hmac_config_set_btcoex_ps_switch(pst_mac_vap, us_len, puc_param);
+}
+#endif
 
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_d2h_hcc_assemble_cnt(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_d2h_hcc_assemble_cnt(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_chn_est_ctrl(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_chn_est_ctrl(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_power_ref(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_power_ref(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_pm_cfg_param(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_pm_cfg_param(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_cus_rf(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_cus_rf(pst_mac_vap, us_len, puc_param);
@@ -5271,59 +2911,17 @@ OAL_STATIC oal_uint32  wal_config_set_down_load_rate_limit(mac_vap_stru *pst_mac
     return ul_ret;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_cus_dts_cali(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_cus_dts_cali(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_set_cus_nvram_params(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_cus_nvram_params(pst_mac_vap, us_len, puc_param);
 }
-/*****************************************************************************
- 函 数 名  : wal_config_dev_customize_info
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 /* show dev customize info */
 OAL_STATIC oal_uint32  wal_config_dev_customize_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
@@ -5332,19 +2930,7 @@ OAL_STATIC oal_uint32  wal_config_dev_customize_info(mac_vap_stru *pst_mac_vap, 
 #endif /* #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE */
 
 #ifdef _PRE_WLAN_FEATURE_HILINK
-/*****************************************************************************
- 函 数 名  : wal_config_fbt_kick_user
- 功能描述  : hilink功能中，剔除用户的命令处理
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2016年01月19日
-    作    者   : xiexiaming
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 OAL_STATIC oal_uint32  wal_config_fbt_kick_user(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_kick_user_param_stru   *pst_kick_user_param;
@@ -5386,65 +2972,19 @@ OAL_STATIC oal_uint32  wal_config_fbt_kick_user(mac_vap_stru *pst_mac_vap, oal_u
 
     return ul_ret;
 }
-/*****************************************************************************
- 函 数 名  : wal_config_set_okc_ie
- 功能描述  : AP 设置okc 信息元素到VAP 结构中
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 *pus_len
-             oal_uint8 *puc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月19日
-    作    者   : xiexiaoming 00226265
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_config_set_okc_ie(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     return hmac_config_set_okc_ie(pst_mac_vap, us_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_get_all_sta_info
- 功能描述  : AP 获取所有已关联STA信息
- 输入参数  : mac_vap_stru *pst_mac_vap
-             oal_uint16 *pus_len
-             oal_uint8 *puc_param
- 输出参数  : oal_uint32
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月19日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_config_get_all_sta_info(mac_vap_stru *pst_mac_vap, oal_uint16 *pus_len, oal_uint8 *puc_param)
 {
     return hmac_config_get_all_sta_info(pst_mac_vap, pus_len, puc_param);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_config_fbt_start_scan
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月16日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 OAL_STATIC oal_uint32 wal_config_fbt_start_scan(mac_vap_stru * pst_mac_vap, oal_uint16 us_len, oal_uint8 * puc_param)
 {
@@ -5454,21 +2994,7 @@ OAL_STATIC oal_uint32 wal_config_fbt_start_scan(mac_vap_stru * pst_mac_vap, oal_
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : wal_config_vap_destroy
- 功能描述  : down掉并删除vap
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月11日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_config_vap_destroy(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     hmac_vap_stru *pst_hmac_vap;

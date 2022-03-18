@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_tcp_opt.c
-  版 本 号   : 初稿
-  作    者   : zengjun
-  生成日期   : 2015年5月16日
-  最近修改   :
-  功能描述   :
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年5月16日
-    作    者   : zengjun
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -70,32 +53,18 @@ oal_bool_enum_uint8 time_before_eq(oal_uint32 a,oal_uint32 b)
 /*****************************************************************************
   4 全局变量定义
 *****************************************************************************/
+hmac_tcp_ack_opt_th_params g_st_tcp_ack_opt_th_params = {0, 0, 0, 0};
 
 
 /*****************************************************************************
   5 内部静态函数声明
 *****************************************************************************/
+oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head);
 
 /*****************************************************************************
   4 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_ack_count_reset
- 功能描述  : 复位TCP ACK的统计值
- 输入参数  : struct hcc_handler *hcc
-             hcc_chan_type dir
-             oal_uint16 stream
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void hmac_tcp_opt_ack_count_reset(hmac_vap_stru    *pst_hmac_vap,hcc_chan_type dir, oal_uint16 stream)
 {
     OAL_BUG_ON(!pst_hmac_vap);
@@ -105,23 +74,7 @@ void hmac_tcp_opt_ack_count_reset(hmac_vap_stru    *pst_hmac_vap,hcc_chan_type d
     oal_spin_unlock_bh(&pst_hmac_vap->st_hamc_tcp_ack[dir].hmac_tcp_ack.hmac_tcp_ack_lock);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_ack_all_count_reset
- 功能描述  : 复位所有TCP ACK的统计值
- 输入参数  : struct hcc_handler *hcc
-             hcc_chan_type dir
-             oal_uint16 stream
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void hmac_tcp_opt_ack_all_count_reset(hmac_vap_stru    *pst_hmac_vap)
 {
     oal_uint16     us_dir_index = 0;
@@ -133,23 +86,7 @@ void hmac_tcp_opt_ack_all_count_reset(hmac_vap_stru    *pst_hmac_vap)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_ack_show_count
- 功能描述  : 复位所有TCP ACK的统计值
- 输入参数  : struct hcc_handler *hcc
-             hcc_chan_type dir
-             oal_uint16 stream
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void hmac_tcp_opt_ack_show_count(hmac_vap_stru    *pst_hmac_vap)
 {
     oal_uint16     us_dir_index = 0;
@@ -172,22 +109,7 @@ void hmac_tcp_opt_ack_show_count(hmac_vap_stru    *pst_hmac_vap)
         }
     }
 }
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_find_oldest_node
- 功能描述  : 查找时间最旧的node
- 输入参数  : struct hcc_handler *hcc
-             hcc_chan_type dir
- 输出参数  : 无
- 返 回 值  : struct tcp_list_node *
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 struct tcp_list_node *hmac_tcp_opt_find_oldest_node(hmac_vap_stru    *pst_hmac_vap, hcc_chan_type dir)
 {
     struct tcp_list_node *node;
@@ -219,22 +141,7 @@ struct tcp_list_node *hmac_tcp_opt_find_oldest_node(hmac_vap_stru    *pst_hmac_v
         OAM_ERROR_LOG0(0,OAM_SF_ANY,"can't find oldest node xx");
     return oldest_node;
 }
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_get_buf
- 功能描述  : get buf for tcp ack
- 输入参数  : struct hcc_handler *hcc
-             hcc_chan_type dir
- 输出参数  : 无
- 返 回 值  : struct tcp_list_node *
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 struct tcp_list_node *hmac_tcp_opt_get_buf(hmac_vap_stru    *pst_hmac_vap, hcc_chan_type dir)
 {
     struct tcp_list_node *node = NULL;
@@ -263,23 +170,7 @@ struct tcp_list_node *hmac_tcp_opt_get_buf(hmac_vap_stru    *pst_hmac_vap, hcc_c
     return node;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_add_node
- 功能描述  : add node to ack list
- 输入参数  : struct hcc_handler *hcc
-             struct wlan_tcp_flow *tcp_info
-             hcc_chan_type dir
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_tcp_opt_add_node(hmac_vap_stru    *pst_hmac_vap, struct wlan_tcp_flow *tcp_info, hcc_chan_type dir)
 {
     struct tcp_list_node *node;
@@ -313,21 +204,7 @@ oal_uint32 hmac_tcp_opt_add_node(hmac_vap_stru    *pst_hmac_vap, struct wlan_tcp
     return node->ul_index;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_init_filter_tcp_ack_pool
- 功能描述  : init tcp ack pool
- 输入参数  : struct hcc_handler* hcc
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_tcp_opt_init_filter_tcp_ack_pool(hmac_vap_stru    *pst_hmac_vap)
 {
     oal_uint16     us_dir_index = 0;
@@ -361,26 +238,12 @@ oal_uint32 hmac_tcp_opt_init_filter_tcp_ack_pool(hmac_vap_stru    *pst_hmac_vap)
     }
 #ifdef _PRE_WLAN_FEATURE_OFFLOAD_FLOWCTL
     pst_hmac_vap->st_hamc_tcp_ack[HCC_TX].filter[HMAC_TCP_ACK_QUEUE] = hmac_tcp_opt_tx_tcp_ack_filter;
-    pst_hmac_vap->st_hamc_tcp_ack[HCC_RX].filter[HMAC_TCP_ACK_QUEUE] = hmac_tcp_opt_rx_tcp_ack_filter;
+    pst_hmac_vap->st_hamc_tcp_ack[HCC_RX].filter[HMAC_TCP_ACK_QUEUE] = OAL_PTR_NULL;
 #endif
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_free_ack_list
- 功能描述  : 删除vap时释放ack list
- 输入参数  : struct hcc_handler *hcc
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void hmac_tcp_opt_free_ack_list(hmac_vap_stru *pst_hmac_vap,oal_uint8 dir,oal_uint8 type)
 {
 #if !defined(WIN32)
@@ -422,21 +285,7 @@ void hmac_tcp_opt_free_ack_list(hmac_vap_stru *pst_hmac_vap,oal_uint8 dir,oal_ui
     oal_spin_unlock_bh(&pst_hmac_vap->st_hamc_tcp_ack[dir].data_queue_lock[type]);
 #endif
 }
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_deinit_list
- 功能描述  : deinit tcp ack list
- 输入参数  : struct hcc_handler *hcc
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void hmac_tcp_opt_deinit_list(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_tcp_opt_free_ack_list(pst_hmac_vap,HCC_TX,HMAC_TCP_ACK_QUEUE);
@@ -446,24 +295,7 @@ void hmac_tcp_opt_deinit_list(hmac_vap_stru *pst_hmac_vap)
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_get_flow_index
- 功能描述  : get follow index for each tcp ack
- 输入参数  : struct hcc_handler     *hcc
-             oal_ip_header_stru  *ip_hdr
-             oal_tcp_header_stru *tcp_hdr
-             hcc_chan_type dir
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_tcp_opt_get_flow_index(hmac_vap_stru    *pst_hmac_vap,
                                              oal_ip_header_stru     *pst_ip_hdr,
                                              oal_tcp_header_stru *pst_tcp_hdr,
@@ -516,24 +348,7 @@ oal_uint32 hmac_tcp_opt_get_flow_index(hmac_vap_stru    *pst_hmac_vap,
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_get_tcp_ack_type
- 功能描述  : get follow index for each tcp ack
- 输入参数  : hmac_vap_stru    *pst_hmac_vap
-             oal_ip_header_stru     *pst_ip_hdr
-             hcc_chan_type dir
-             oal_uint16 ul_index
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月20日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_tcp_ack_type_enum_uint8 hmac_tcp_opt_get_tcp_ack_type(hmac_vap_stru    *pst_hmac_vap,
                                              oal_ip_header_stru     *pst_ip_hdr,
                                              hcc_chan_type dir,
@@ -573,37 +388,30 @@ oal_tcp_ack_type_enum_uint8 hmac_tcp_opt_get_tcp_ack_type(hmac_vap_stru    *pst_
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_judge_rx_netbuf_is_tcp_ack
- 功能描述  : 判断接收帧是否是TCP_ACK帧
- 输入参数  : mac_llc_snap *pst_snap
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月15日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap)
+oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap, oal_uint32 buf_len)
 {
     oal_ip_header_stru  *pst_ip_hdr;
     oal_bool_enum_uint8 en_is_tcp_ack = OAL_FALSE;
     oal_tcp_header_stru    *pst_tcp_hdr;
 
-    if(OAL_PTR_NULL == pst_snap)
+    if(OAL_PTR_NULL == pst_snap || buf_len == 0)
     {
         OAM_ERROR_LOG0(0, OAM_SF_RX, "{hmac_judge_rx_netbuf_is_tcp_ack:  pst_snap is null!}");
+        return OAL_FALSE;
+    }
+    if (buf_len < sizeof(mac_llc_snap_stru)) {
+        OAM_ERROR_LOG1(0, OAM_SF_ANY, "{hmac_judge_rx_netbuf_is_tcp_ack:buf_len[%d].}", buf_len);
         return OAL_FALSE;
     }
     switch (pst_snap->us_ether_type)
     {
         /*lint -e778*//* 屏蔽Info -- Constant expression evaluates to 0 in operation '&' */
         case OAL_HOST2NET_SHORT(ETHER_TYPE_IP):
-
+            if (buf_len < sizeof(mac_llc_snap_stru) + sizeof(oal_ip_header_stru)) {
+                OAM_ERROR_LOG1(0, OAM_SF_ANY, "{hmac_judge_rx_netbuf_is_tcp_ack:buf_len[%d].}", buf_len);
+                return OAL_FALSE;
+            }
             pst_ip_hdr = (oal_ip_header_stru *)(pst_snap + 1);      /* 偏移一个snap，取ip头 */
 
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
@@ -611,6 +419,10 @@ oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap)
 #endif
             if (MAC_TCP_PROTOCAL == pst_ip_hdr->uc_protocol)
             {
+                if (buf_len < sizeof(mac_llc_snap_stru) + sizeof(oal_ip_header_stru) + sizeof(oal_tcp_header_stru)) {
+                    OAM_ERROR_LOG1(0, OAM_SF_ANY, "{hmac_judge_rx_netbuf_is_tcp_ack:buf_len[%d].}", buf_len);
+                    return OAL_FALSE;
+                }
                 if (OAL_TRUE == oal_netbuf_is_tcp_ack(pst_ip_hdr))
                 {
                     pst_tcp_hdr = (oal_tcp_header_stru *)(pst_ip_hdr + 1);
@@ -642,26 +454,9 @@ oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap)
     return en_is_tcp_ack;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_judge_rx_netbuf_classify
- 功能描述  : 接收帧进行分类
- 输入参数  : oal_netbuf_stru* netbuf
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月20日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-oal_bool_enum_uint8 hmac_judge_rx_netbuf_classify(oal_netbuf_stru *pst_netbuff)
+oal_bool_enum_uint8 hmac_judge_rx_netbuf_classify(mac_llc_snap_stru *pst_snap, oal_uint32 buf_len)
 {
-    mac_llc_snap_stru             *pst_snap;
-
-    pst_snap = (mac_llc_snap_stru *)(pst_netbuff);
     if(OAL_PTR_NULL == pst_snap)
     {
         return OAL_FALSE;
@@ -669,25 +464,11 @@ oal_bool_enum_uint8 hmac_judge_rx_netbuf_classify(oal_netbuf_stru *pst_netbuff)
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
     OAM_WARNING_LOG1(0,OAM_SF_ANY,"**hmac_judge_rx_netbuf_classify, us_ether_type = %d**",pst_snap->us_ether_type);
 #endif
-    return hmac_judge_rx_netbuf_is_tcp_ack(pst_snap);
+    return hmac_judge_rx_netbuf_is_tcp_ack(pst_snap, buf_len);
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_judge_tx_netbuf_is_tcp_ack
- 功能描述  : 判断接收帧是否是TCP_ACK帧
- 输入参数  : oal_ether_header_stru *ps_ethmac_hdr
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月15日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_judge_tx_netbuf_is_tcp_ack(oal_ether_header_stru *ps_ethmac_hdr)
 {
     oal_ip_header_stru     *pst_ip;
@@ -738,35 +519,23 @@ oal_bool_enum_uint8 hmac_judge_tx_netbuf_is_tcp_ack(oal_ether_header_stru *ps_et
     return en_is_tcp_ack;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_get_tcp_ack
- 功能描述  : get tcp ack from the skb data
- 输入参数  : struct oal_netbuf_stru *skb
-             struct hcc_handler *hcc
-             oal_uint16 *p_us_index
-             uint8 dir
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-******************************************************************************/
 oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_rx_get_tcp_ack(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, oal_uint16 *p_us_index, oal_uint8 dir)
 {
     oal_ip_header_stru  *pst_ip_hdr;
     oal_tcp_header_stru *pst_tcp_hdr;
     mac_llc_snap_stru             *pst_snap;
     hmac_rx_ctl_stru                   *pst_rx_ctrl;                        /* 指向MPDU控制块信息的指针 */
-
+    oal_uint32 buf_len = OAL_NETBUF_LEN(skb);
     pst_rx_ctrl = (hmac_rx_ctl_stru *)oal_netbuf_cb(skb);
+    if (buf_len < pst_rx_ctrl->st_rx_info.uc_mac_header_len) {
+        OAM_ERROR_LOG1(0, OAM_SF_ANY, "{hmac_tcp_opt_rx_get_tcp_ack:buf_len[%d].}", buf_len);
+        return TCP_TYPE_ERROR;
+    }
+    buf_len -= pst_rx_ctrl->st_rx_info.uc_mac_header_len;
     pst_snap = (mac_llc_snap_stru*)(skb->data + pst_rx_ctrl->st_rx_info.uc_mac_header_len);
 
-    if(OAL_FALSE == hmac_judge_rx_netbuf_is_tcp_ack(pst_snap))
+    if(OAL_FALSE == hmac_judge_rx_netbuf_is_tcp_ack(pst_snap, buf_len))
     {
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
         /* not tcp ack data */
@@ -788,24 +557,7 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_rx_get_tcp_ack(oal_netbuf_stru *skb, h
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_tx_get_tcp_ack
- 功能描述  : get tcp ack from the skb data
- 输入参数  : struct oal_netbuf_stru *skb
-             struct hcc_handler *hcc
-             oal_uint16*p_us_index
-             uint8 dir
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_tx_get_tcp_ack(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, oal_uint16 *p_us_index, oal_uint8 dir)
 {
     oal_ip_header_stru  *pst_ip_hdr;
@@ -834,25 +586,8 @@ oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_tx_get_tcp_ack(oal_netbuf_stru *skb, h
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_tcp_ack_list_filter
- 功能描述  : TCP ACK过滤函数
- 输入参数  : struct hcc_handler* hcc
-             hmac_tcp_opt_queue type
-             hcc_chan_type dir
-             oal_netbuf_head_stru  *head
- 输出参数  : 无
- 返 回 值  : oal_uint16
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-oal_uint16 hmac_tcp_opt_tcp_ack_list_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head)
+oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head)
 {
     struct tcp_list_node *node;
     oal_netbuf_stru * skb;
@@ -862,6 +597,10 @@ oal_uint16 hmac_tcp_opt_tcp_ack_list_filter(hmac_vap_stru    *pst_hmac_vap, hmac
     oal_dlist_head_stru        *pst_entry_temp;
 
     OAL_BUG_ON(!pst_hmac_vap);
+    OAL_BUG_ON(!head);
+    OAL_BUG_ON(HMAC_TCP_ACK_QUEUE != type);
+    OAL_BUG_ON((HCC_TX != dir));
+
     if(!oal_netbuf_list_len(head))
     {
         return 0;
@@ -929,113 +668,7 @@ oal_uint16 hmac_tcp_opt_tcp_ack_list_filter(hmac_vap_stru    *pst_hmac_vap, hmac
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_rx_tcp_ack_filter
- 功能描述  : 接收TCP ACK过滤函数
- 输入参数  : struct hcc_handler* hcc
-             hmac_tcp_opt_queue type
-             hcc_chan_type dir
-             void* data
- 输出参数  : 无
- 返 回 值  : oal_uint16
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-oal_uint16 hmac_tcp_opt_rx_tcp_ack_filter(void *hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, void* data)
-{
-    hmac_vap_stru    *pst_hmac_vap;
-    hmac_device_stru    *pst_hmac_device;
-    oal_netbuf_head_stru  *head = (oal_netbuf_head_stru  *)data;
-    OAL_BUG_ON(!hmac_vap);
-    OAL_BUG_ON(!data);
-    OAL_BUG_ON(HMAC_TCP_ACK_QUEUE != type);
-    OAL_BUG_ON(HCC_RX != dir);
-
-    pst_hmac_vap = (hmac_vap_stru *)hmac_vap;
-
-    pst_hmac_device = hmac_res_get_mac_dev(pst_hmac_vap->st_vap_base_info.uc_device_id);
-    if (OAL_PTR_NULL == pst_hmac_device)
-    {
-        OAM_ERROR_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ANY,
-            "{hmac_tcp_opt_rx_tcp_ack_filter fail: pst_hmac_device is null}\r\n");
-        return OAL_FAIL;
-    }
-
-    if(!pst_hmac_device->sys_tcp_rx_ack_opt_enable)
-    {
-        return 0;
-    }
-    return hmac_tcp_opt_tcp_ack_list_filter(pst_hmac_vap, type, dir, head);
-}
-
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_tx_tcp_ack_filter
- 功能描述  : 发送TCP ACK过滤函数
- 输入参数  : struct hcc_handler* hcc
-             hmac_tcp_opt_queue type
-             hcc_chan_type dir
-             void* data
- 输出参数  : 无
- 返 回 值  : oal_uint16
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(void *hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, void* data)
-{
-    hmac_vap_stru    *pst_hmac_vap;
-    hmac_device_stru    *pst_hmac_device;
-    oal_netbuf_head_stru  *head = (oal_netbuf_head_stru  *)data;
-    OAL_BUG_ON(!hmac_device);
-    OAL_BUG_ON(!data);
-    OAL_BUG_ON(HMAC_TCP_ACK_QUEUE != type);
-    OAL_BUG_ON(HCC_TX != dir);
-    pst_hmac_vap = (hmac_vap_stru *)hmac_device;
-
-    pst_hmac_device = hmac_res_get_mac_dev(pst_hmac_vap->st_vap_base_info.uc_device_id);
-    if (OAL_PTR_NULL == pst_hmac_device)
-    {
-        OAM_ERROR_LOG0(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ANY,
-            "{hmac_tcp_opt_tx_tcp_ack_filter fail: pst_hmac_device is null}\r\n");
-        return OAL_FAIL;
-    }
-
-    if(!pst_hmac_device->sys_tcp_tx_ack_opt_enable)
-    {
-        return 0;
-    }
-    return hmac_tcp_opt_tcp_ack_list_filter(pst_hmac_vap, type, dir, head);
-}
-
-
-/*****************************************************************************
- 函 数 名  : hmac_tcp_opt_tcp_ack_filter
- 功能描述  : save it to tcp ack queue
- 输入参数  : struct oal_netbuf_stru *skb
-             struct hcc_handler *hcc
-             hcc_chan_type dir
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2015年5月12日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, hcc_chan_type dir)
 {
 
@@ -1234,29 +867,25 @@ oal_int32 hmac_tcp_ack_process(void)
     }
     else
     {
-        if((OAL_TRUE == pst_hmac_device->sys_tcp_rx_ack_opt_enable) || (OAL_TRUE == pst_hmac_device->sys_tcp_tx_ack_opt_enable))
+        for (uc_vap_idx = 0; uc_vap_idx < pst_hmac_device->pst_device_base_info->uc_vap_num; uc_vap_idx++)
         {
-            for (uc_vap_idx = 0; uc_vap_idx < pst_hmac_device->pst_device_base_info->uc_vap_num; uc_vap_idx++)
+            pst_hmac_vap = (hmac_vap_stru *)mac_res_get_hmac_vap(pst_hmac_device->pst_device_base_info->auc_vap_id[uc_vap_idx]);
+            if (OAL_PTR_NULL == pst_hmac_vap)
             {
-                pst_hmac_vap = (hmac_vap_stru *)mac_res_get_hmac_vap(pst_hmac_device->pst_device_base_info->auc_vap_id[uc_vap_idx]);
-                if (OAL_PTR_NULL == pst_hmac_vap)
-                {
-                    OAM_ERROR_LOG0(uc_vap_idx, OAM_SF_ANY, "{hmac_config_add_vap::pst_hmac_vap null.}");
-                    continue;
-                }
-                if ((MAC_VAP_STATE_UP != pst_hmac_vap->st_vap_base_info.en_vap_state) &&
-                    (MAC_VAP_STATE_PAUSE != pst_hmac_vap->st_vap_base_info.en_vap_state))
-                {
-                    continue;
-                }
+                OAM_ERROR_LOG0(uc_vap_idx, OAM_SF_ANY, "{hmac_config_add_vap::pst_hmac_vap null.}");
+                continue;
+            }
+            if ((MAC_VAP_STATE_UP != pst_hmac_vap->st_vap_base_info.en_vap_state) &&
+                (MAC_VAP_STATE_PAUSE != pst_hmac_vap->st_vap_base_info.en_vap_state))
+            {
+                continue;
+            }
 #ifdef _PRE_WLAN_FEATURE_OFFLOAD_FLOWCTL
-                 hmac_tcp_ack_process_hcc_queue(pst_hmac_vap,HCC_TX,HMAC_TCP_ACK_QUEUE);
+             hmac_tcp_ack_process_hcc_queue(pst_hmac_vap,HCC_TX,HMAC_TCP_ACK_QUEUE);
 #endif
 #ifdef _PRE_WLAN_TCP_OPT_DEBUG
-                 hmac_tcp_ack_process_hcc_queue(pst_hmac_vap,HCC_RX,HMAC_TCP_ACK_QUEUE);
+             hmac_tcp_ack_process_hcc_queue(pst_hmac_vap,HCC_RX,HMAC_TCP_ACK_QUEUE);
 #endif
-            }
-
         }
     }
 
@@ -1349,6 +978,58 @@ oal_int32 hmac_set_hmac_tcp_ack_need_schedule(hmac_tcp_ack_need_schedule_func p_
     return OAL_SUCC;
 }
 
+
+oal_void hmac_tcp_ack_opt_switch_ctrol(oal_uint32 ul_count)
+{
+    oal_uint32         ul_rate;
+    oal_uint32         ul_cur_time;
+    oal_uint32         ul_duration;
+
+
+    hmac_device_stru      *pst_hmac_device = (hmac_device_stru*)hmac_res_get_mac_dev(0);
+
+    if (pst_hmac_device == OAL_PTR_NULL)
+    {
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{hmac_tcp_ack_opt_switch_ctrol:get hmac device fail.}");
+        return;
+    }
+
+    if (g_st_tcp_ack_opt_th_params.l_on_threshold <= 0)
+    {
+        /* l_on_threshold = 0定制化未开启TCP ACK 优化门限设置功能，直接返回 */
+        /* l_on_threshold < 0不使能TCP ACK 优化，直接返回 */
+        return;
+    }
+
+    g_st_tcp_ack_opt_th_params.ul_total_count += ul_count;
+
+    /* 每1s 周期统计一次pps */
+    ul_cur_time    = (oal_uint32)OAL_TIME_GET_STAMP_MS();
+    ul_duration    = ((oal_int32)ul_cur_time - (oal_int32)g_st_tcp_ack_opt_th_params.ul_pre_time);
+    if (ul_duration < 1000)
+    {
+        return;
+    }
+
+    ul_rate = (g_st_tcp_ack_opt_th_params.ul_total_count * 1000)/ul_duration;
+    g_st_tcp_ack_opt_th_params.ul_pre_time = ul_cur_time;
+    g_st_tcp_ack_opt_th_params.ul_total_count = 0;
+
+    if (ul_rate > g_st_tcp_ack_opt_th_params.l_on_threshold
+        && pst_hmac_device->sys_tcp_tx_ack_opt_enable == OAL_FALSE)
+    {
+        pst_hmac_device->sys_tcp_tx_ack_opt_enable = OAL_TRUE;
+    }
+    else if (ul_rate < g_st_tcp_ack_opt_th_params.l_off_threshold
+        && pst_hmac_device->sys_tcp_tx_ack_opt_enable == OAL_TRUE)
+    {
+        pst_hmac_device->sys_tcp_tx_ack_opt_enable = OAL_FALSE;
+    }
+    else
+    {
+        /* 不做处理 */
+    }
+}
 
 #endif   /* end of _PRE_WLAN_TCP_OPT */
 

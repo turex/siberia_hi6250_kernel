@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_atcmdsrv.h
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2012年12月10日
-  最近修改   :
-  功能描述   : wal_linux_atcmdsrv.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年10月10日
-    作    者   : zhangxiang
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __WAL_LINUX_ATCMDSRV_H__
 #define __WAL_LINUX_ATCMDSRV_H__
@@ -84,6 +67,11 @@ enum WAL_ATCMDSRV_IOCTL_CMD
 #define WAL_ATCMDSRV_EFUSE_BUFF_LEN               16
 #define WAL_ATCMDSRV_EFUSE_REG_WIDTH              0x10
 #define WAL_ATCMDSRV_CHANNEL_NUM                  6
+#define WAL_ATCMSRV_MIN_BSS_EXPIRATION_AGE 25           /* 单位:  秒 */
+#define WAL_ATCMSRV_MAX_BSS_EXPIRATION_AGE 500          /*单位:  秒*/
+
+#define WAL_ATCMDSRV_WIFI_MIN_TXPOWER             5     /*单位:dBm */
+#define WAL_ATCMDSRV_WIFI_MAX_TXPOWER             14    /*单位:dBm */
 
 
 /*****************************************************************************
@@ -117,10 +105,19 @@ enum WAL_ATCMDSRV_IOCTL_CMD
     WAL_ATCMDSRV_IOCTL_CMD_DIEID_INFORM,
     WAL_ATCMDSRV_IOCTL_CMD_SET_COUNTRY,
     WAL_ATCMDSRV_IOCTL_CMD_GET_UPCCODE,
+    WAL_ATCMDSRV_IOCTL_CMD_SET_CONN_POWER,          /* 设置最大发送功率 */
+    WAL_ATCMDSRV_IOCTL_CMD_SET_BSS_EXPIRE_AGE,      /* 设置扫描结果老化时间*/ 
+    WAL_ATCMDSRV_IOCTL_CMD_GET_CONN_INFO,           /* 获取连接信息 */
     WAL_ATCMDSRV_IOCTL_CMD_TEST_BUTT
 
 
 };
+typedef enum
+{
+    ATCMDSRV_WIFI_DISCONNECT,           /*  */
+    ATCMDSRV_WIFI_CONNECTED,            /*  */
+}atcmdsrv_wifi_conn_info_enum;
+typedef oal_uint8 atcmdsrv_wifi_conn_info_enum_uint8;
 
 #ifdef _PRE_WLAN_FEATURE_SMARTANT
 typedef struct
@@ -141,6 +138,7 @@ typedef struct
 extern wal_atcmdsrv_ant_info_stru g_st_atcmdsrv_ant_info;
 #endif
 
+extern oal_uint32  g_pd_bss_expire_time;
 
 /*****************************************************************************
   5 消息头定义
@@ -155,6 +153,21 @@ extern wal_atcmdsrv_ant_info_stru g_st_atcmdsrv_ant_info;
 /*****************************************************************************
   7 STRUCT定义
 *****************************************************************************/
+struct wal_atcmdsrv_wifi_connect_info
+{
+	atcmdsrv_wifi_conn_info_enum_uint8 en_status;
+	oal_uint8 auc_ssid[WLAN_SSID_MAX_LEN];
+	oal_uint8 auc_bssid[WLAN_MAC_ADDR_LEN];
+	oal_int8  c_rssi;
+};
+
+struct wal_atcmdsrv_wifi_tx_power_range
+{
+	oal_uint8  uc_min;
+	oal_uint8  uc_max;
+};
+
+
 /* 1102 使用atcmdsrv 下发命令 */
 typedef struct wal_atcmdsrv_wifi_priv_cmd {
     /* 校验位,取值1102,与其他平台区别开来 */
@@ -185,6 +198,9 @@ typedef struct wal_atcmdsrv_wifi_priv_cmd {
     oal_uint8 auc_caldata[WAL_ATCMDSRV_NV_WINVRAM_LENGTH];      /* 104 */
     oal_uint16 die_id[WAL_ATCMDSRV_DIE_ID_LENGTH];      /*  16 */
     oal_int8  auc_country_code[WAL_ATCMDSRV_IOCTL_COUNTRY_LEN]; /* 3 */
+    oal_uint32 ul_bss_expire_age;                               /* 产线扫描结果老化时间 */
+    struct wal_atcmdsrv_wifi_connect_info st_connect_info;      /* WiFi 连接信息 */
+    struct wal_atcmdsrv_wifi_tx_power_range st_power_range;     /* WiFi 发送范围功率 */
     }pri_data;
 
 }wal_atcmdsrv_wifi_priv_cmd_stru;

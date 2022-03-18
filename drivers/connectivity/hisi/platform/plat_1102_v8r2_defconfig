@@ -157,6 +157,9 @@ COPTS +=-D_PRE_WLAN_TCP_OPT
 #auto_freq adjust
 COPTS +=-D_PRE_WLAN_FEATURE_AUTO_FREQ
 
+#WiFi wake up source
+COPTS +=-D_PRE_WLAN_WAKEUP_SRC_PARSE
+
 ifndef BOARD_FUNC
 export BOARD_FUNC=RF
 endif

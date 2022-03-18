@@ -63,9 +63,11 @@ extern int32 g_uart_rx_dump;
 *****************************************************************************/
 extern int32 bfgx_user_ctrl_init(void);
 extern void bfgx_user_ctrl_exit(void);
+#ifndef HI110X_HAL_MEMDUMP_ENABLE
 extern int32 plat_send_rotate_cmd_2_app(uint32 which_dump);
 extern void plat_wait_last_rotate_finish(void);
 extern void plat_rotate_finish_set(void);
+#endif
 extern void plat_exception_dump_file_rotate_init(void);
 
 #endif

@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_blockack.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2013年4月8日
-  最近修改   :
-  功能描述   : dmac_blockack.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年4月8日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __DMAC_BLOCKACK_H__
 #define __DMAC_BLOCKACK_H__
@@ -94,21 +77,7 @@ extern "C" {
 /*****************************************************************************
   10 inline函数定义
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_ba_rx_seqno_lt
- 功能描述  : 判断seq1是否小于seq2
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月15日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_lt(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     if(((us_seq1 < us_seq2) && ((us_seq2 - us_seq1) < DMAC_BA_MAX_SEQNO_BY_TWO)) ||
@@ -120,41 +89,13 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_lt(oal_uint16 us_seq
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_ba_rx_seqno_gt
- 功能描述  : 判断seq1是否大于seq2
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月15日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_gt(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     return hmac_ba_rx_seqno_lt(us_seq2, us_seq1);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_ba_seqno_lt
- 功能描述  : 判断seq1是否小于seq2
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_ba_seqno_lt(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     if(((us_seq1 < us_seq2) && ((us_seq2 - us_seq1) < DMAC_BA_MAX_SEQNO_BY_TWO)) ||
@@ -166,41 +107,13 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_ba_seqno_lt(oal_uint16 us_seq1, o
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_ba_seqno_gt
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月15日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_seqno_gt(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     return hmac_ba_seqno_lt(us_seq2, us_seq1);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_rx_seqno_leq
- 功能描述  : 判断seq1是否小于或等于seq2
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月15日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_leq(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     if(((us_seq1 <= us_seq2) && ((us_seq2 - us_seq1) < DMAC_BA_MAX_SEQNO_BY_TWO)) ||
@@ -212,21 +125,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_leq(oal_uint16 us_se
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_rx_seqno_geq
- 功能描述  : 判断seq1是否大于或等于seq2
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月15日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_geq(oal_uint16 us_seq1, oal_uint16 us_seq2)
 {
     return hmac_ba_rx_seqno_leq(us_seq2, us_seq1);
@@ -260,21 +159,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_ba_rx_seqno_geq(oal_uint16 us_se
 #define HMAC_BAW_WITHIN(_start, _bawsz, _seqno)      \
         ((((_seqno) - (_start)) & 4095) < (_bawsz))
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_isset
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月4日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_ba_isset(hmac_ba_rx_stru *pst_ba_rx_hdl, oal_uint16 us_seqno)
 {
     oal_uint16    us_index;
@@ -293,21 +178,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_ba_isset(hmac_ba_rx_stru *pst_ba_
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_addto_rx_bitmap
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月11日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  hmac_ba_addto_rx_bitmap(hmac_ba_rx_stru *pst_ba_rx_hdl, oal_uint16 us_seqno)
 {
     oal_uint16    us_index;
@@ -319,21 +190,7 @@ OAL_STATIC OAL_INLINE oal_void  hmac_ba_addto_rx_bitmap(hmac_ba_rx_stru *pst_ba_
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_clear_rx_bitmap
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月11日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  hmac_ba_clear_rx_bitmap(hmac_ba_rx_stru *pst_ba_rx_hdl)
 {
     oal_uint16    us_index;
@@ -343,21 +200,7 @@ OAL_STATIC OAL_INLINE oal_void  hmac_ba_clear_rx_bitmap(hmac_ba_rx_stru *pst_ba_
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_update_rx_bitmap
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月11日
-    作    者   : sunxiaolin
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  hmac_ba_update_rx_bitmap(hmac_user_stru *pst_hmac_user, mac_ieee80211_frame_stru *pst_frame_hdr)
 {
     oal_bool_enum_uint8     en_is_4addr;
@@ -403,23 +246,7 @@ OAL_STATIC OAL_INLINE oal_void  hmac_ba_update_rx_bitmap(hmac_user_stru *pst_hma
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_ba_seqno_bound_chk
- 功能描述  :
- This function compares the given sequence number with the specified
- upper and lower bounds and returns its position relative to them.
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8 hmac_ba_seqno_bound_chk(oal_uint16 us_seq_lo, oal_uint16 us_seq_hi, oal_uint16 us_seq)
 {
     oal_bool_enum_uint8 en_lo_chk;
@@ -443,22 +270,7 @@ OAL_STATIC OAL_INLINE oal_uint8 hmac_ba_seqno_bound_chk(oal_uint16 us_seq_lo, oa
 
 /* This function reads out the TX-Dscr indexed by the specified sequence number in */
 /* the Retry-Q Ring-Buffer. */
-/*****************************************************************************
- 函 数 名  : hmac_remove_frame_from_reorder_q
- 功能描述  :This function reads out the TX-Dscr indexed by the specified sequence number in
-            the Retry-Q Ring-Buffer.
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE hmac_rx_buf_stru *hmac_remove_frame_from_reorder_q(hmac_ba_rx_stru *pst_ba_rx_hdl, oal_uint16 us_seq_num)
 {
     oal_uint16        us_idx;
@@ -491,22 +303,7 @@ OAL_STATIC OAL_INLINE hmac_rx_buf_stru *hmac_remove_frame_from_reorder_q(hmac_ba
     return pst_rx_buff;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_get_frame_from_reorder_q
- 功能描述  :This function reads out the TX-Dscr indexed by the specified sequence number in
-            the Retry-Q Ring-Buffer.
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE hmac_rx_buf_stru *hmac_get_frame_from_reorder_q(hmac_ba_rx_stru *pst_ba_rx_hdl, oal_uint16 us_seq_num)
 {
     oal_uint16        us_idx;

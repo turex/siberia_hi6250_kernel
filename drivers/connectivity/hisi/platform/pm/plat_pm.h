@@ -101,7 +101,7 @@ struct pm_drv_data
 	BOARD_INFO						*board;
 
     /*wake lock for bfg,be used to prevent host form suspend*/
-    struct wake_lock                bfg_wake_lock;
+    oal_wakelock_stru       bfg_wake_lock;
 
     /*mutex for sync*/
     struct mutex                    host_mutex;

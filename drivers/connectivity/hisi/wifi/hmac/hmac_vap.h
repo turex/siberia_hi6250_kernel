@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_vap.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   : hmac_vap.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_VAP_H__
 #define __HMAC_VAP_H__
@@ -98,6 +81,11 @@ typedef oal_uint8 hmac_addba_mode_enum_uint8;
 /*****************************************************************************
   7 STRUCT定义
 *****************************************************************************/
+/* 声明hmac_vap 结构体定义 */
+struct hmac_vap_tag;
+typedef struct hmac_vap_tag hmac_vap_stru;
+
+
 typedef struct
 {
     oal_dlist_head_stru st_timeout_head;
@@ -184,7 +172,7 @@ typedef enum _hmac_tcp_opt_queue_
 } hmac_tcp_opt_queue;
 
 #ifdef _PRE_WLAN_TCP_OPT
-typedef oal_uint16 (* hmac_trans_cb_func)(void *pst_hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, void* data);
+typedef oal_uint16 (* hmac_trans_cb_func)(hmac_vap_stru *pst_hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru* data);
 /*tcp_ack优化*/
 typedef struct
 {

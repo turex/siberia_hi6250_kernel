@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hal_common_ops.h
-  版 本 号   : 初稿
-  作    者   : z00241943
-  生成日期   : 2014年10月23日
-  最近修改   :
-  功能描述   : hal层规格定义
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年10月23日
-    作    者   : z00241943
-    修改内容   : 创建文件
-
-******************************************************************************/
 #ifndef __HAL_COMMOM_OPS_H__
 #define __HAL_COMMOM_OPS_H__
 
@@ -75,17 +58,6 @@ typedef enum
     HAL_TX_QUEUE_BUTT
 }hal_tx_queue_type_enum;
 typedef oal_uint8 hal_tx_queue_type_enum_uint8;
-#ifdef _PRE_WLAN_FEATURE_BTCOEX
-typedef enum
-{
-    BTCOEX_NOFRAME = 0,
-    BTCOEX_SELFCTS = 1,
-    BTCOEX_NULLDATA = 2,
-    BTCOEX_QOSNULL = 3,
-    BTCOEX_FRAME_NUTT
-} coex_preempt_frame_enum;
-typedef oal_uint8 coex_preempt_frame_enum_uint8;
-#endif
 
 
 /*****************************************************************************
@@ -200,6 +172,18 @@ typedef enum
     HAL_FCS_PROTECT_TYPE_BUTT
 }hal_fcs_protect_type_enum;
 typedef oal_uint8 hal_fcs_protect_type_enum_uint8;
+
+typedef enum
+{
+    HAL_FCS_SERVICE_TYPE_DBAC      = 0,    /* DBAC业务    */
+    HAL_FCS_SERVICE_TYPE_SCAN,             /* 扫描业务    */
+    HAL_FCS_SERVICE_TYPE_M2S,              /* m2s切换业务 */
+    HAL_FCS_SERVICE_TYPE_BTCOEX_NORMAL,    /* btcoex共存业务 */
+    HAL_FCS_SERVICE_TYPE_BTCOEX_LDAC,      /* btcoex共存业务 */
+
+    HAL_FCS_PROTECT_NOTIFY_BUTT
+}hal_fcs_service_type_enum;
+typedef oal_uint8 hal_fcs_service_type_enum_uint8;
 
 typedef enum
 {
@@ -364,6 +348,134 @@ typedef enum
 }hal_event_tbtt_sub_type_enum;
 typedef oal_uint8 hal_event_tbtt_sub_type_enum_uint8;
 
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+typedef enum
+{
+    BTCOEX_NOFRAME = 0,
+    BTCOEX_SELFCTS = 1,
+    BTCOEX_NULLDATA = 2,
+    BTCOEX_QOSNULL = 3,
+    BTCOEX_FRAME_NUTT
+} coex_preempt_frame_enum;
+typedef oal_uint8 coex_preempt_frame_enum_uint8;
+
+/* sw preempt机制下蓝牙业务状态，a2dp|transfer  page|inquiry 或者  both */
+typedef enum
+{
+    HAL_BTCOEX_PS_STATUE_ACL       = 1,   /* only a2dp|数传 BIT0 */
+    HAL_BTCOEX_PS_STATUE_PAGE_INQ  = 2,   /* only  page|inquiry BIT1 */
+    HAL_BTCOEX_PS_STATUE_PAGE_ACL  = 3,   /* both a2dp|数传 and page|inquiry BIT0|BIT1 */
+    HAL_BTCOEX_PS_STATUE_LDAC      = 4,   /* only ldac BIT2 */
+    HAL_BTCOEX_PS_STATUE_LDAC_ACL  = 5,   /* ldac and a2dp|数传 BIT2|BIT0 */
+    HAL_BTCOEX_PS_STATUE_LDAC_PAGE = 6,   /* ldac and page|inquiry BIT2|BIT1 */
+    HAL_BTCOEX_PS_STATUE_TRIPLE    = 7,   /* ldac and page|inquiry and a2dp|数传 BIT2|BIT1|BIT0 */
+
+    HAL_BTCOEX_PS_STATUE_BUTT
+}hal_btcoex_ps_status_enum;
+typedef oal_uint8 hal_btcoex_ps_status_enum_uint8;
+
+typedef enum
+{
+    HAL_BTCOEX_HW_POWSAVE_NOFRAME   = 0,
+    HAL_BTCOEX_HW_POWSAVE_SELFCTS   = 1,
+    HAL_BTCOEX_HW_POWSAVE_NULLDATA  = 2,
+    HAL_BTCOEX_HW_POWSAVE_QOSNULL   = 3,
+
+    HAL_BTCOEX_HW_POWSAVE_BUTT
+} hal_coex_hw_preempt_mode_enum;
+typedef oal_uint8 hal_coex_hw_preempt_mode_enum_uint8;
+
+/* mode常见类型，后续根据测试需要补充 */
+typedef enum
+{
+    HAL_BTCOEX_SW_POWSAVE_MODE_0            = 0,
+    HAL_BTCOEX_SW_POWSAVE_MODE_1            = 1,
+    HAL_BTCOEX_SW_POWSAVE_MODE_NORMAL       = 2, //删聚合打开  BIT1(02方案)
+    HAL_BTCOEX_SW_POWSAVE_MODE_3            = 3,
+    HAL_BTCOEX_SW_POWSAVE_MODE_4            = 4,
+    HAL_BTCOEX_SW_POWSAVE_MODE_5            = 5,
+    HAL_BTCOEX_SW_POWSAVE_MODE_6            = 6,
+    HAL_BTCOEX_SW_POWSAVE_MODE_7            = 7,
+    HAL_BTCOEX_SW_POWSAVE_MODE_8            = 8,
+    HAL_BTCOEX_SW_POWSAVE_MODE_9            = 9,
+    HAL_BTCOEX_SW_POWSAVE_MODE_10           = 10,
+    HAL_BTCOEX_SW_POWSAVE_MODE_11           = 11,
+    HAL_BTCOEX_SW_POWSAVE_MODE_12           = 12,
+    HAL_BTCOEX_SW_POWSAVE_MODE_13           = 13,
+    HAL_BTCOEX_SW_POWSAVE_MODE_14           = 14,
+    HAL_BTCOEX_SW_POWSAVE_MODE_15           = 15,
+
+    HAL_BTCOEX_SW_POWSAVE_MODE_BUTT
+} hal_coex_sw_preempt_mode;
+typedef oal_uint8 hal_coex_sw_preempt_mode_uint8;
+
+typedef enum
+{
+    HAL_BTCOEX_SW_POWSAVE_IDLE       = 0,
+    HAL_BTCOEX_SW_POWSAVE_WORK       = 1,
+    HAL_BTCOEX_SW_POWSAVE_TIMEOUT    = 2,
+    HAL_BTCOEX_SW_POWSAVE_SCAN       = 3,
+    HAL_BTCOEX_SW_POWSAVE_SCAN_BEGIN = 4,
+    HAL_BTCOEX_SW_POWSAVE_SCAN_WAIT  = 5,
+    HAL_BTCOEX_SW_POWSAVE_SCAN_ABORT = 6,
+    HAL_BTCOEX_SW_POWSAVE_SCAN_END   = 7,
+    HAL_BTCOEX_SW_POWSAVE_PSM_START  = 8,
+    HAL_BTCOEX_SW_POWSAVE_PSM_END    = 9,
+    HAL_BTCOEX_SW_POWSAVE_PSM_STOP   = 10,
+
+    HAL_BTCOEX_SW_POWSAVE_BUTT
+} hal_coex_sw_preempt_type;
+typedef oal_uint8 hal_coex_sw_preempt_type_uint8;
+
+typedef enum
+{
+    HAL_BTCOEX_SW_POWSAVE_SUB_ACTIVE   = 0,
+    HAL_BTCOEX_SW_POWSAVE_SUB_IDLE     = 1,
+    HAL_BTCOEX_SW_POWSAVE_SUB_SCAN     = 2,
+    HAL_BTCOEX_SW_POWSAVE_SUB_CONNECT  = 3,
+    HAL_BTCOEX_SW_POWSAVE_SUB_PSM_FORBIT  = 4, /* 低功耗唤醒时，连续出现多次ps=1状态，要禁止psm 做状态判断，直到soc中断来更新 */
+
+    HAL_BTCOEX_SW_POWSAVE_SUB_BUTT
+} hal_coex_sw_preempt_subtype_enum;
+typedef oal_uint8 hal_coex_sw_preempt_subtype_uint8;
+
+typedef enum
+{
+    HAL_BTCOEX_PRIORITY_FOLLOW   = 0,//如果是响应帧则和其对应的接收或发生帧的优先级相同
+    HAL_BTCOEX_PRIORITY_NORMAL   = 1,//普通优先级
+    HAL_BTCOEX_PRIORITY_HIGHT    = 2,//高优先级
+    HAL_BTCOEX_PRIORITY_HIGHTEST = 3,//最高优先级
+    HAL_BTCOEX_PRIORITY_BUTT
+}hal_coex_priority_type_enum;
+typedef oal_uint8 hal_coex_priority_type_uint8;
+
+typedef enum
+{
+    HAL_FCS_PROTECT_COEX_PRI_NORMAL   = 0,    /* b00 */
+    HAL_FCS_PROTECT_COEX_PRI_PRIORITY = 1,    /* b01 */
+    HAL_FCS_PROTECT_COEX_PRI_OCCUPIED = 2,    /* b10 */
+
+    HAL_FCS_PROTECT_COEX_PRI_BUTT
+}hal_fcs_protect_coex_pri_enum;
+typedef oal_uint8 hal_fcs_protect_coex_pri_enum_uint8;
+
+typedef enum
+{
+    HAL_COEX_SW_IRQ_LTE_RX_ASSERT     = 0x1,  /* BIT0 */
+    HAL_COEX_SW_IRQ_LTE_RX_DEASSERT   = 0x2,  /* BIT1 */
+    HAL_COEX_SW_IRQ_LTE_TX_ASSERT     = 0x4,  /* BIT2 */
+    HAL_COEX_SW_IRQ_LTE_TX_DEASSERT   = 0x8,  /* BIT3 */
+#if(_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1102_DEV)
+    HAL_COEX_SW_IRQ_BT                = 0x20,  /* 02芯片问题，需要配置为BIT5 */
+#else
+    HAL_COEX_SW_IRQ_BT                = 0x10,  /* BIT4 */
+#endif
+
+    HAL_COEX_SW_IRQ_TYPE_BUTT
+}hal_coex_sw_irq_type_enum;
+typedef oal_uint8 hal_coex_sw_irq_type_enum_uint8;
+
+#endif
 
 /*****************************************************************************
   3.4 中断相关枚举定义
@@ -371,9 +483,11 @@ typedef oal_uint8 hal_event_tbtt_sub_type_enum_uint8;
 /****3.4.1  芯片错误中断类型 ************************************************/
 typedef enum
 {
-    HAL_EVENT_ERROR_IRQ_MAC_ERROR,      /* MAC错误中断时间*/
+    //HAL_EVENT_ERROR_IRQ_MAC_ERROR,      /* MAC错误中断时间*/
     HAL_EVENT_ERROR_IRQ_SOC_ERROR,      /* SOC错误中断事件*/
-
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+    HAL_EVENT_DMAC_BTCOEX_PS,               /* 共存PS事件 */
+#endif
     HAL_EVENT_ERROR_IRQ_SUB_TYPE_BUTT
 }hal_event_error_irq_sub_type_enum;
 typedef oal_uint8 hal_event_error_irq_sub_type_enum_uint8;
@@ -475,6 +589,7 @@ typedef enum
 #ifdef _PRE_WLAN_FEATURE_SMARTANT
     HAL_EVENT_DMAC_DUAL_ANTENNA_SWITCH,
 #endif
+    HAL_EVENT_ERROR_IRQ_MAC_ERROR,
     HAL_EVENT_DMAC_MISC_SUB_TYPE_BUTT
 }hal_dmac_misc_sub_type_enum;
 typedef oal_uint8  hal_dmac_misc_sub_type_enum_uint8;
@@ -666,6 +781,18 @@ typedef enum
 } hal_dual_antenna_switch_type_enum;
 typedef oal_uint8 hal_dual_antenna_switch_type_enum_uint8;
 #endif
+
+/* 当前国家管制域枚举，需要同HOST regdomain_enum 枚举相同 */
+typedef enum
+{
+   HAL_REGDOMAIN_FCC        = 0,
+   HAL_REGDOMAIN_ETSI       = 1,
+   HAL_REGDOMAIN_JAPAN      = 2,
+   HAL_REGDOMAIN_COMMON     = 3,
+
+   HAL_REGDOMAIN_COUNT
+} hal_regdomain_enum;
+
 /*****************************************************************************
   4 全局变量声明
 *****************************************************************************/
@@ -688,7 +815,7 @@ typedef struct
 {
     hal_fcs_protect_type_enum_uint8     en_protect_type;
     hal_fcs_protect_cnt_enum_uint8      en_protect_cnt;
-    oal_uint8                           auc_resv[2];
+    oal_uint16                          us_wait_timeout;     /* 软件定时器超时时间 */
     oal_uint32                          ul_tx_mode;
     oal_uint32                          ul_tx_data_rate;
     oal_uint16                          us_duration;    /* 单位 us */
@@ -744,7 +871,10 @@ typedef struct {
                bit_ble_adv          : 1,
                bit_bt_transfer      : 1,
                bit_bt_6slot         : 2,
-               bit_resv             : 8,
+               bit_ble_init         : 1,
+               bit_bt_acl           : 1,
+               bit_bt_ldac          : 1,
+               bit_resv             : 5,
                bit_bt_ba            : 1;
 } ble_status_stru;
 
@@ -1740,6 +1870,35 @@ typedef struct
 
 }hal_mac_key_statis_info_stru;
 
+#ifdef _PRE_WLAN_FEATURE_BTCOEX
+/* ps mode管理结构体 */
+typedef struct
+{
+    oal_uint8   bit_ps_on         : 1,        /* ps软件机制: 0=关闭, 1=打开 */
+                bit_delba_on      : 1,        /* 删减聚合逻辑: 0=关闭, 1=打开 */
+                bit_reply_cts     : 1,        /* 是否回复CTS， 0=不回复， 1=回复 */
+                bit_rsp_frame_ps  : 1,        /* resp帧节能位是否设置 0=不设置， 1=设置 */
+                bit_resv          : 4;
+}hal_coex_sw_preempt_mode_stru;
+
+typedef struct
+{
+    hal_coex_sw_preempt_mode_stru       st_sw_preempt_mode;
+    hal_coex_sw_preempt_type_uint8      en_sw_preempt_type;
+    hal_coex_sw_preempt_subtype_uint8   en_sw_preempt_subtype;
+    hal_fcs_protect_coex_pri_enum_uint8 en_protect_coex_pri;      /* one pkt帧发送优先级 */
+    oal_uint16                          us_timeout_ms;            /* ps超时时间，page扫描190slot 音乐和数传30slot */
+    oal_bool_enum_uint8                 en_last_acl_status;       /* 保存上一次acl状态 */
+    oal_bool_enum_uint8                 en_ps_stop;               /* 特定业务下，不需要开启ps，通知蓝牙不要发送ps中断 */
+    oal_uint32                          ul_ps_cur_time;           /* 用于ps中断上下半部执行时间统计 */
+    oal_atomic                          ul_ps_event_num;          /* ps中断event数目 */
+    oal_atomic                          ul_acl_en_cnt;            /* 连续acl cnt的计数，达到一定次数时，可能是蓝牙长时间为恢复 */
+    oal_bool_enum_uint8                 en_ps_pause;              /* 特定业务下，需要暂停ps，不影响ps中断处理，防止和wifi特定业务冲突 */
+    oal_bool_enum_uint8                 en_coex_pri_forbit;       /* coex pri控制开关，ldac下需要关闭该功能 */
+}hal_device_btcoex_sw_preempt_stru;
+#endif
+
+
 typedef struct tag_hal_to_dmac_device_stru
 {
     oal_uint8                       uc_chip_id;
@@ -1769,8 +1928,8 @@ typedef struct tag_hal_to_dmac_device_stru
 
     oal_uint32                      ul_track_stop_flag;
     oal_uint8                       uc_al_tx_flag;
-    oal_uint8                       uc_fcc_country;            /* 0:表示非FCC认证国家，1:表示FCC认证国家 */
-    oal_uint8                       uc_full_phy_freq_user_cnt; //device下需要满频的vap(ap)/sta(user) 个数
+    hal_regdomain_enum              en_current_reg_domain;     /* 当前处于NORMAL/FCC/CE 管制域 */
+    oal_uint8                       uc_full_phy_freq_user_cnt; /* device下需要满频的vap(ap)/sta(user) 个数 */
     oal_uint8                       uc_over_temp;
     oal_uint32                      bit_al_tx_flag        :3;  /*0: 关闭常发; 1:保留给RF测试; 2: ampdu聚合帧常发; 3:非聚合帧常发*/
     oal_uint32                      bit_al_rx_flag        :3;  /*0: 关闭常收; 1:保留给RF测试；2: ampdu聚合帧常收; 3:非聚合帧常收*/
@@ -1839,8 +1998,10 @@ typedef struct tag_hal_to_dmac_device_stru
     oal_uint32                          ul_rx_rate;
     oal_int32                           l_rx_rssi;
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
-    hal_btcoex_btble_status_stru   st_btcoex_btble_status;
-    hal_btcoex_statistics_stru    st_btcoex_statistics;
+    hal_btcoex_btble_status_stru        st_btcoex_btble_status;
+    hal_btcoex_statistics_stru          st_btcoex_statistics;
+    frw_timeout_stru                    st_btcoex_powersave_timer;
+    hal_device_btcoex_sw_preempt_stru   st_btcoex_sw_preempt;
 #endif
 #ifdef _PRE_WLAN_FEATURE_LTECOEX
     oal_uint32                     ul_lte_coex_status;
@@ -2378,6 +2539,12 @@ extern oal_void hi1151_rf_auto_cali(hal_to_dmac_device_stru * pst_hal_device);
 extern oal_void hi1151_dscr_set_iv_value(hal_tx_dscr_stru *pst_tx_dscr, oal_uint32 ul_iv_ls_word, oal_uint32 ul_iv_ms_word);
 extern oal_void hi1151_dscr_set_tx_pn_hw_bypass(hal_tx_dscr_stru *pst_tx_dscr, oal_bool_enum_uint8 en_bypass);
 extern oal_void hi1151_dscr_get_tx_pn_hw_bypass(hal_tx_dscr_stru *pst_tx_dscr, oal_bool_enum_uint8 *pen_bypass);
+extern oal_void hi1151_rf_is_fcc_edge_band(hal_to_dmac_device_stru* pst_hal_device,
+                                                wlan_channel_band_enum_uint8 en_band,
+                                                oal_uint8 uc_channel_idx,
+                                                wlan_channel_bandwidth_enum_uint8 en_bandwidth,
+                                                oal_bool_enum_uint8 *pen_fcc_edge_band);
+extern oal_void hi1151_update_scaling_reg(hal_to_dmac_device_stru *pst_hal_device, oal_void *past_nvram_params);
 
 #elif ((_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1102_DEV) || (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1102_HOST))
 
@@ -2858,6 +3025,7 @@ extern oal_void hi1102_coex_sw_irq_status_get(oal_uint8 *uc_irq_status);
 extern oal_void hi1102_get_btcoex_abort_qos_null_seq_num(oal_uint32 *ul_qosnull_seq_num);
 extern oal_void hi1102_get_btcoex_occupied_period(oal_uint16 *ul_occupied_period);
 extern oal_void hi1102_get_btcoex_pa_status(oal_uint32 *ul_pa_status);
+extern oal_void hi1102_btcoex_get_ps_switch(hal_to_dmac_device_stru *pst_hal_device, oal_bool_enum_uint8 *pen_ps_switch);
 extern oal_void hi1102_update_btcoex_btble_status(hal_to_dmac_device_stru *pst_hal_device);
 extern oal_uint32 hi1102_btcoex_init(oal_void *p_arg);
 extern oal_void hi1102_get_btcoex_statistic(oal_bool_enum_uint8 en_enable_abort_stat);
@@ -2866,6 +3034,10 @@ extern oal_void hi1102_btcoex_update_ap_beacon_count(oal_uint32 *pul_beacon_coun
 extern oal_void hi1102_btcoex_post_event(hal_to_dmac_device_stru *pst_hal_device, hal_dmac_misc_sub_type_enum_uint8 uc_sub_type);
 extern oal_void hi1102_btcoex_have_small_ampdu(hal_to_dmac_device_stru *pst_hal_base_device, oal_uint32 *pul_have_ampdu);
 extern oal_void hi1102_btcoex_process_bt_status(hal_to_dmac_device_stru *pst_hal_device, oal_uint8 uc_print);
+extern oal_void hi1102_btcoex_get_ps_service_status(hal_to_dmac_device_stru *pst_hal_device, hal_btcoex_ps_status_enum_uint8 *en_ps_status);
+extern oal_void hi1102_btcoex_get_bt_acl_status(hal_to_dmac_device_stru *pst_hal_device, oal_bool_enum_uint8 *en_acl_status);
+extern oal_void hi1102_btcoex_get_bt_sco_status(hal_to_dmac_device_stru *pst_hal_device, oal_bool_enum_uint8 *en_sco_status);
+
 #ifdef _PRE_WLAN_FEATURE_LTECOEX
 extern oal_void  hi1102_ltecoex_req_mask_ctrl(oal_uint16 req_mask_ctrl);
 #endif
@@ -2914,6 +3086,13 @@ extern oal_uint32 hi1102_rf_get_pll_div_idx(wlan_channel_band_enum_uint8 en_band
 extern oal_void hi1102_dscr_set_iv_value(hal_tx_dscr_stru *pst_tx_dscr, oal_uint32 ul_iv_ls_word, oal_uint32 ul_iv_ms_word);
 extern oal_void hi1102_dscr_set_tx_pn_hw_bypass(hal_tx_dscr_stru *pst_tx_dscr, oal_bool_enum_uint8 en_bypass);
 extern oal_void hi1102_dscr_get_tx_pn_hw_bypass(hal_tx_dscr_stru *pst_tx_dscr, oal_bool_enum_uint8 *pen_bypass);
+extern oal_void hi1102_rf_is_fcc_edge_band(hal_to_dmac_device_stru* pst_hal_device,
+                                                wlan_channel_band_enum_uint8 en_band,
+                                                oal_uint8 uc_channel_idx,
+                                                wlan_channel_bandwidth_enum_uint8 en_bandwidth,
+                                                oal_bool_enum_uint8 *pen_fcc_edge_band);
+extern oal_void hi1102_update_scaling_reg(hal_to_dmac_device_stru *pst_hal_device, oal_void *past_nvram_params);
+
 #elif ((_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1103_DEV) || (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1103_HOST))
 
 /************************  1103  CHIP********************************************/

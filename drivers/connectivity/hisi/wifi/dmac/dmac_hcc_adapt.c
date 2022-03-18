@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_hcc_adapt.c
-  版 本 号   : 初稿
-  作    者   : h00217255
-  生成日期   : 2014年10月8日
-  最近修改   :
-  功能描述   : HMAC模块HCC层适配
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年10月8日
-    作    者   : 侯寅
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -156,25 +139,7 @@ oal_netbuf_stru  *  dmac_hcc_tx_event_convert_to_netbuf_alloc(frw_event_mem_stru
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_hcc_rx_netbuf_convert_to_event
- 功能描述  : Dmac模块将事件内存中的内容复制到netbuf中，在hmac适配中还原
- 输入参数  : frw_event_mem_stru *pst_hcc_event_mem
-             oal_int32 is_had_netbuf
-             oal_uint32 event_size
-             oal_uint32 payload_size
-             oal_uint32 revert_size
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月3日
-    作    者   : z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 /*lint -e801*/
 oal_uint32 dmac_hcc_tx_event_convert_to_netbuf(frw_event_mem_stru   *pst_event_mem,
                                                oal_netbuf_stru      *pst_event_netbuf,
@@ -250,22 +215,7 @@ oal_uint32 dmac_hcc_tx_netbuf_convert_to_netbuf(frw_event_mem_stru *pst_event_me
     return ret;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_hcc_rx_netbuf_convert_to_event
- 功能描述  : Dmac模块将netbuf中的事件内容还原到事件内存中
- 输入参数  : frw_event_mem_stru *pst_hcc_event_mem
-             oal_uint32 revert_size
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月3日
-    作    者   : z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 frw_event_mem_stru * dmac_hcc_rx_netbuf_convert_to_event(frw_event_mem_stru *pst_hcc_event_mem, oal_uint32 revert_size)
 {
     frw_event_hdr_stru             *pst_hcc_event_hdr;
@@ -334,104 +284,34 @@ frw_event_mem_stru * dmac_hcc_rx_netbuf_convert_to_event(frw_event_mem_stru *pst
 }
 /*lint +e801*/
 
-/*****************************************************************************
- 函 数 名  : dmac_hcc_tx_convert_event_to_netbuf_uint16
- 功能描述  : dmac不携带payload事件的公共发送适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月18日
-    作    者   : h00217255
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_uint32 dmac_hcc_tx_convert_event_to_netbuf_uint16(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,OAL_SIZEOF(oal_uint16));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_event_del_ba_tx_adapt
- 功能描述  : DMAC_TO_HMAC_DEL_BA事件发送适配(dmac发送delba)
- 输入参数  : pst_event_mem: 事件内存指针
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月28日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_proc_event_del_ba_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                     OAL_SIZEOF(dmac_to_hmac_ctx_event_stru));
 }
-/*****************************************************************************
- 函 数 名  : dmac_alg_syn_info_adapt
- 功能描述  : DMAC_TO_HMAC_ALG_INFO_SYN事件发送适配(dmac通知hmac协议模式改变)
- 输入参数  : pst_event_mem: 事件内存指针
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月9日
-    作    者   : j0019683
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_alg_syn_info_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                     OAL_SIZEOF(dmac_to_hmac_syn_info_event_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_alg_voice_aggr_adapt
- 功能描述  : DMAC_TO_HMAC_VOICE_AGGR事件发送适配(dmac通知hmac协议模式改变)
- 输入参数  : pst_event_mem: 事件内存指针
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月20日
-    作    者   : l0033043
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_alg_voice_aggr_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                     OAL_SIZEOF(dmac_to_hmac_voice_aggr_event_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_event_config_syn_tx_adapt
- 功能描述  : config_syn模块发送适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月27日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 /*lint -e413*/
 oal_uint32 dmac_proc_event_config_syn_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
@@ -445,21 +325,7 @@ oal_uint32 dmac_proc_event_config_syn_tx_adapt(frw_event_mem_stru *pst_event_mem
 /*lint +e413*/
 
 #ifdef _PRE_WLAN_CHIP_TEST_ALG
-/*****************************************************************************
- 函 数 名  : dmac_alg_test_result_tx_adapt
- 功能描述  : 算法芯片测试结果上报
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月8日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_alg_ct_result_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                  *pst_event;
@@ -482,21 +348,7 @@ oal_uint32 dmac_proc_init_event_process_tx_adapt(frw_event_mem_stru *pst_event_m
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_wlan_drx_event_tx_adapt
- 功能描述  : wlan_drx_event发送适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月7日
-    作    者   : h00217255
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_proc_wlan_drx_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_hdr_stru              *pst_event_hdr;
@@ -599,41 +451,13 @@ oal_uint32 dmac_proc_wlan_drx_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_tkip_mic_fail_tx_adapt
- 功能描述  : tkip mic fail事件上报适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年01月27日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_proc_tkip_mic_fail_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem,NULL, OAL_SIZEOF(dmac_to_hmac_mic_event_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_crx_event_tx_adapt
- 功能描述  : crx_event发送适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月7日
-    作    者   : h00217255
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_uint32 dmac_proc_crx_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
@@ -656,22 +480,7 @@ oal_uint32 dmac_proc_crx_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_scan_report_scanned_bss_tx_adapt
- 功能描述  : dmac适配hcc事件，dmac上报每次扫描的bss信息的发送适配接口
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月13日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_scan_report_scanned_bss_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     oal_uint16 payload_len;
@@ -716,106 +525,35 @@ oal_uint32 dmac_dpd_data_cali_tx_adapt(frw_event_mem_stru *pst_event_mem)
 }
 
 #endif
-/*****************************************************************************
- 函 数 名  : dmac_proc_mgmt_rx_delba_event_tx_adapt
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月3日
-    作    者   : h00217255
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_proc_mgmt_rx_delba_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                                         OAL_SIZEOF(dmac_ctx_action_event_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_send_event_tx_adapt
- 功能描述  : device侧接收到的帧，发送去认证或者去关联消息到host侧，host侧进行对应的处理
- 输入参数  : frw_event_mem_stru *pst_event_mem
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月13日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_send_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                                                OAL_SIZEOF(dmac_diasoc_deauth_event));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_switch_to_new_chan_complete_tx_adapt
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月16日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_switch_to_new_chan_complete_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                      OAL_SIZEOF(dmac_set_chan_stru));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_dbac_status_notify_tx_adapt
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月8日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_dbac_status_notify_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
                      OAL_SIZEOF(oal_bool_enum_uint8));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_hcc_scan_comp_event_tx_adapt
- 功能描述  : 通过SDIO上报扫描完成事件的发送适配函数
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_scan_proc_scan_comp_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
@@ -823,21 +561,7 @@ oal_uint32 dmac_scan_proc_scan_comp_event_tx_adapt(frw_event_mem_stru *pst_event
 }
 
 #ifdef _PRE_WLAN_FEATURE_FLOWCTL
-/*****************************************************************************
- 函 数 名  : dmac_alg_flowctl_backp_tx_adapt
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月7日
-    作    者   :x00189397
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_alg_flowctl_backp_tx_adapt(frw_event_mem_stru * pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
@@ -847,22 +571,7 @@ oal_uint32  dmac_alg_flowctl_backp_tx_adapt(frw_event_mem_stru * pst_event_mem)
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-/*****************************************************************************
- 函 数 名  : dmac_scan_proc_obss_scan_comp_event_tx_adapt
- 功能描述  : 通过SDIO上报OBSS扫描完成事件的发送适配函数
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月28日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_scan_proc_obss_scan_comp_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL,
@@ -870,22 +579,7 @@ oal_uint32 dmac_scan_proc_obss_scan_comp_event_tx_adapt(frw_event_mem_stru *pst_
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_proc_chan_result_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     dmac_crx_chan_result_stru    *pst_event_payload;
@@ -928,21 +622,7 @@ oal_uint32 dmac_proc_chan_result_event_tx_adapt(frw_event_mem_stru *pst_event_me
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_process_rx_data_event_adapt_default
- 功能描述  : tx_process_data_event接收适配
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月7日
-    作    者   : h00217255
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 frw_event_mem_stru* dmac_process_rx_data_event_adapt_default(frw_event_mem_stru * pst_hcc_event_mem)
 {
     hcc_event_stru                  *pst_hcc_event_payload;
@@ -1010,21 +690,7 @@ frw_event_mem_stru* dmac_process_rx_data_event_adapt_default(frw_event_mem_stru 
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_hcc_rx_convert_netbuf_to_event_default
- 功能描述  : dmac rx 事件统一的接收适配函数
- 输入参数  : frw_event_mem_stru *
- 输出参数  : 无
- 返 回 值  : frw_event_mem_stru*
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月21日
-    作    者   : z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 frw_event_mem_stru* dmac_hcc_rx_convert_netbuf_to_event_default(frw_event_mem_stru * pst_hcc_event_mem)
 {
@@ -1035,23 +701,7 @@ frw_event_mem_stru* dmac_hcc_rx_convert_netbuf_to_event_default(frw_event_mem_st
     return dmac_hcc_rx_netbuf_convert_to_event(pst_hcc_event_mem,pst_hcc_event_payload->ul_buf_len);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_scan_proc_scan_req_event_rx_adapt
- 功能描述  : 通过SDIO下发扫描请求信息
-             dmac接收侧，需要将hcc事件内容具体转换为具体业务事件
- 输入参数  : frw_event_mem_stru *pst_hcc_event_mem，原先的hcc事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月16日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 frw_event_mem_stru* dmac_scan_proc_scan_req_event_rx_adapt(frw_event_mem_stru *pst_hcc_event_mem)
 {
     frw_event_hdr_stru         *pst_hcc_event_hdr;
@@ -1203,21 +853,7 @@ frw_event_mem_stru*   dmac_cali_hmac2dmac_rx_adapt(frw_event_mem_stru *pst_hcc_e
    return pst_event_mem;
 }
 #ifdef _PRE_WLAN_FEATURE_IP_FILTER
-/*****************************************************************************
- 函 数 名  : dmac_config_update_ip_filter_rx_adapt
- 功能描述  : rx ip数据包过滤功能参数配置流程 device的的适配函数
- 输入参数  : frw_event_mem_stru *pst_hcc_event_mem
- 输出参数  : 无
- 返 回 值  : frw_event_mem_stru*
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年4月18日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 frw_event_mem_stru* dmac_config_update_ip_filter_rx_adapt(frw_event_mem_stru *pst_hcc_event_mem)
 {
 
@@ -1263,23 +899,7 @@ frw_event_mem_stru* dmac_config_update_ip_filter_rx_adapt(frw_event_mem_stru *ps
 }
 
 #endif //_PRE_WLAN_FEATURE_IP_FILTER
-/*****************************************************************************
- 函 数 名  : dmac_scan_proc_sched_scan_req_event_rx_adapt
- 功能描述  : 通过SDIO下发PNO调度扫描请求信息
-             dmac接收侧，需要将hcc事件内容具体转换为具体业务事件
- 输入参数  : frw_event_mem_stru *pst_hcc_event_mem，原先的hcc事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月9日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 frw_event_mem_stru* dmac_scan_proc_sched_scan_req_event_rx_adapt(frw_event_mem_stru *pst_hcc_event_mem)
 {
     frw_event_hdr_stru            *pst_hcc_event_hdr;
@@ -1369,65 +989,20 @@ frw_event_mem_stru* dmac_scan_proc_sched_scan_req_event_rx_adapt(frw_event_mem_s
     return pst_event_mem;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_proc_disasoc_misc_event_tx_adapt
- 功能描述  : dmac适配hcc事件，dmac上报每次去关联事件发送适配接口
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_proc_disasoc_misc_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL, OAL_SIZEOF(dmac_disasoc_misc_stru));
 }
 
 #ifdef _PRE_WLAN_FEATURE_ROAM
-/*****************************************************************************
- 函 数 名  : dmac_proc_roam_trigger_event_tx_adapt
- 功能描述  : dmac适配hcc事件，dmac上报每次去关联事件发送适配接口
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_proc_roam_trigger_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     return dmac_hcc_tx_event_convert_to_netbuf(pst_event_mem, NULL, OAL_SIZEOF(oal_int8));
 }
 #endif //_PRE_WLAN_FEATURE_ROAM
-/*****************************************************************************
- 函 数 名  : dmac_proc_disasoc_misc_event_tx_adapt
- 功能描述  : dmac适配hcc事件，dmac上报每次去关联事件发送适配接口
- 输入参数  : frw_event_mem_stru *pst_event_mem，原先的业务事件类型
- 输出参数  : 无
- 返 回 值  : OAL_SUCC， 发送前适配成功
-             其他，     失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_cali2hmac_misc_event_tx_adapt(frw_event_mem_stru *pst_event_mem)
 {
     oal_netbuf_stru                 *pst_tmp_netbuf = NULL;

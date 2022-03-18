@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_auto_adjust_freq.h
-  版 本 号   : 初稿
-  作    者   : w00316376
-  生成日期   : 2015年6月26日
-  最近修改   :
-  功能描述   : device调频的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年6月26日
-    作    者   : w00316376
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __DMAC_AUTO_ADJUST_FREQ_H__
 #define __DMAC_AUTO_ADJUST_FREQ_H__
@@ -142,41 +125,13 @@ extern oal_uint32 dmac_auto_freq_pps_timeout(void *prg);
 extern oal_void dmac_set_auto_freq_pps_reuse_deinit(oal_void);
 extern oal_void dmac_set_auto_freq_pps_reuse(oal_void);
 
-/*****************************************************************************
- 函 数 名  : dmac_get_pps_statistics_handle
- 功能描述  : 获取pps统计结构体
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月12日
-    作    者   : l00324381
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE  dmac_pps_statistics_stru* dmac_get_pps_statistics_handle(oal_void)
 {
     return &g_device_pps_statistics;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_auto_freq_pps_count
- 功能描述  : device统计device收发数据帧个数
- 输入参数  : 帧数量
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月12日
-    作    者   : l00324381
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_auto_freq_pps_count(oal_uint32 pkt_cnt)
 {
     g_device_pps_statistics.ul_hcc_rxtx_total += pkt_cnt;

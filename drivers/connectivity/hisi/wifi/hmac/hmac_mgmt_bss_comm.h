@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_mgmt_bss_comm.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2013年4月9日
-  最近修改   :
-  功能描述   : hmac_mgmt_bss_comm.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年4月9日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_MGMT_BSS_COMM_H__
 #define __HMAC_MGMT_BSS_COMM_H__
@@ -106,15 +89,18 @@ extern oal_uint16  hmac_mgmt_encap_delba(
 extern oal_uint32  hmac_mgmt_rx_addba_req(
                        hmac_vap_stru              *pst_hmac_vap,
                        hmac_user_stru             *pst_hmac_user,
-                       oal_uint8                  *puc_payload);
+                       oal_uint8                  *puc_payload,
+                       oal_uint32                  frame_body_len);
 extern oal_uint32  hmac_mgmt_rx_addba_rsp(
                        hmac_vap_stru              *pst_hmac_vap,
                        hmac_user_stru             *pst_hmac_user,
-                       oal_uint8                  *puc_payload);
+                       oal_uint8                  *puc_payload,
+                       oal_uint32                  frame_body_len);
 extern oal_uint32  hmac_mgmt_rx_delba(
                        hmac_vap_stru              *pst_hmac_vap,
                        hmac_user_stru             *pst_hmac_user,
-                       oal_uint8                  *puc_payload);
+                       oal_uint8                  *puc_payload,
+                       oal_uint32                  frame_body_len);
 extern oal_uint32  hmac_mgmt_tx_addba_req(
                        hmac_vap_stru              *pst_hmac_vap,
                        hmac_user_stru             *pst_hmac_user,
