@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_btcoex.c
-  版 本 号   : 初稿
-  作    者   : g00306640
-  生成日期   : 2016年4月12日
-  最近修改   :
-  功能描述   : hmac共存功能函数定义
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年4月12日
-    作    者   : g00306640
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_BTCOEX_C__
 #define __HMAC_BTCOEX_C__
@@ -49,21 +32,7 @@
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_delba_foreach_tid
- 功能描述  : 共存删除BA会话
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月24日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_btcoex_delba_foreach_tid(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user, mac_cfg_delba_req_param_stru *pst_mac_cfg_delba_param)
 {
     oal_uint32 ul_ret = 0;
@@ -82,21 +51,7 @@ OAL_STATIC oal_uint32 hmac_btcoex_delba_foreach_tid(mac_vap_stru *pst_mac_vap, m
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_delba_foreach_user
- 功能描述  : hmac删除BA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月24日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_btcoex_delba_from_user(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_user)
 {
     oal_uint32 ul_ret = 0;
@@ -115,21 +70,7 @@ OAL_STATIC oal_uint32 hmac_btcoex_delba_from_user(mac_vap_stru *pst_mac_vap, hma
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_rx_delba_trigger
- 功能描述  : hmac删除BA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月24日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_btcoex_rx_delba_trigger(mac_vap_stru *pst_mac_vap, oal_uint8 uc_len, oal_uint8 *puc_param)
 {
     hmac_vap_stru *pst_hmac_vap;
@@ -170,21 +111,7 @@ oal_uint32 hmac_btcoex_rx_delba_trigger(mac_vap_stru *pst_mac_vap, oal_uint8 uc_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_delba_send_timeout
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月25日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_delba_send_timeout(oal_void *p_arg)
 {
     hmac_user_stru *pst_hmac_user;
@@ -232,21 +159,7 @@ OAL_STATIC oal_uint32 hmac_delba_send_timeout(oal_void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_arp_fail_delba_process
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月25日
-    作    者   : c00221210
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_btcoex_arp_fail_delba_process(oal_netbuf_stru *pst_netbuf, mac_vap_stru *pst_mac_vap)
 {
 
@@ -300,21 +213,7 @@ oal_void hmac_btcoex_arp_fail_delba_process(oal_netbuf_stru *pst_netbuf, mac_vap
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_check_exception_in_list
- 功能描述  : hmac记录异常兼容性AP的地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_btcoex_check_exception_in_list(hmac_vap_stru *pst_hmac_vap, oal_uint8 *auc_addr)
 {
     hmac_btcoex_delba_exception_stru *pst_btcoex_exception;
@@ -345,21 +244,7 @@ oal_uint32 hmac_btcoex_check_exception_in_list(hmac_vap_stru *pst_hmac_vap, oal_
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_add_exception_to_list
- 功能描述  : hmac记录异常兼容性AP的地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void hmac_btcoex_add_exception_to_list(hmac_vap_stru *pst_hmac_vap, oal_uint8 *auc_mac_addr)
 {
     hmac_btcoex_delba_exception_stru *pst_btcoex_exception;
@@ -388,31 +273,21 @@ OAL_STATIC oal_void hmac_btcoex_add_exception_to_list(hmac_vap_stru *pst_hmac_va
     pst_hmac_device_btcoex->uc_exception_bss_index++;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_btcoex_set_exception_to_file
- 功能描述  : hmac记录异常兼容性AP的地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月16日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_btcoex_check_rx_same_baw_start_from_addba_req(hmac_vap_stru *pst_hmac_vap,
-                                                                                    hmac_user_stru *pst_hmac_user,
-                                                                                    mac_ieee80211_frame_stru *pst_frame_hdr,
-                                                                                    oal_uint8 *puc_action)
+                                                            hmac_user_stru *pst_hmac_user,
+                                                            mac_ieee80211_frame_stru *pst_frame_hdr,
+                                                            oal_uint8 *puc_action,
+                                                            oal_uint32 frame_body_len)
 {
     hmac_user_btcoex_stru *pst_hmac_user_btcoex;
     hmac_btcoex_addba_req_stru *pst_hmac_btcoex_addba_req;
     oal_uint16 us_baw_start;
     oal_uint8 uc_tid;
-
+    if (frame_body_len < MAC_ADDBA_REQ_FRAME_BODY_LEN) {
+        OAM_WARNING_LOG1(0, OAM_SF_COEX, "{frame_body_len[%d] < MAC_ADDBA_REQ_FRAME_BODY_LEN.}", frame_body_len);
+        return;
+    }
     pst_hmac_user_btcoex = &(pst_hmac_user->st_hmac_user_btcoex);
 
     pst_hmac_btcoex_addba_req = &(pst_hmac_user_btcoex->st_hmac_btcoex_addba_req);
@@ -477,21 +352,7 @@ oal_void hmac_btcoex_check_rx_same_baw_start_from_addba_req(hmac_vap_stru *pst_h
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_config_print_btcoex_status
- 功能描述  : 打印共存维测信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月17日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_print_btcoex_status(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint32                  ul_ret;
@@ -533,21 +394,7 @@ oal_uint32  hmac_config_print_btcoex_status(mac_vap_stru *pst_mac_vap, oal_uint1
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_config_print_btcoex_status
- 功能描述  : 打印共存维测信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月12日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_btcoex_check_by_ba_size(hmac_user_stru *pst_hmac_user)
 {
     hmac_user_btcoex_stru *pst_hmac_user_btcoex;

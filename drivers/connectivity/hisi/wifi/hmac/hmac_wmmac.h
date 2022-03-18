@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_wmmac.h
-  版 本 号   : 初稿
-  作    者   : z00241943
-  生成日期   : 2016年9月30日
-  最近修改   :
-  功能描述   : hmac_wmmac.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年9月30日
-    作    者   : z00241943
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_WMMAC_H__
 #define __HMAC_WMMAC_H__
@@ -92,8 +75,10 @@ extern "C" {
   10 函数声明
 *****************************************************************************/
 extern oal_uint32 hmac_mgmt_tx_addts_rsp(hmac_vap_stru *pst_hmac_vap,hmac_user_stru *pst_hmac_user, hmac_ba_rx_stru *pst_ba_rx_info, oal_uint8 uc_tid, oal_uint8 uc_status);
-extern oal_uint32 hmac_mgmt_rx_addts_rsp(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user, oal_uint8 *puc_payload);
-extern oal_uint32 hmac_mgmt_rx_delts(hmac_vap_stru *pst_hmac_vap,hmac_user_stru *pst_hmac_user, oal_uint8 *puc_payload);
+extern oal_uint32 hmac_mgmt_rx_addts_rsp(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user,
+                                         oal_uint8 *puc_payload, oal_uint32 frame_body_len);
+extern oal_uint32 hmac_mgmt_rx_delts(hmac_vap_stru *pst_hmac_vap,hmac_user_stru *pst_hmac_user,
+                                     oal_uint8 *puc_payload, oal_uint32 frame_body_len);
 extern oal_uint32 hmac_mgmt_rx_addts_req_frame(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf);
 extern oal_uint32  hmac_config_addts_req(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 extern oal_uint32  hmac_config_delts(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);

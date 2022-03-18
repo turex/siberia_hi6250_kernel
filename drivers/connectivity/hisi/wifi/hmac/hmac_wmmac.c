@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_wmmac.c
-  版 本 号   : 初稿
-  作    者   : z00241943
-  生成日期   : 2016年9月30日
-  最近修改   :
-  功能描述   : WMMAC功能实现
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年9月30日
-    作    者   : z00241943
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -46,21 +29,7 @@ extern "C" {
 *****************************************************************************/
 OAL_STATIC oal_uint32  hmac_mgmt_tx_delts(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user, mac_wmm_tspec_stru *pst_delts_args);
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_encap_addts_req
- 功能描述  : 组装ADDTS REQ帧
- 输入参数  : pst_addts_args上层下发的ADDTS req参数
 
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint16  hmac_mgmt_encap_addts_req(
                     hmac_vap_stru                      *pst_vap,
                     oal_uint8                          *puc_data,
@@ -124,21 +93,7 @@ OAL_STATIC oal_uint16  hmac_mgmt_encap_addts_req(
     /* 返回的帧长度中不包括FCS */
     return us_index;
 }
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_tx_addts_req_timeout
- 功能描述  : 发送ADDTS req帧超时处理，超时后发送delts。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月22日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_mgmt_tx_addts_req_timeout(oal_void *p_arg)
 {
     hmac_vap_stru                      *pst_vap = OAL_PTR_NULL;         /* vap指针 */
@@ -175,21 +130,7 @@ OAL_STATIC oal_uint32  hmac_mgmt_tx_addts_req_timeout(oal_void *p_arg)
     return hmac_mgmt_tx_delts(pst_vap, pst_hmac_user, &st_addts_args);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_tx_addts_req
- 功能描述  : ADDTS REQUEST帧发送处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_mgmt_tx_addts_req(
                 hmac_vap_stru                      *pst_hmac_vap,
                 hmac_user_stru                     *pst_hmac_user,
@@ -322,21 +263,7 @@ OAL_STATIC oal_uint32  hmac_mgmt_tx_addts_req(
      return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_encap_addts_rsp
- 功能描述  : 组装ADDTS RSP帧
- 输入参数  :
 
- 输出参数  : 无
- 返 回 值  :返回帧的长度
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint16  hmac_mgmt_encap_addts_rsp(hmac_vap_stru     *pst_vap,
                                                 oal_uint8         *puc_data,
                                                 oal_uint8         *puc_addts_req,
@@ -362,6 +289,10 @@ OAL_STATIC oal_uint16  hmac_mgmt_encap_addts_rsp(hmac_vap_stru     *pst_vap,
     mac_rx_get_sa((mac_ieee80211_frame_stru *)puc_addts_req, &puc_sa);
 
     /* 拷贝整个ADDTS REQ帧 */
+    if (WLAN_MEM_NETBUF_SIZE2 < us_frame_len) {
+        OAM_ERROR_LOG0(0, OAM_SF_ANY, "hmac_mgmt_encap_addts_rsp::memcpy fail!");
+        return 0;
+    }
     oal_memcopy(puc_data, puc_addts_req, us_frame_len);
 
     /* Frame Control Field 中只需要设置Type/Subtype值，其他设置为0 */
@@ -401,23 +332,7 @@ OAL_STATIC oal_uint16  hmac_mgmt_encap_addts_rsp(hmac_vap_stru     *pst_vap,
     /* 返回的帧长度中不包括FCS */
     return us_frame_len;
 }
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_encap_delts
- 功能描述  : 组装DELTS帧
- 输入参数  :
 
- 输出参数  : 无
- 返 回 值  :返回帧的长度
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-
-*****************************************************************************/
 OAL_STATIC oal_uint16  hmac_mgmt_encap_delts(hmac_vap_stru    *pst_vap,
                                           oal_uint8        *puc_data,
                                           oal_uint8        *puc_addr,
@@ -499,21 +414,7 @@ OAL_STATIC oal_uint16  hmac_mgmt_encap_delts(hmac_vap_stru    *pst_vap,
     /* 返回的帧长度中不包括FCS */
     return us_index;
 }
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_tx_delts
- 功能描述  : DELTS帧发送处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_mgmt_tx_delts(
                        hmac_vap_stru                      *pst_hmac_vap,
                        hmac_user_stru                     *pst_hmac_user,
@@ -652,25 +553,12 @@ OAL_STATIC oal_uint32  hmac_mgmt_tx_delts(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_rx_addts_rsp
- 功能描述  : 从空口接收ADDTS_RSP帧的处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月23日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_mgmt_rx_addts_rsp(
                 hmac_vap_stru              *pst_hmac_vap,
                 hmac_user_stru             *pst_hmac_user,
-                oal_uint8                  *puc_payload)
+                oal_uint8                  *puc_payload,
+                oal_uint32                 frame_body_len)
 {
     mac_vap_stru               *pst_mac_vap;
     oal_uint8                   uc_user_prio;
@@ -687,7 +575,10 @@ oal_uint32  hmac_mgmt_rx_addts_rsp(
         OAM_ERROR_LOG3(0, OAM_SF_WMMAC, "{hmac_mgmt_rx_addts_rsp::null param, %p %p %p.}", pst_hmac_vap, pst_hmac_user, puc_payload);
         return OAL_ERR_CODE_PTR_NULL;
     }
-
+    if (frame_body_len < MAC_ADDTS_RSP_FRAME_BODY_LEN) { /* 10个元素长度总和 12  */
+        OAM_WARNING_LOG1(0, OAM_SF_WMMAC, "{hmac_mgmt_rx_addts_rsp::frame_body_len [%d]}", frame_body_len);
+        return OAL_FAIL;
+    }
     pst_mac_vap = &(pst_hmac_vap->st_vap_base_info);
 
     /*************************************************************************/
@@ -776,25 +667,12 @@ oal_uint32  hmac_mgmt_rx_addts_rsp(
                      uc_ac_num);
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_rx_delts
- 功能描述  : 从空口接收delts帧的处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月23日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_mgmt_rx_delts(
                 hmac_vap_stru              *pst_hmac_vap,
                 hmac_user_stru             *pst_hmac_user,
-                oal_uint8                  *puc_payload)
+                oal_uint8                  *puc_payload,
+                oal_uint32                 frame_body_len)
 {
     mac_vap_stru               *pst_mac_vap;
     oal_uint8                   uc_ac_num;
@@ -806,7 +684,10 @@ oal_uint32  hmac_mgmt_rx_delts(
         OAM_ERROR_LOG3(0, OAM_SF_WMMAC, "{hmac_mgmt_rx_delts::null param, %p %p %p.}", pst_hmac_vap, pst_hmac_user, puc_payload);
         return OAL_ERR_CODE_PTR_NULL;
     }
-
+    if (frame_body_len < MAC_DELTS_FRAME_BODY_LEN) {
+        OAM_WARNING_LOG1(0, OAM_SF_WMMAC, "{hmac_mgmt_rx_delts::frame_body_len [%d]}", frame_body_len);
+        return OAL_FAIL;
+    }
     pst_mac_vap = &(pst_hmac_vap->st_vap_base_info);
 
     /*************************************************************************/
@@ -860,21 +741,7 @@ oal_uint32  hmac_mgmt_rx_delts(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_rx_addts_req_frame
- 功能描述  : 组装ADDTS RSP帧
- 输入参数  :
 
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年9月19日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32  hmac_mgmt_rx_addts_req_frame(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     mac_user_stru              *pst_mac_user;
@@ -957,21 +824,7 @@ oal_uint32  hmac_mgmt_rx_addts_req_frame(hmac_vap_stru *pst_hmac_vap, oal_netbuf
     return OAL_SUCC;
 }
 
-/*****************************************************************************
-函 数 名  : hmac_config_addts_req
-功能描述  : 发送ADDTS REQ配置命令
-输入参数  : 无
-输出参数  : 无
-返 回 值  :
-调用函数  :
-被调函数  :
 
-修改历史      :
-1.日    期   : 2016年9月18日
-作    者   : l00357925
-修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_addts_req(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_wmm_tspec_stru_param_stru   *pst_addts_req;
@@ -1027,21 +880,7 @@ oal_uint32  hmac_config_addts_req(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, 
     return hmac_mgmt_tx_addts_req(pst_hmac_vap, pst_hmac_user, &st_addts_args);
 }
 
-/*****************************************************************************
-函 数 名  : hmac_config_delts
-功能描述  : 删除ts的配置命令
-输入参数  : 无
-输出参数  : 无
-返 回 值  :
-调用函数  :
-被调函数  :
 
-修改历史      :
-1.日    期   : 2016年9月18日
-作    者   : l00357925
-修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_delts(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     mac_cfg_wmm_tspec_stru_param_stru   *pst_delts;
@@ -1077,21 +916,7 @@ oal_uint32  hmac_config_delts(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_
     return hmac_mgmt_tx_delts(pst_hmac_vap, pst_hmac_user, &st_delts_args);
 }
 
-/*****************************************************************************
-函 数 名  : hmac_config_wmmac_switch
-功能描述  : 设置WMMAC开关的配置命令,sta使用
-输入参数  : 无
-输出参数  : 无
-返 回 值  :
-调用函数  :
-被调函数  :
 
-修改历史      :
-1.日    期   : 2016年9月18日
-作    者   : l00357925
-修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_wmmac_switch(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param)
 {
     oal_uint8                            uc_wmmac_switch;
@@ -1141,21 +966,7 @@ oal_uint32  hmac_config_wmmac_switch(mac_vap_stru *pst_mac_vap, oal_uint16 us_le
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  :  hmac_tx_mgmt_reassoc_req
- 功能描述  : sta发送重关联请求帧处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月24日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_uint32  hmac_tx_mgmt_reassoc_req(hmac_vap_stru *pst_hmac_vap_sta)
 {
@@ -1227,21 +1038,7 @@ oal_uint32  hmac_tx_mgmt_reassoc_req(hmac_vap_stru *pst_hmac_vap_sta)
 
 }
 
-/*****************************************************************************
-函 数 名  : hmac_config_reassoc_req
-功能描述  : 设置发送重关联请求的配置命令
-输入参数  : 无
-输出参数  : 无
-返 回 值  :
-调用函数  :
-被调函数  :
 
-修改历史      :
-1.日    期   : 2016年9月24日
-作    者   : l00357925
-修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_config_reassoc_req(mac_vap_stru *pst_mac_vap)
 {
     hmac_vap_stru                       *pst_hmac_vap;

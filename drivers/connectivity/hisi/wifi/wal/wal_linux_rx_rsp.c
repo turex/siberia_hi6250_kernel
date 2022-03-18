@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_rx_rsp.c
-  版 本 号   : 初稿
-  作    者   : y00184180
-  生成日期   : 2013年8月26日
-  最近修改   :
-  功能描述   : 接收驱动上报过来的消息，上报给内核
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年8月26日
-    作    者   : y00184180
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -70,21 +53,7 @@ extern  hmac_dfr_info_stru    g_st_dfr_info;
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : wal_scan_report
- 功能描述  : 上报扫描完成事件处理
- 输入参数  : pst_scan_mgmt
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年7月29日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void wal_scan_report(hmac_scan_stru *pst_scan_mgmt)
 {
     /* 通知 kernel scan 已经结束 */
@@ -100,21 +69,7 @@ OAL_STATIC oal_void wal_scan_report(hmac_scan_stru *pst_scan_mgmt)
     OAL_WAIT_QUEUE_WAKE_UP_INTERRUPT(&pst_scan_mgmt->st_wait_queue);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_schedule_scan_report
- 功能描述  : 上报PNO扫描完成事件处理
- 输入参数  : pst_wiphy,pst_scan_mgmt
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年7月29日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void wal_schedule_scan_report(oal_wiphy_stru *pst_wiphy, hmac_scan_stru *pst_scan_mgmt)
 {
     /* 上报调度扫描结果 */
@@ -126,24 +81,7 @@ OAL_STATIC oal_void wal_schedule_scan_report(oal_wiphy_stru *pst_wiphy, hmac_sca
     OAM_WARNING_LOG0(0, OAM_SF_SCAN, "{wal_schedule_scan_report::sched scan complete.!}");
 }
 
-/*****************************************************************************
- 函 数 名  : wal_scan_comp_proc_sta
- 功能描述  : STA上报扫描完成事件处理
- 输入参数  : pst_event_mem: 事件内存
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-  2.日    期   : 2013年9月9日
-    作    者   : y00184180
-    修改内容   : 增加上报内核部分函数
-
-*****************************************************************************/
 oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                 *pst_event;
@@ -228,7 +166,6 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         /* PNO扫描结束事件 */
         if(OAL_PTR_NULL != pst_scan_mgmt->pst_sched_scan_req)
         {
-            /* DTS2016082206602 存在PNO扫描结束上报但驱动PNO扫描已经结束的情况,即普通scan打断PNO scan,此时device正巧上报PNO扫描结束事件 */
             wal_schedule_scan_report(pst_wiphy, pst_scan_mgmt);
         }
         else
@@ -255,22 +192,19 @@ oal_uint32  wal_scan_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 
+static oal_void wal_free_asoc_comp_proc_sta_ie_buf(hmac_asoc_rsp_stru *pst_asoc_rsp)
+{
+    if (pst_asoc_rsp->puc_asoc_rsp_ie_buff != NULL) {
+        oal_free(pst_asoc_rsp->puc_asoc_rsp_ie_buff);
+        pst_asoc_rsp->puc_asoc_rsp_ie_buff = NULL;
+    }
+    if (pst_asoc_rsp->puc_asoc_req_ie_buff != NULL) {
+        oal_free(pst_asoc_rsp->puc_asoc_req_ie_buff);
+        pst_asoc_rsp->puc_asoc_req_ie_buff = NULL;
+    }
+}
 
-/*****************************************************************************
- 函 数 名  : wal_asoc_comp_proc_sta
- 功能描述  : STA上报关联完成事件处理
- 输入参数  : pst_event_mem: 事件内存
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru              *pst_event;
@@ -293,8 +227,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     if (OAL_PTR_NULL == pst_net_device)
     {
         OAM_ERROR_LOG0(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ASSOC, "{wal_asoc_comp_proc_sta::get net device ptr is null!}\r\n");
-        oal_free(pst_asoc_rsp->puc_asoc_rsp_ie_buff);
-        pst_asoc_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+        wal_free_asoc_comp_proc_sta_ie_buf(pst_asoc_rsp);
         return OAL_ERR_CODE_PTR_NULL;
     }
 
@@ -308,8 +241,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     st_connet_result.ul_rsp_ie_len    = pst_asoc_rsp->ul_asoc_rsp_ie_len;
     st_connet_result.us_status_code   = pst_asoc_rsp->en_status_code;
 
-    /* begin:DTS2016052700869: 关联成功，上报关联结果前，先更新对应bss 信息，
-     * 避免由于关联前不扫描，内核将bss 老化，4次握手完成后下发秘钥提示失败情况 */
+    
     if (st_connet_result.us_status_code == MAC_SUCCESSFUL_STATUSCODE)
     {
         hmac_device_stru    *pst_hmac_device;
@@ -322,8 +254,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         {
             OAM_ERROR_LOG0(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ASSOC,
                             "{wal_asoc_comp_proc_sta::get ptr is null!}");
-            oal_free(pst_asoc_rsp->puc_asoc_rsp_ie_buff);
-            pst_asoc_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+            wal_free_asoc_comp_proc_sta_ie_buf(pst_asoc_rsp);
             return OAL_ERR_CODE_PTR_NULL;
         }
         pst_wiphy       = pst_hmac_device->pst_device_base_info->pst_wiphy;
@@ -331,8 +262,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 
         wal_update_bss(pst_wiphy, pst_bss_mgmt, st_connet_result.auc_bssid);
     }
-    /* end:DTS2016052700869: 关联成功，上报关联结果前，先更新对应bss 信息，
-     * 避免由于关联前不扫描，内核将bss 老化，4次握手完成后下发秘钥提示失败情况 */
+    
 
     /* 调用内核接口，上报关联结果 */
     ul_ret = oal_cfg80211_connect_result(pst_net_device,
@@ -348,8 +278,7 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
         OAM_ERROR_LOG1(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ASSOC, "{wal_asoc_comp_proc_sta::oal_cfg80211_connect_result fail[%d]!}\r\n", ul_ret);
     }
 
-    oal_free(pst_asoc_rsp->puc_asoc_rsp_ie_buff);
-    pst_asoc_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+    wal_free_asoc_comp_proc_sta_ie_buf(pst_asoc_rsp);
 
 #ifdef _PRE_WLAN_FEATURE_11D
     /* 如果关联成功，sta根据AP的国家码设置自己的管制域 */
@@ -376,21 +305,18 @@ oal_uint32  wal_asoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 }
 
 #ifdef _PRE_WLAN_FEATURE_ROAM
-/*****************************************************************************
- 函 数 名  : wal_roam_comp_proc_sta
- 功能描述  : STA上报漫游完成事件处理
- 输入参数  : pst_event_mem: 事件内存
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
+static oal_void wal_free_roam_comp_proc_sta_ie_buf(hmac_roam_rsp_stru *pst_roam_rsp)
+{
+    if (pst_roam_rsp->puc_asoc_rsp_ie_buff != NULL) {
+        oal_free(pst_roam_rsp->puc_asoc_rsp_ie_buff);
+        pst_roam_rsp->puc_asoc_rsp_ie_buff = NULL;
+    }
+    if (pst_roam_rsp->puc_asoc_req_ie_buff != NULL) {
+        oal_free(pst_roam_rsp->puc_asoc_req_ie_buff);
+        pst_roam_rsp->puc_asoc_req_ie_buff = NULL;
+    }
+}
 
- 修改历史      :
-  1.日    期   : 2015年6月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru              *pst_event;
@@ -416,8 +342,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     if (OAL_PTR_NULL == pst_net_device)
     {
         OAM_ERROR_LOG0(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ROAM, "{wal_asoc_comp_proc_sta::get net device ptr is null!}\r\n");
-        oal_free(pst_roam_rsp->puc_asoc_rsp_ie_buff);
-        pst_roam_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+        wal_free_roam_comp_proc_sta_ie_buf(pst_roam_rsp);
         return OAL_ERR_CODE_PTR_NULL;
     }
     /* 获取device id 指针*/
@@ -425,16 +350,14 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     if (OAL_PTR_NULL == pst_mac_device)
     {
        OAM_WARNING_LOG0(pst_event->st_event_hdr.uc_vap_id, OAM_SF_SCAN, "{wal_asoc_comp_proc_sta::pst_mac_device is null ptr!}");
-       oal_free(pst_roam_rsp->puc_asoc_rsp_ie_buff);
-       pst_roam_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+       wal_free_roam_comp_proc_sta_ie_buf(pst_roam_rsp);
        return OAL_ERR_CODE_PTR_NULL;
     }
 
     if (pst_roam_rsp->st_channel.en_band >= WLAN_BAND_BUTT)
     {
         OAM_ERROR_LOG1(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ROAM, "{wal_asoc_comp_proc_sta::unexpected band[%d]!}\r\n", pst_roam_rsp->st_channel.en_band);
-        oal_free(pst_roam_rsp->puc_asoc_rsp_ie_buff);
-        pst_roam_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+        wal_free_roam_comp_proc_sta_ie_buf(pst_roam_rsp);
         return OAL_FAIL;
     }
     if (WLAN_BAND_2G == pst_roam_rsp->st_channel.en_band)
@@ -473,8 +396,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
     OAM_WARNING_LOG4(pst_event->st_event_hdr.uc_vap_id, OAM_SF_ASSOC, "{wal_roam_comp_proc_sta::oal_cfg80211_roamed OK asoc_req_ie[%p] len[%d] asoc_rsp_ie[%p] len[%d]!}\r\n",
                    pst_roam_rsp->puc_asoc_req_ie_buff, pst_roam_rsp->ul_asoc_req_ie_len, pst_roam_rsp->puc_asoc_rsp_ie_buff, pst_roam_rsp->ul_asoc_rsp_ie_len);
 
-    oal_free(pst_roam_rsp->puc_asoc_rsp_ie_buff);
-    pst_roam_rsp->puc_asoc_rsp_ie_buff = OAL_PTR_NULL;
+    wal_free_roam_comp_proc_sta_ie_buf(pst_roam_rsp);
 
     ul_ret = hmac_vap_free_asoc_req_ie_ptr(pst_event->st_event_hdr.uc_vap_id);
     if (OAL_SUCC != ul_ret)
@@ -487,21 +409,7 @@ oal_uint32  wal_roam_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 }
 #endif //_PRE_WLAN_FEATURE_ROAM
 #ifdef _PRE_WLAN_FEATURE_11R
-/*****************************************************************************
- 函 数 名  : wal_ft_event_proc_sta
- 功能描述  : STA上报FT事件处理
- 输入参数  : pst_event_mem: 事件内存
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_ft_event_proc_sta(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru              *pst_event;
@@ -544,21 +452,7 @@ oal_uint32  wal_ft_event_proc_sta(frw_event_mem_stru *pst_event_mem)
 }
 #endif //_PRE_WLAN_FEATURE_11R
 
-/*****************************************************************************
- 函 数 名  : wal_disasoc_comp_event_proc
- 功能描述  : STA上报去关联完成事件处理
- 输入参数  : pst_event_mem: 事件内存
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_disasoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru              *pst_event;
@@ -609,21 +503,7 @@ oal_uint32  wal_disasoc_comp_proc_sta(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_connect_new_sta_proc_ap
- 功能描述  : 驱动上报内核bss网络中新加入了一个STA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月9日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_connect_new_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru              *pst_event;
@@ -696,21 +576,7 @@ oal_uint32  wal_connect_new_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_disconnect_sta_proc_ap
- 功能描述  : 驱动上报内核bss网络中删除了一个STA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月9日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_disconnect_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru            *pst_event;
@@ -751,21 +617,7 @@ oal_uint32  wal_disconnect_sta_proc_ap(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_mic_failure_proc
- 功能描述  : 驱动上报内核mic错误
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月28日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_mic_failure_proc(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru               *pst_event;
@@ -799,21 +651,7 @@ oal_uint32  wal_mic_failure_proc(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_send_mgmt_to_host
- 功能描述  : 驱动上报内核接收到管理帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月17日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_send_mgmt_to_host(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru               *pst_event;
@@ -891,21 +729,7 @@ oal_uint32  wal_send_mgmt_to_host(frw_event_mem_stru *pst_event_mem)
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_p2p_listen_timeout
- 功能描述  : HMAC上报监听超时
- 输入参数  : frw_event_mem_stru *pst_event_mem
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月25日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_p2p_listen_timeout(frw_event_mem_stru *pst_event_mem)
 {
 #if (_PRE_PRODUCT_ID != _PRE_PRODUCT_ID_HI1151)

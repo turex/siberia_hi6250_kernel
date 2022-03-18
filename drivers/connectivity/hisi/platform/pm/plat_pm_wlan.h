@@ -33,6 +33,9 @@
 #define WLAN_SLEEP_LONG_CHECK_CNT       (8)     /*入网阶段,延长至400ms*/
 //#define DEFAULT_WDG_TIMEOUT             (200)
 //#define LONG_WDG_TIMETOUT               (400)
+
+#define WLAN_WAKELOCK_HOLD_TIME         (500)   /*hold wakelock 500ms*/
+
 #define WLAN_SDIO_MSG_RETRY_NUM         (3)
 #define WLAN_WAKEUP_FAIL_MAX_TIMES      (1)  /* 连续多少次wakeup失败，可进入DFR流程 */
 
@@ -61,10 +64,16 @@ enum WLAN_PM_SLEEP_STAGE
   3 STRUCT DEFINE
 *****************************************************************************/
 typedef oal_uint32 (*wifi_srv_get_pm_pause_func)(oal_void);
+#ifdef _PRE_WLAN_WAKEUP_SRC_PARSE
+typedef oal_void (*wifi_srv_data_wkup_print_en_func)(oal_bool_enum_uint8);
+#endif
 
 struct wifi_srv_callback_handler
 {
     wifi_srv_get_pm_pause_func p_wifi_srv_get_pm_pause_func;
+#ifdef _PRE_WLAN_WAKEUP_SRC_PARSE
+    wifi_srv_data_wkup_print_en_func     p_data_wkup_print_en_func;
+#endif
 };
 
 
@@ -85,6 +94,9 @@ struct wlan_pm_s
     oal_work_stru           st_ram_reg_test_work;  //ram_reg_test work
 
     struct timer_list       st_watchdog_timer;   //sleep watch dog
+    struct timer_list       st_deepsleep_delay_timer;
+    oal_wakelock_stru       st_deepsleep_wakelock;
+
     oal_uint32              ul_packet_cnt;       //睡眠周期内统计的packet个数
     oal_uint32              ul_wdg_timeout_cnt;  //timeout check cnt
     oal_uint32              ul_wdg_timeout_curr_cnt;  //timeout check current cnt

@@ -24,13 +24,11 @@
  */
 #define CUST_COMP_NODE             "hi1102,customize"
 #define PROC_NAME_INI_FILE_NAME    "ini_file_name"
-#define CUST_PATH_SPEC             "/cust_spec"     /*某运营商在不同产品的差异配置*/
-#define CUST_PATH_COMM             "/data/cust"     /*某运营商在所有产品的相同配置*/
+#define CUST_PATH_INI_CONN             "/data/vendor/cust_conn/ini_cfg"     /*某运营商在不同产品的差异配置*/
 /* mutex for open ini file */
 struct mutex        file_mutex;
 int8 g_ini_file_name[INI_FILE_PATH_LEN] = {0};
-int8 g_ini_spec_file_name[INI_FILE_PATH_LEN] = {0};
-int8 g_ini_comm_file_name[INI_FILE_PATH_LEN] = {0};
+int8 g_ini_conn_file_name[INI_FILE_PATH_LEN] = {0};
 #define INI_FILE_PATH           (g_ini_file_name)
 
 INI_BOARD_VERSION_STRU g_board_version = {{0}};
@@ -564,18 +562,9 @@ int32 ini_find_var_value_by_path(int8* path, int32 tag_index, int8 * puc_var, in
 int32 ini_find_var_value(int32 tag_index, int8 * puc_var, int8* puc_value, uint32 size)
 {
     /* read spec if exist */
-    if (ini_file_exist(g_ini_spec_file_name))
+    if (ini_file_exist(g_ini_conn_file_name))
     {
-        if (INI_SUCC == ini_find_var_value_by_path(g_ini_spec_file_name, tag_index, puc_var, puc_value, size))
-        {
-            return INI_SUCC;
-        }
-    }
-
-    /* read comm if exist */
-    if (ini_file_exist(g_ini_comm_file_name))
-    {
-        if (INI_SUCC == ini_find_var_value_by_path(g_ini_comm_file_name, tag_index, puc_var, puc_value, size))
+        if (INI_SUCC == ini_find_var_value_by_path(g_ini_conn_file_name, tag_index, puc_var, puc_value, size))
         {
             return INI_SUCC;
         }
@@ -768,8 +757,7 @@ int ini_cfg_init(void)
     INI_INIT_MUTEX(&file_mutex);
 
     snprintf(g_ini_file_name, sizeof(g_ini_file_name)-1, "%s", auc_dts_ini_path);
-    snprintf(g_ini_spec_file_name, sizeof(g_ini_spec_file_name)-1, "%s%s", CUST_PATH_SPEC, auc_dts_ini_path);
-    snprintf(g_ini_comm_file_name, sizeof(g_ini_comm_file_name)-1, "%s%s", CUST_PATH_COMM, auc_dts_ini_path);
+    snprintf(g_ini_conn_file_name, sizeof(g_ini_conn_file_name)-1, "%s", CUST_PATH_INI_CONN);
 
     INI_INFO("%s@%s\n", PROC_NAME_INI_FILE_NAME, g_ini_file_name);
 

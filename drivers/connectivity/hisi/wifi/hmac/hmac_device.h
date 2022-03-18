@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_device.h
-  版 本 号   : 初稿
-  作    者   : l00279018
-  生成日期   : 2015年1月31日
-  最近修改   :
-  功能描述   : hmac_device.c 的头文件，包括hmac device结构的定义
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_DEVICE_H__
 #define __HMAC_DEVICE_H__
@@ -113,21 +96,24 @@ typedef struct
 typedef struct
 {
     /* scan 相关控制信息 */
-    oal_bool_enum_uint8                    en_is_scanning;               /* host侧的扫描请求是否正在执行 */
-    oal_bool_enum_uint8                    en_is_random_mac_addr_scan;   /* 是否为随机mac addr扫描，默认关闭(定制化宏开启下废弃) */
-    oal_bool_enum_uint8                    en_complete;                   /* 内核普通扫描请求是否完成标志 */
-    oal_bool_enum_uint8                    en_sched_scan_complete;        /* 调度扫描是否正在运行标记 */
+    oal_bool_enum_uint8                    en_is_scanning;             /* host侧的扫描请求是否正在执行 */
+    oal_bool_enum_uint8                    en_is_random_mac_addr_scan; /* 是否为随机mac addr扫描，默认关闭(定制化宏开启下废弃) */
+    oal_bool_enum_uint8                    en_complete;                /* 内核普通扫描请求是否完成标志 */
+    oal_bool_enum_uint8                    en_sched_scan_complete;     /* 调度扫描是否正在运行标记 */
 
-    oal_cfg80211_scan_request_stru        *pst_request;               /* 内核下发的扫描请求结构体 */
-    oal_cfg80211_sched_scan_request_stru  *pst_sched_scan_req;        /* 内核下发的调度扫描请求结构体 */
+    oal_cfg80211_scan_request_stru        *pst_request;                /* 内核下发的扫描请求结构体 */
+    oal_cfg80211_sched_scan_request_stru  *pst_sched_scan_req;         /* 内核下发的调度扫描请求结构体 */
 
     oal_wait_queue_head_stru               st_wait_queue;
-    oal_spin_lock_stru                     st_scan_request_spinlock;            /* 内核下发的request资源锁 */
+    oal_spin_lock_stru                     st_scan_request_spinlock;   /* 内核下发的request资源锁 */
 
     frw_timeout_stru                       st_scan_timeout;            /* 扫描模块host侧的超时保护所使用的定时器 */
 #if defined(_PRE_SUPPORT_ACS) || defined(_PRE_WLAN_FEATURE_DFS) || defined(_PRE_WLAN_FEATURE_20_40_80_COEXIST)
     frw_timeout_stru                       st_init_scan_timeout;
 #endif
+    oal_uint8                              auc_random_mac[WLAN_MAC_ADDR_LEN]; /* 扫描时候用的随机MAC */
+    oal_uint8                              auc_resv[2];
+
     hmac_scan_record_stru                  st_scan_record_mgmt;        /* 扫描运行记录管理信息，包括扫描结果和发起扫描者的相关信息 */
 }hmac_scan_stru;
 

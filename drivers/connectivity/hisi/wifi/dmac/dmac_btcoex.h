@@ -1,19 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_btcoex.h
-
-  最近修改   :
-  功能描述   : dmac_btcoex.h 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年12月02日
-    作    者   : c00221210
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __DMAC_BTCOEX_H__
 #define __DMAC_BTCOEX_H__
@@ -42,6 +27,7 @@ extern "C" {
   2 宏定义
 *****************************************************************************/
 
+#define BTCOEX_RELEASE_TIMEOUT              (1000)
 
 /*****************************************************************************
   3 枚举定义
@@ -243,6 +229,9 @@ extern oal_void dmac_btcoex_bt_low_rate_process (mac_vap_stru *pst_vap, hal_to_d
 extern oal_void dmac_btcoex_release_rx_prot(mac_vap_stru *pst_mac_vap, oal_uint8 uc_data_type);
 extern oal_void dmac_btcoex_tx_vip_frame(hal_to_dmac_device_stru *pst_hal_device, mac_vap_stru *pst_mac_vap, oal_dlist_head_stru *pst_tx_dscr_list_hdr);
 extern oal_void dmac_btcoex_sco_rx_rate_process (mac_vap_stru *pst_vap, hal_to_dmac_device_stru *pst_hal_device);
+extern oal_void dmac_btcoex_ps_stop_check_and_notify(oal_void);
+extern oal_void dmac_btcoex_ps_pause_check_and_notify(hal_to_dmac_device_stru *pst_hal_device);
+extern oal_uint32 dmac_btcoex_ps_status_handler(frw_event_mem_stru *pst_event_mem);
 #endif /* #ifdef _PRE_WLAN_FEATURE_COEXIST_BT */
 
 #ifdef __cplusplus

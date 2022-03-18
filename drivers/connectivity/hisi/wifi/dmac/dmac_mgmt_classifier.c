@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_mgmt_classifier.c
-  版 本 号   : 初稿
-  作    者   : t00231215
-  生成日期   : 2012年12月18日
-  最近修改   :
-  功能描述   : dmac 管理帧处理
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年12月18日
-    作    者   : t00231215
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -91,21 +74,7 @@ extern "C" {
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : dmac_rx_process_control
- 功能描述  : 控制帧处理
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月3日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_process_control(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf, oal_uint8 *pen_go_on)
 {
     dmac_rx_ctl_stru                 *pst_rx_ctl;
@@ -289,21 +258,7 @@ OAL_STATIC oal_uint32 dmac_btcoex_wlan_occupied_timeout_callback(oal_void *p_arg
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_mgmt_update_tsf
- 功能描述  : DMAC接收关联帧更新TSF
- 输入参数  : pst_dmac_vap
-             pst_frame_hdr
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月25日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_void dmac_rx_mgmt_update_tsf(dmac_vap_stru *pst_dmac_vap,
                                             mac_ieee80211_frame_stru *pst_frame_hdr,
                                             mac_device_stru    *pst_mac_device,
@@ -349,21 +304,7 @@ OAL_STATIC oal_void dmac_rx_mgmt_update_tsf(dmac_vap_stru *pst_dmac_vap,
     }
 
 }
-/*****************************************************************************
- 函 数 名  : dmac_rx_notify_channel_width
- 功能描述  : sta在UP状态下处理"Notify Channel Width"帧上报过滤
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             pst_netbuf  : "Notify Channel Width帧"所在的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月14日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_void  dmac_rx_notify_channel_width(mac_vap_stru *pst_mac_vap,oal_uint8 *puc_data,dmac_user_stru *pst_dmac_user)
 {
     wlan_bw_cap_enum_uint8      en_bwcap_vap;
@@ -386,21 +327,7 @@ OAL_STATIC oal_void  dmac_rx_notify_channel_width(mac_vap_stru *pst_mac_vap,oal_
     dmac_alg_cfg_user_bandwidth_notify(pst_mac_vap, &(pst_dmac_user->st_user_base_info));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_rx_ch_switch
- 功能描述  : sta在UP状态下处理"Notify Channel Width"帧上报过滤
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             pst_netbuf  : "Notify Channel Width帧"所在的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月14日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_void  dmac_sta_up_rx_ch_switch(mac_vap_stru *pst_mac_vap, oal_uint8  *puc_frame_body,oal_uint16  us_framebody_len)
 {
     oal_uint8          *puc_ie                = OAL_PTR_NULL;
@@ -409,6 +336,11 @@ OAL_STATIC oal_void  dmac_sta_up_rx_ch_switch(mac_vap_stru *pst_mac_vap, oal_uin
     {
         OAM_ERROR_LOG2(0, OAM_SF_ANY, "{dmac_sta_up_rx_ch_switch::param null,pst_mac_vap = [%p],puc_frame_body = [%p]}",
                        pst_mac_vap,puc_frame_body);
+        return;
+    }
+
+    if (pst_mac_vap->st_ch_switch_info.uc_switch_fail) {
+        OAM_WARNING_LOG0(0, OAM_SF_ANY, "{dmac_sta_up_rx_ch_switch::CSA no handle csa action!}");
         return;
     }
 
@@ -440,22 +372,7 @@ OAL_STATIC oal_void  dmac_sta_up_rx_ch_switch(mac_vap_stru *pst_mac_vap, oal_uin
         dmac_ie_proc_wide_bandwidth_ie(pst_mac_vap, puc_ie);
     }
 }
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_rx_ext_ch_switch
- 功能描述  : STA up状态接收Extended Channel Switch Announcement帧处理
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             pst_netbuf : 包含Extended Channel Switch Announcement帧的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月12日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  dmac_sta_up_rx_ext_ch_switch(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_frame_body,oal_uint16 us_framebody_len)
 {
     oal_uint16          us_index;
@@ -492,21 +409,7 @@ OAL_STATIC oal_void  dmac_sta_up_rx_ext_ch_switch(mac_vap_stru *pst_mac_vap, oal
 }
 
 #ifdef _PRE_WLAN_FEATURE_OPMODE_NOTIFY
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_rx_opmode_notify_frame
- 功能描述  : 从空口接收opmode_notify帧的处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月7日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_mgmt_rx_opmode_notify_frame(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user, oal_uint8 *puc_frame_payload)
 {
     mac_opmode_notify_stru     *pst_opmode_notify = OAL_PTR_NULL;
@@ -543,21 +446,7 @@ oal_uint32  dmac_mgmt_rx_opmode_notify_frame(mac_vap_stru *pst_mac_vap, mac_user
 
 #endif
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-/*****************************************************************************
- 函 数 名  : dmac_send_2040_coext_mgmt_frame_sta
- 功能描述  : STA发送20/40 共存管理帧(根据Trigger Event A & Trigger Event B填写)
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月12日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  dmac_send_2040_coext_mgmt_frame_sta(mac_vap_stru *pst_mac_vap)
 {
     dmac_vap_stru     *pst_dmac_vap;
@@ -621,22 +510,7 @@ oal_void  dmac_send_2040_coext_mgmt_frame_sta(mac_vap_stru *pst_mac_vap)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_rx_2040_coext
- 功能描述  : STA在UP状态下处理接收到的20/40共存管理帧
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             pst_netbuf : 包含20/40共存管理帧的netbuf指针
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月12日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  dmac_sta_up_rx_2040_coext(mac_vap_stru *pst_mac_vap, oal_uint8  *puc_frame_body)
 {
     /* 如果STA不支持"20/40共存管理"特性，则直接忽略AP发过来的"20/40共存管理帧"  非HT站点，不处理此帧 */
@@ -658,22 +532,7 @@ OAL_STATIC oal_void  dmac_sta_up_rx_2040_coext(mac_vap_stru *pst_mac_vap, oal_ui
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_rx_action
- 功能描述  : STA在UP状态下的接收ACTION帧处理
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针
-             pst_netbuf  : Action帧所在的netbuf
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月6日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_sta_up_rx_action(dmac_vap_stru *pst_dmac_vap,oal_netbuf_stru *pst_netbuf,oal_uint16 us_user_idx)
 {
     mac_vap_stru                   *pst_mac_vap;
@@ -842,24 +701,7 @@ oal_uint8 dmac_sta_up_rx_action(dmac_vap_stru *pst_dmac_vap,oal_netbuf_stru *pst
 
     return uc_go_on;
 }
-/*****************************************************************************
- 函 数 名  : dmac_rx_filter_mgmt
- 功能描述  : dmac_rx_filter_mgmt
- 输入参数  : pst_dmac_vap
-             pst_netbuf
-             pst_event_mem
-             &en_go_on
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月3日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf, frw_event_mem_stru *pst_event_mem, oal_uint8 *pen_go_on)
 {
     mac_device_stru            *pst_mac_device;
@@ -937,7 +779,6 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
                 dmac_process_p2p_noa(pst_dmac_vap, pst_netbuf);
             }
 
-            /* DTS2015042506406 P2P WFA 7.1.3，OppPS 节能接收到beacon 帧后， 才使能发送 */
             if ((IS_P2P_CL(&pst_dmac_vap->st_vap_base_info))&&
                 (IS_P2P_OPPPS_ENABLED(pst_dmac_vap)))
             {
@@ -1038,7 +879,6 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
             /* 如果扫描动作关心bss信息，那么进行扫描管理帧过滤，进行对应的处理动作，其它do nothing  */
             if (pst_mac_device->st_scan_params.uc_scan_func & MAC_SCAN_FUNC_BSS)
             {
-                /*DTS2015102002093 扫描时也是会偶尔切回工作信道工作,不能过滤掉所有管理帧 */
 // *pen_go_on = OAL_FALSE;
 
                 /* 扫描状态的帧过滤处理 */
@@ -1091,7 +931,6 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
         else if(WLAN_ACTION == pst_frame_hdr->st_frame_control.bit_sub_type)
         {
 #ifdef _PRE_WLAN_FEATURE_P2P
-            /* DTS2015082401460  P2P GO接收到P2P action 管理帧处理 */
             if (IS_P2P_GO((&pst_dmac_vap->st_vap_base_info)))
             {
                 *pen_go_on = dmac_p2p_listen_rx_mgmt(pst_dmac_vap, pst_netbuf);
@@ -1159,8 +998,7 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
     {
         if (WLAN_PROBE_RSP == pst_frame_hdr->st_frame_control.bit_sub_type)
         {
-            /* BEGIN:DTS2017022700518:判断接收到的probe rsp 帧和本VAP 是相同信道，才清零linkloss 计数
-               防止由于ap 切换信道后，sta 在其他信道扫描到ap 信号不能触发linkloss 去关联 */
+            
             /* 获取probe rsp 帧中的信道 */
             oal_uint8                   uc_frame_channel;
             uc_frame_channel = mac_ie_get_chan_num(MAC_GET_RX_PAYLOAD_ADDR(&(pst_rx_ctl->st_rx_info), pst_netbuf),
@@ -1172,8 +1010,7 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
             {
                 dmac_vap_linkloss_clean(pst_dmac_vap);
             }
-            /* END:DTS2017022700518:判断接收到的probe rsp 帧和本VAP 是相同信道，才清零linkloss 计数
-               防止由于ap 切换信道后，sta 在其他信道扫描到ap 信号不能触发linkloss 去关联 */
+            
         }
         else
         {
@@ -1209,21 +1046,7 @@ oal_uint32  dmac_rx_filter_mgmt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *ps
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_mgmt_classify
- 功能描述  : DMAC模块，接收流程管理帧处理入口，主要用于帧在DMAC或者HMAC的分发
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月8日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_mgmt_classify(
                 frw_event_mem_stru             *pst_event_mem,
                 frw_event_hdr_stru             *pst_event_hdr,
@@ -1306,37 +1129,13 @@ oal_uint32  dmac_rx_mgmt_classify(
         pst_crx_event->pst_netbuf = pst_netbuf;
 
         /* 分发 */
-        /*DTS2015031608237 如果直接返回，netbuf会内存泄露*/
         return frw_event_dispatch_event(pst_event_mem);
     }
 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_multi_mgmt_pre_process
- 功能描述  : 预处理来自其他BSS的广播管理帧，根据本vap 状态和帧类型判断是否需要处理。
-            probe req 帧(广播)
-                （1）如果是go/ap ，接收到probe req 信道和本vap 工作信道不同，则不做复制和进一步处理。
-                （2）如果是sta， 接收到prob req ，不做复制和处理。
-                （3）如果是p2p device 或者p2p client ,接收dao probe req ，判断是否为监听状态，如果是监听状态，则复制，否则不复制。
-            beacon 帧
-                （1）ap/p2p go, 信道选择时的扫描接收到的beacon 帧需要处理
-                （2）sta/p2p gc/p2p dev 一直需要beacon 帧
-            action 帧(广播)
-                （1）广播action 帧，复制给其他vap
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月2日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum_uint8 dmac_rx_multi_mgmt_pre_process(mac_device_stru    *pst_mac_device,
                                                                 mac_vap_stru     *pst_mac_vap,
                                                                 oal_uint8         uc_channel_number,
@@ -1397,21 +1196,7 @@ OAL_STATIC oal_bool_enum_uint8 dmac_rx_multi_mgmt_pre_process(mac_device_stru   
     return en_need_copy;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_multi_mgmt_frame
- 功能描述  : 处理来自其他BSS的广播管理帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月2日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_multi_mgmt_frame(
                 frw_event_mem_stru             *pst_event_mem,
                 frw_event_hdr_stru             *pst_event_hdr,
@@ -1538,21 +1323,7 @@ oal_uint32  dmac_rx_multi_mgmt_frame(
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_process_mgmt
- 功能描述  : 管理帧总入口
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月2日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_process_mgmt(
                 frw_event_mem_stru             *pst_event_mem,
                 frw_event_hdr_stru             *pst_event_hdr,
@@ -1636,21 +1407,7 @@ oal_uint32  dmac_rx_process_mgmt(
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_tx_process_action_event
- 功能描述  : DMAC模块，ACTION发送处理接口，主要是进行信息同步和调用管理帧发送接口
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月10日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_tx_process_action_event(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru             *pst_event;
@@ -1759,21 +1516,7 @@ oal_uint32  dmac_tx_process_action_event(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_tx_event_process
- 功能描述  : 通用的（那些不需要damc做任何业务处理的管理帧，认证关联）处理hmac抛来的发送管理帧事件，填写相应cb参数，发送管理帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月25日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_mgmt_tx_event_process(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru          *pst_event;
@@ -1853,21 +1596,7 @@ oal_uint32  dmac_mgmt_tx_event_process(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_process_sync_event
- 功能描述  : 收到wlan的Delba和addba rsp用于到dmac的同步
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月18日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_process_sync_event(frw_event_mem_stru *pst_event_mem)
 {
 
@@ -1930,21 +1659,7 @@ oal_uint32  dmac_rx_process_sync_event(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rx_process_priv_req_event
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月26日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_rx_process_priv_req_event(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru             *pst_event;
@@ -1991,21 +1706,7 @@ oal_uint32  dmac_rx_process_priv_req_event(frw_event_mem_stru *pst_event_mem)
     return OAL_SUCC;
 }
 #ifdef _PRE_WLAN_FEATURE_BTCOEX
-/*****************************************************************************
- 函 数 名  : dmac_btcoex_tx_addba_rsp_check
- 功能描述  : 判断一个帧是否是addba_rsp
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月18日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void dmac_btcoex_tx_addba_rsp_check(oal_netbuf_stru *pst_netbuf, dmac_user_stru *pst_dmac_user)
 {
     oal_uint8 *puc_mac_header  = oal_netbuf_header(pst_netbuf);
@@ -2029,23 +1730,7 @@ OAL_STATIC OAL_INLINE oal_void dmac_btcoex_tx_addba_rsp_check(oal_netbuf_stru *p
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : dmac_tx_complete_mgmt_notify
- 功能描述  : 发送完成管理帧处理入口
- 输入参数  : pst_dscr: 描述符地址
-             pst_dmac_user: sta结构体指针
-             pst_dmac_vap: vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月14日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_tx_complete_mgmt_notify(
                 hal_to_dmac_device_stru *pst_hal_device,
                 dmac_user_stru         *pst_dmac_user,
@@ -2076,23 +1761,7 @@ oal_uint32  dmac_tx_complete_mgmt_notify(
     return OAL_SUCC;
 }
 #if 0
-/*****************************************************************************
- 函 数 名  : dmac_tx_complete_security
- 功能描述  : 发送完成安全处理入口
- 输入参数  : pst_dscr: 描述符地址
-             pst_dmac_user: sta结构体指针
-             pst_dmac_vap: vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月14日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_tx_complete_security_ap(
                 dmac_user_stru     *pst_dmac_user,
                 hal_tx_dscr_stru   *pst_dscr,
@@ -2103,21 +1772,7 @@ oal_uint32  dmac_tx_complete_security_ap(
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_connect_set_channel
- 功能描述  : STA入网设信道或者AP设置信道接口
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月8日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  dmac_mgmt_connect_set_channel(
                 mac_device_stru    *pst_mac_device,
                 mac_vap_stru       *pst_up_vap,
@@ -2152,34 +1807,19 @@ oal_void  dmac_mgmt_connect_set_channel(
     }
     else
     {
-        /* DTS2015073102639 同信道时需要切到更大带宽的信道 */
         if (pst_channel->en_bandwidth > pst_up_vap->st_channel.en_bandwidth)
         {
             OAM_WARNING_LOG2(pst_up_vap->uc_vap_id, OAM_SF_SCAN, "dmac_mgmt_connect_set_channel:  same chan_num[%d], switch to bw[%d].",
                             pst_channel->uc_chan_number,
                             pst_channel->en_bandwidth);
-            /* 切换带宽vap仍工作于当前信道，不清除FIFO */
+            /* 切换带宽vap仍工作于当前信道，不清除FIFO */
             dmac_mgmt_switch_channel(pst_mac_device, pst_channel, OAL_FALSE);
         }
     }
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_join_set_reg_event_process
- 功能描述  : 更新jion req时，设置相应寄存器
- 输入参数  : 事件结构体
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月4日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_join_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                 *pst_event;
@@ -2265,7 +1905,6 @@ oal_uint32 dmac_join_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
 #endif
 
     /* 通知算法 */
-	/* DTS2016061707848 通知算法用户下线，在更新完用户后再重新上线，保证dbac的信道信息正确 */
     dmac_alg_vap_down_notify(&pst_dmac_vap->st_vap_base_info);
     dmac_alg_cfg_channel_notify(&pst_dmac_vap->st_vap_base_info, CH_BW_CHG_TYPE_MOVE_WORK);
     dmac_alg_cfg_bandwidth_notify(&pst_dmac_vap->st_vap_base_info, CH_BW_CHG_TYPE_MOVE_WORK);
@@ -2328,7 +1967,6 @@ oal_uint32 dmac_join_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
 
 #endif //_PRE_WLAN_FEATURE_ROAM
 
-    /* BEGIN: DTS2017110400498 关联前，用真实MAC 地址发送一次probe req */
     oal_set_mac_addr(pst_device->st_scan_params.auc_sour_mac_addr,
                     pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 
@@ -2337,7 +1975,6 @@ oal_uint32 dmac_join_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
         OAM_WARNING_LOG0(pst_dmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_SCAN,
                         "{dmac_join_set_reg_event_process::dmac_scan_send_probe_req_frame failed.}");
     }
-    /* END: DTS2017110400498 关联前，用真实MAC 地址发送一次probe req */
 
 #if 0
 OAM_ERROR_LOG0(pst_event_hdr->uc_vap_id, OAM_SF_SCAN, "{call DPD Calibration Start function}");
@@ -2353,21 +1990,7 @@ OAM_ERROR_LOG0(pst_event_hdr->uc_vap_id, OAM_SF_SCAN, "{call DPD Calibration Sta
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_join_set_dtim_reg_event_process
- 功能描述  : join时设置dtim相应寄存器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月4日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_join_set_dtim_reg_event_process(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                      *pst_event;
@@ -2426,21 +2049,7 @@ oal_uint32 dmac_join_set_dtim_reg_event_process(frw_event_mem_stru *pst_event_me
 }
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
-/*****************************************************************************
- 函 数 名  : dmac_set_smps_process
- 功能描述  : DMAC设置SMPS模式处理函数(配置MAC寄存器，使能SMPS)
- 输入参数  : pst_event_mem--事件指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月17日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_set_smps_process(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                         *pst_event;
@@ -2513,21 +2122,7 @@ oal_uint32  dmac_set_smps_process(frw_event_mem_stru *pst_event_mem)
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : dmac_asoc_set_reg_event_process
- 功能描述  : 关联时写寄存器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月18日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_asoc_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                      *pst_event;
@@ -2575,21 +2170,7 @@ oal_uint32  dmac_asoc_set_reg_event_process(frw_event_mem_stru *pst_event_mem)
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_conn_result_event
- 功能描述  : 处理hmac抛来的关联结果事件
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月15日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_mgmt_conn_result_event(frw_event_mem_stru *pst_event_mem)
 {
     frw_event_stru                      *pst_event;

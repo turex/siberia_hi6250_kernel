@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_11k.c
-  版 本 号   : 初稿
-  作    者   : y00196452
-  生成日期   : 2016年5月4日
-  最近修改   :
-  功能描述   : 11k Radio Resource Measurement功能处理
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年5月4日
-    作    者   : y00196452
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -59,21 +42,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_exit_quiet
- 功能描述  : 退出Quiet模式，恢复硬件发送功能
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_exit_quiet(oal_void *para)
 {
     dmac_vap_stru       *pst_dmac_vap;
@@ -116,21 +85,7 @@ oal_uint32 dmac_rrm_exit_quiet(oal_void *para)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_enter_quiet
- 功能描述  : 进入Quiet模式，关闭硬件发送功能
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_enter_quiet(oal_void *para)
 {
     mac_device_stru         *pst_mac_device;
@@ -180,21 +135,7 @@ oal_uint32 dmac_rrm_enter_quiet(oal_void *para)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_handle_quiet
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_handle_quiet(dmac_vap_stru  *pst_dmac_vap)
 {
     OAL_STATIC oal_uint8        uc_count = 0;
@@ -298,21 +239,7 @@ oal_uint32 dmac_rrm_handle_quiet(dmac_vap_stru  *pst_dmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_parse_quiet
- 功能描述  : 解析Quiet IE，记录帧内容，内容有变化时触发Quiet过程
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_parse_quiet(dmac_vap_stru  *pst_dmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     oal_uint16                   us_frame_len;
@@ -390,21 +317,7 @@ oal_uint32 dmac_rrm_parse_quiet(dmac_vap_stru  *pst_dmac_vap, oal_netbuf_stru *p
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_proc_pwr_constraint
- 功能描述  : 根据功率约束调整本地允许发送的最大功率值
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_proc_pwr_constraint(dmac_vap_stru  *pst_dmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     oal_uint16                   us_frame_len;
@@ -486,22 +399,7 @@ oal_uint32 dmac_rrm_proc_pwr_constraint(dmac_vap_stru  *pst_dmac_vap, oal_netbuf
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_gen_random16
- 功能描述  : 产生16位随机数
- 输入参数  : ul_val: 随机种子
-            us_rst_flag: 是否使用随机种子
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint16  dmac_rrm_gen_random16(oal_uint32 ul_val, oal_uint8 us_rst_flag)
 {
     OAL_STATIC oal_uint32 ul_rand = 0;
@@ -513,22 +411,7 @@ oal_uint16  dmac_rrm_gen_random16(oal_uint32 ul_val, oal_uint8 us_rst_flag)
     return (oal_uint16) (ul_rand >> 16);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_get_link_req_info
- 功能描述  : 获取link req帧内容
- 输入参数  : pst_dmac_vap: dmac vap结构体
-             puc_link_req_frame: link req帧体
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_get_link_req_info(dmac_vap_stru *pst_dmac_vap, oal_uint8 *puc_link_req_frame)
 {
     oal_uint8       uc_offset = 0;
@@ -553,21 +436,7 @@ oal_void dmac_rrm_get_link_req_info(dmac_vap_stru *pst_dmac_vap, oal_uint8 *puc_
     pst_dmac_vap->pst_rrm_info->c_link_max_tx_pwr       = (oal_int8)puc_link_req_frame[uc_offset++];
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_fill_basic_rm_rpt_action
- 功能描述  : 申请管理帧内存，填充管理帧和Radio Measurement Report的固定域
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_fill_basic_rm_rpt_action(dmac_vap_stru *pst_dmac_vap)
 {
     oal_uint8                       *puc_mac_header;
@@ -662,21 +531,7 @@ oal_uint32 dmac_rrm_fill_basic_rm_rpt_action(dmac_vap_stru *pst_dmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_start_scan_for_bcn_req
- 功能描述  : 更新实际测量起始时间
- 输入参数  : uc_vap_id: vap id
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_start_scan_for_bcn_req(dmac_vap_stru *pst_dmac_vap)
 {
     mac_device_stru     *pst_mac_device;
@@ -702,21 +557,7 @@ oal_uint32 dmac_rrm_start_scan_for_bcn_req(dmac_vap_stru *pst_dmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_encap_meas_rpt
- 功能描述  : 组装Measurement Report IE的固定域
- 输入参数  : pst_dmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_encap_meas_rpt(dmac_vap_stru *pst_dmac_vap)
 {
     mac_rrm_info_stru       *pst_rrm_info;
@@ -819,21 +660,7 @@ oal_void dmac_rrm_encap_meas_rpt(dmac_vap_stru *pst_dmac_vap)
     } while (!oal_dlist_is_empty(&(pst_rrm_info->st_meas_rpt_list)));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_extract_bcn_rpt_fix_field
- 功能描述  : 填充Beacon report固定长度域
- 输入参数  : pst_dmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_extract_bcn_rpt_fix_field(  dmac_vap_stru *pst_dmac_vap,
                                                         mac_meas_rpt_bcn_item_stru *pst_meas_rpt_bcn_item,
                                                         dmac_rx_ctl_stru *pst_rx_ctrl,
@@ -878,21 +705,7 @@ oal_void dmac_rrm_extract_bcn_rpt_fix_field(  dmac_vap_stru *pst_dmac_vap,
     hal_vap_tsf_get_32bit(pst_dmac_vap->pst_hal_vap, (oal_uint32 *)&(pst_meas_rpt_bcn_item->ul_parent_tsf));
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_extract_bcn_rpt_detail
- 功能描述  : 填充Beacon report的frame body
- 输入参数  : pst_dmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 void dmac_rrm_extract_bcn_rpt_detail(dmac_vap_stru *pst_dmac_vap,
                                                 oal_uint8  *puc_frame_body,
                                                 oal_uint16   us_frame_len,
@@ -974,22 +787,7 @@ void dmac_rrm_extract_bcn_rpt_detail(dmac_vap_stru *pst_dmac_vap,
         }
     }
 }
-/*****************************************************************************
- 函 数 名  : dmac_rrm_get_bcn_info_from_rx
- 功能描述  : 从接收的Beacon/Probe Rsp中获取Beacon Req所需信息, Active/Passive模式使用
- 输入参数  : pst_dmac_vap : dmac vap结构体
-             pst_netbuf   : 接收帧netbuf
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_get_bcn_info_from_rx(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru  *pst_netbuf)
 {
     oal_uint8                    *puc_ssid_ie = OAL_PTR_NULL;
@@ -1142,23 +940,7 @@ oal_void dmac_rrm_prepare_basic_scan_params(dmac_vap_stru *pst_dmac_vap, mac_bcn
     pst_scan_req->uc_probe_delay = 0;
     oal_set_mac_addr(pst_scan_req->auc_sour_mac_addr, pst_dmac_vap->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.auc_dot11StationID);
 }
-/*****************************************************************************
- 函 数 名  : dmac_rrm_meas_bcn
- 功能描述  : 根据不同测量模式，准备扫描参数并启动扫描
- 输入参数  : pst_dmac_vap : dmac vap结构体指针
-             pst_bcn_req  : Beacon Req信息指针
-             pst_scan_req : 保存扫描参数结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_meas_bcn(dmac_vap_stru *pst_dmac_vap, mac_bcn_req_stru *pst_bcn_req, mac_scan_req_stru   *pst_scan_req)
 {
     mac_rrm_info_stru               *pst_rrm_info;
@@ -1257,24 +1039,7 @@ oal_uint32 dmac_rrm_meas_bcn(dmac_vap_stru *pst_dmac_vap, mac_bcn_req_stru *pst_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_get_bcn_rpt_channels
- 功能描述  : 根据channel number及operating class计算所需测量的信道
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
-             ppst_ap_chn_rpt    : 指向AP Channel Report的指针数组
-             uc_ap_chn_rpt_num  : AP Channel Report个数
-             pst_scan_req       : 扫描信息结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_get_bcn_rpt_channels(mac_bcn_req_stru *pst_bcn_req, mac_ap_chn_rpt_stru **ppst_ap_chn_rpt, oal_uint8 uc_ap_chn_rpt_num, mac_scan_req_stru *pst_scan_req)
 {
     oal_uint8                       uc_chan_idx;
@@ -1351,22 +1116,7 @@ oal_uint32 dmac_rrm_get_bcn_rpt_channels(mac_bcn_req_stru *pst_bcn_req, mac_ap_c
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_parse_beacon_req
- 功能描述  : 解析Beacon Request信息，并准备测量
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
-             pst_meas_req_ie    : Measurement Request IE指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_parse_beacon_req(dmac_vap_stru *pst_dmac_vap, mac_meas_req_ie_stru  *pst_meas_req_ie)
 {
     mac_bcn_req_stru               *pst_bcn_req;
@@ -1499,21 +1249,7 @@ oal_void dmac_rrm_parse_beacon_req(dmac_vap_stru *pst_dmac_vap, mac_meas_req_ie_
     dmac_rrm_meas_bcn(pst_dmac_vap, pst_bcn_req, &st_scan_req);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_send_rm_rpt_action
- 功能描述  : 发送已经组装好的Radio Measurement Report帧
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 dmac_rrm_send_rm_rpt_action(dmac_vap_stru* pst_dmac_vap)
 {
     mac_tx_ctl_stru                 *pst_tx_ctl;
@@ -1558,21 +1294,7 @@ oal_uint32 dmac_rrm_send_rm_rpt_action(dmac_vap_stru* pst_dmac_vap)
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_encap_and_send_bcn_rpt
- 功能描述  : 组Beacon report rsp Action帧，可能由多个Action帧共同完成信息传递
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_encap_and_send_bcn_rpt(dmac_vap_stru* pst_dmac_vap)
 {
     if (OAL_PTR_NULL == pst_dmac_vap)
@@ -1593,22 +1315,7 @@ oal_void dmac_rrm_encap_and_send_bcn_rpt(dmac_vap_stru* pst_dmac_vap)
         dmac_rrm_send_rm_rpt_action(pst_dmac_vap);
     }while (!oal_dlist_is_empty(&(pst_dmac_vap->pst_rrm_info->st_meas_rpt_list)));
 }
-/*****************************************************************************
- 函 数 名  : dmac_rrm_proc_rm_request
- 功能描述  : 解析Radio Measurement Request，并处理Beacon Request
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
-             pst_netbuf         : RM Request的netbuf
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_proc_rm_request(dmac_vap_stru* pst_dmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     mac_action_rm_req_stru          *pst_rm_req;
@@ -1723,22 +1430,7 @@ oal_void dmac_rrm_proc_rm_request(dmac_vap_stru* pst_dmac_vap, oal_netbuf_stru *
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_encap_link_meas_rpt
- 功能描述  : 组装Link Measurement Report
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
-             puc_buffer         : link measurement report帧的地址
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32    dmac_rrm_encap_link_meas_rpt(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_netbuf, oal_netbuf_stru *pst_rx_netbuf)
 {
     oal_uint8                     uc_offset = 0;
@@ -1866,21 +1558,7 @@ oal_uint32    dmac_rrm_encap_link_meas_rpt(dmac_vap_stru *pst_dmac_vap, oal_netb
     return (oal_uint32)(uc_offset + MAC_80211_FRAME_LEN);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_rrm_send_link_meas_rpt_action
- 功能描述  : 发送Link Measurement Report
- 输入参数  : pst_dmac_vap       : dmac vap结构体指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月29日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_rrm_send_link_meas_rpt_action(dmac_vap_stru *pst_dmac_vap, oal_netbuf_stru *pst_rx_netbuf)
 {
     oal_netbuf_stru        *pst_mgmt_buf;

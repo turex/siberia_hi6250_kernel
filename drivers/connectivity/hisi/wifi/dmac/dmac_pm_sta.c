@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_pm_sta.c
-  版 本 号   : 初稿
-  作    者   : l00280485
-  生成日期   : 2015年1月14日
-  最近修改   :
-  功能描述   : hi1102 深睡唤醒保存恢复函数所在文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年1月14日
-    作    者   : l00280485
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -75,22 +58,7 @@ oal_uint32  g_ul_wait_dbac = 0;
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
 
- 函 数 名  : dmac_psm_sync_tsf_to_sta
- 功能描述  : 睡眠前将ap的tsf同步给sta
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2015年9月17日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_sync_tsf_to_sta(oal_void)
 {
     hal_to_dmac_vap_stru                 st_sta_hal_vap;
@@ -110,21 +78,7 @@ oal_void dmac_psm_sync_tsf_to_sta(oal_void)
 
     return;
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_sync_tsf_to_sta
- 功能描述  : 深睡唤醒后将sta的tsf同步给ap
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月17日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_sync_tsf_to_ap(oal_void)
 {
     hal_to_dmac_vap_stru    st_sta_hal_vap;
@@ -161,21 +115,7 @@ oal_uint8 dmac_psm_check_hw_txq_state(oal_void)
     return OAL_TRUE;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_check_txrx_state
- 功能描述  : 检测协议栈txrx状态是否满足睡眠条件
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_psm_check_txrx_state(oal_void)
 {
     hal_to_dmac_device_stru     *pst_hal_device;
@@ -261,21 +201,7 @@ oal_uint8 dmac_psm_check_txrx_state(oal_void)
     return OAL_TRUE;
 
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_is_fake_queues_empty
- 功能描述  : 检查fake_q,期望为空,调用dbac接口检查,不为空上报第一个帧
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : oal_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月28日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8  dmac_psm_is_fake_queues_empty(oal_void)
 {
     mac_device_stru                     *pst_device;
@@ -299,21 +225,7 @@ oal_uint8  dmac_psm_is_fake_queues_empty(oal_void)
     return uc_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_save_tcm
- 功能描述  : 整体保存TCM段内存，包括ATCM 和 BTCM
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_save_tcm (hal_to_dmac_device_stru  *pst_hal_device)
 {
     hal_reset_reg_save(pst_hal_device, HAL_RESET_HW_TYPE_TCM);
@@ -333,21 +245,7 @@ oal_void dmac_psm_save_start_dma (oal_uint8* puc_ch0,oal_uint8* puc_ch1,oal_uint
 }
 
 #ifdef _PRE_WLAN_FEATURE_EDCA_OPT
-/*****************************************************************************
- 函 数 名  : dmac_psm_save_dutycycle
- 功能描述  : 低功耗时保存占空比
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_save_dutycycle (mac_device_stru  *pst_device)
 {
     oal_uint32 aul_reg_value[3];
@@ -360,21 +258,7 @@ oal_void dmac_psm_save_dutycycle (mac_device_stru  *pst_device)
     pst_device->ul_duty_ratio_lp += aul_reg_value[2];
 }
 #endif
-/*****************************************************************************
- 函 数 名  : dmac_psm_save_mac_statistics_data
- 功能描述  : 睡眠之前保存mac关键统计信息
- 输入参数  : pst_device
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月16日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_save_mac_statistics_data(mac_device_stru  *pst_device)
 {
     hal_mac_key_statis_info_stru   st_mac_key_statis_info;
@@ -396,24 +280,7 @@ oal_void dmac_psm_save_mac_statistics_data(mac_device_stru  *pst_device)
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_clean_state
- 功能描述  : this func must be called before any save ps state operate,because save ps state will use netbuf mem
-             clean state including:
-             1. stop sys timer
-             2. free alloced netbuf
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_psm_clean_state (oal_void)
 {
     hal_to_dmac_device_stru     *pst_hal_device;
@@ -457,22 +324,7 @@ oal_uint8 dmac_psm_clean_state (oal_void)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_save_ps_state
- 功能描述  : Save Powersaving state including:
-             1. Save MAC & PHY Register
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_psm_save_ps_state (oal_void)
 {
     hal_to_dmac_device_stru *pst_hal_device;
@@ -501,23 +353,7 @@ oal_uint8 dmac_psm_save_ps_state (oal_void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_init_netbuf_pool
- 功能描述  : large netbuf 内存池被低功耗覆盖，重新初始化.由于netbuf内存在释放时是还到可用链的头部。所以
- 			 在流量低的情况下，PM所用的保存ATCM部分的netbuf基本不会被覆盖，不需要重复保存，也不需要每次唤醒后
- 			 重新初始化netbuf内存池，仅在内存被使用的情况下，才需要重新初始化netbuf内存池，并清空覆盖标记。
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月127日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_init_netbuf_pool(oal_void)
 {
     oal_uint32 ul_atcm_save = 0;
@@ -532,61 +368,19 @@ oal_void dmac_psm_init_netbuf_pool(oal_void)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_save_mac_hw_reg
- 功能描述  : mac 寄存器的恢复
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  dmac_psm_recover_mac_reg(hal_to_dmac_device_stru  *pst_hal_device)
 {
     hal_reset_reg_restore(pst_hal_device, HAL_RESET_HW_TYPE_MAC);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_recover_tcm
- 功能描述  : 整体恢复TCM段内存，包括ATCM 和 BTCM
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_recover_tcm (hal_to_dmac_device_stru  *pst_hal_device)
 {
     hal_reset_reg_restore(pst_hal_device, HAL_RESET_HW_TYPE_TCM);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_recover_primary_channel
- 功能描述  : 重设信道
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月7日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_recover_primary_channel(mac_device_stru *pst_device)
 {
     hal_to_dmac_device_stru         *pst_h2d_device;
@@ -599,7 +393,6 @@ oal_void dmac_psm_recover_primary_channel(mac_device_stru *pst_device)
     /* 设置带宽 */
     hal_set_bandwidth_mode(pst_device->pst_device_stru, pst_wifi_channel_status->uc_bandwidth);
 
-    /* 调用hal接口设置信道号 DTS2015082603335 */
     hal_set_primary_channel(pst_device->pst_device_stru,
                    pst_wifi_channel_status->uc_chan_number,
                    pst_wifi_channel_status->uc_band,
@@ -609,21 +402,7 @@ oal_void dmac_psm_recover_primary_channel(mac_device_stru *pst_device)
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_recover_ps_mac_state
- 功能描述  : phy状态恢复
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8  dmac_psm_recover_powerdown(oal_uint8 uc_dmach0,oal_uint8 uc_dmach1,oal_uint8 uc_dmach2)
 {
     hal_to_dmac_device_stru        *pst_hal_device;
@@ -697,21 +476,7 @@ oal_uint8  dmac_psm_recover_powerdown(oal_uint8 uc_dmach0,oal_uint8 uc_dmach1,oa
 }
 
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_recover_ps_start_dma
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  dmac_psm_recover_start_dma(oal_uint8 *puc_ch0,oal_uint8 *puc_ch1,oal_uint8 *puc_ch2)
 {
     hal_to_dmac_device_stru        *pst_hal_device;
@@ -724,22 +489,7 @@ oal_void  dmac_psm_recover_start_dma(oal_uint8 *puc_ch0,oal_uint8 *puc_ch1,oal_u
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_recover_ps_state
- 功能描述  : recover Powersaving state including:
-             1. recover MAC & PHY Register
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_psm_recover_no_powerdown (oal_void)
 {
     hal_to_dmac_device_stru        *pst_hal_device;
@@ -796,22 +546,7 @@ oal_uint8 dmac_psm_recover_no_powerdown (oal_void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_cbb_stopwork
- 功能描述  : start light sleep:
-             1. stop MAC/phy PA
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 dmac_psm_cbb_stopwork (oal_void)
 {
     hal_to_dmac_device_stru     *pst_hal_device;
@@ -830,21 +565,7 @@ oal_uint8 dmac_psm_cbb_stopwork (oal_void)
     return OAL_TRUE;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_psm_rf_sleep
- 功能描述  : rf sleep
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_rf_sleep(oal_uint8 uc_restore_reg)
 {
     hal_to_dmac_device_stru     *pst_hal_device;
@@ -858,21 +579,7 @@ oal_void dmac_psm_rf_sleep(oal_uint8 uc_restore_reg)
 
     return;
 }
-/*****************************************************************************
- 函 数 名  : dmac_psm_rf_awake
- 功能描述  : rf awake
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void dmac_psm_rf_awake (oal_uint8 uc_restore_reg)
 {
     hal_to_dmac_device_stru     *pst_hal_device;

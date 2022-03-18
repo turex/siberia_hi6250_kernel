@@ -2503,7 +2503,7 @@ STATIC int64 hw_gnss_ioctl(struct file *file, uint32 cmd, uint64 arg)
 
     return 0;
 }
-
+#ifndef HI110X_HAL_MEMDUMP_ENABLE
 
 void plat_exception_dump_file_rotate_init(void)
 {
@@ -2644,7 +2644,73 @@ STATIC int64 hw_debug_ioctl(struct file *file, uint32 cmd, uint64 arg)
 
     return 0;
 }
+#else
+int32 plat_excp_dump_rotate_cmd_read(uint64 arg, memdump_info_t* memdump_info)
+{
+    uint32 __user  *puser = (uint32 __user *)arg;
 
+    struct sk_buff  *skb =NULL;
+    if (!access_ok(VERIFY_WRITE, puser, (int32)sizeof(uint32)))
+    {
+        PS_PRINT_ERR("address can not write\n");
+        return -EINVAL;
+    }
+    if (wait_event_interruptible(memdump_info->dump_type_wait,  (skb_queue_len(&memdump_info->dump_type_queue)) > 0))
+    {
+        PS_PRINT_WARNING("wake up by interrupt\n");
+        return -EINVAL;
+    }
+    skb = skb_dequeue(&memdump_info->dump_type_queue);
+    if (NULL == skb)
+    {
+        PS_PRINT_WARNING("skb is NULL\n");
+        return -EINVAL;
+    }
+    if (copy_to_user(puser, skb->data, sizeof(uint32)))
+    {
+        PS_PRINT_WARNING("copy_to_user err!restore it, len=%d,arg=%ld\n", (int32)sizeof(uint32),arg);
+        skb_queue_head(&memdump_info->dump_type_queue, skb);
+        return -EINVAL;
+    }
+
+    PS_PRINT_INFO("read rotate cmd [%d] from queue\n", *(uint32*)skb->data);
+    skb_pull(skb, skb->len);
+    kfree_skb(skb);
+    return 0;
+}
+int32 plat_bfgx_dump_rotate_cmd_read(uint64 arg)
+{
+    return plat_excp_dump_rotate_cmd_read(arg, &bcpu_memdump_cfg);
+}
+int32 plat_wifi_dump_rotate_cmd_read(uint64 arg)
+{
+    return plat_excp_dump_rotate_cmd_read(arg, &wcpu_memdump_cfg);
+}
+
+
+
+STATIC int64 hw_debug_ioctl(struct file *file, uint32 cmd, uint64 arg)
+{
+    if (NULL == file)
+    {
+        PS_PRINT_ERR("file is null\n");
+        return -EINVAL;
+    }
+    switch (cmd)
+    {
+        case PLAT_DFR_CFG_CMD:
+            plat_dfr_cfg_set(arg);
+            break;
+        case PLAT_BEATTIMER_TIMEOUT_RESET_CFG_CMD:
+            plat_beatTimer_timeOut_reset_cfg_set(arg);
+            break;
+        default:
+            PS_PRINT_WARNING("hw_debug_ioctl cmd = %d not find\n", cmd);
+            return -EINVAL;
+    }
+    return 0;
+}
+#endif
 
 /**
  * Prototype    : hw_gnss_release
@@ -2721,7 +2787,97 @@ STATIC int32 hw_gnss_release(struct inode *inode, struct file *filp)
 
     return 0;
 }
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+STATIC int32 hw_excp_read(struct file *filp, int8 __user *buf,
+                                size_t count,loff_t *f_pos, memdump_info_t *memdump_t)
+{
+    struct sk_buff *skb = NULL;
+    uint16 count1;
 
+    PS_PRINT_WARNING("hw_excp_read\n");
+    if (unlikely((NULL == buf)||(NULL == filp)))
+    {
+        PS_PRINT_ERR("ps_core_d is NULL\n");
+        return -EINVAL;
+    }
+    if (NULL == (skb = skb_dequeue(&memdump_t->quenue)))
+    {
+        PS_PRINT_WARNING("hw_excp_read read skb queue is null!\n");
+        return 0;
+    }
+    /* read min value from skb->len or count */
+    count1 = min_t(size_t, skb->len, count);
+    if (copy_to_user(buf, skb->data, count1))
+    {
+        PS_PRINT_ERR("copy_to_user is err!\n");
+        skb_queue_head(&memdump_t->quenue, skb);
+        return -EFAULT;
+    }
+    skb_pull(skb, count1);
+    if (0 == skb->len)
+    {   /* curr skb data have read to user */
+        kfree_skb(skb);
+    }
+    else
+    {   /* if don,t read over; restore to skb queue */
+        skb_queue_head(&memdump_t->quenue, skb);
+    }
+    return count1;
+}
+
+STATIC ssize_t hw_bfgexcp_read(struct file *filp, int8 __user *buf,
+                                size_t count,loff_t *f_pos)
+{
+    return hw_excp_read(filp, buf, count, f_pos, &bcpu_memdump_cfg);
+}
+STATIC int64 hw_bfgexcp_ioctl(struct file *file, uint32 cmd, uint64 arg)
+{
+    int32 ret = 0;
+    if (NULL == file)
+    {
+        PS_PRINT_ERR("file is null\n");
+        return -EINVAL;
+    }
+    switch (cmd)
+    {
+        case PLAT_BFGX_DUMP_FILE_READ_CMD:
+            ret =  plat_bfgx_dump_rotate_cmd_read(arg);
+            break;
+        default:
+            PS_PRINT_WARNING("hw_debug_ioctl cmd = %d not find\n", cmd);
+            return -EINVAL;
+    }
+
+    return ret;
+}
+STATIC int64 hw_wifiexcp_ioctl(struct file *file, uint32 cmd, uint64 arg)
+{
+    int32 ret = 0;
+
+    if (NULL == file)
+    {
+        PS_PRINT_ERR("file is null\n");
+        return -EINVAL;
+    }
+    switch (cmd)
+    {
+        case PLAT_WIFI_DUMP_FILE_READ_CMD:
+            ret =  plat_wifi_dump_rotate_cmd_read(arg);
+            break;
+        default:
+            PS_PRINT_WARNING("hw_debug_ioctl cmd = %d not find\n", cmd);
+            return -EINVAL;
+    }
+
+    return ret;
+}
+
+STATIC ssize_t hw_wifiexcp_read(struct file *filp, int8 __user *buf,
+                                size_t count,loff_t *f_pos)
+{
+    return hw_excp_read(filp, buf, count, f_pos, &wcpu_memdump_cfg);
+}
+#endif
 /**********************************************************************/
 /**
  * Prototype    : hw_debug_open
@@ -3476,7 +3632,19 @@ STATIC const struct file_operations hw_debug_fops = {
         .unlocked_ioctl = hw_debug_ioctl,
         .release        = hw_debug_release,
 };
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+STATIC const struct file_operations hw_bfgexcp_fops = {
+        .owner          = THIS_MODULE,
+        .read           = hw_bfgexcp_read,
+        .unlocked_ioctl = hw_bfgexcp_ioctl,
+};
 
+STATIC const struct file_operations hw_wifiexcp_fops = {
+        .owner          = THIS_MODULE,
+        .read           = hw_wifiexcp_read,
+        .unlocked_ioctl = hw_wifiexcp_ioctl,
+};
+#endif
 STATIC struct miscdevice hw_bt_device = {
         .minor  = MISC_DYNAMIC_MINOR,
         .name   = "hwbt",
@@ -3514,7 +3682,19 @@ STATIC struct miscdevice hw_debug_device = {
         .name   = "hwbfgdbg",
         .fops   = &hw_debug_fops,
 };
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+STATIC struct miscdevice hw_bfgexcp_device = {
+        .minor  = MISC_DYNAMIC_MINOR,
+        .name   = "hwbfgexcp",
+        .fops   = &hw_bfgexcp_fops,
+};
 
+STATIC struct miscdevice hw_wifiexcp_device = {
+        .minor  = MISC_DYNAMIC_MINOR,
+        .name   = "hwwifiexcp",
+        .fops   = &hw_wifiexcp_fops,
+};
+#endif
 static struct  hw_ps_plat_data   hisi_platform_data = {
     .dev_name           = "/dev/ttyAMA3",
     .flow_cntrl         = FLOW_CTRL_ENABLE,
@@ -3666,7 +3846,21 @@ STATIC int32 ps_probe(struct platform_device *pdev)
         PS_PRINT_ERR("Failed to register debug inode\n");
         goto err_register_debug;
     }
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+    err = misc_register(&hw_bfgexcp_device);
+    if (0 != err)
+    {
+        PS_PRINT_ERR("Failed to register hw_bfgexcp_device inode\n");
+        goto err_register_bfgexcp;
+    }
 
+    err = misc_register(&hw_wifiexcp_device);
+    if (0 != err)
+    {
+        PS_PRINT_ERR("Failed to register hw_wifiexcp_device inode\n");
+        goto err_register_wifiexcp;
+    }
+#endif
     if (g_board_info.have_ir)
     {
         err = misc_register(&hw_ir_device);
@@ -3704,6 +3898,12 @@ STATIC int32 ps_probe(struct platform_device *pdev)
         misc_deregister(&hw_ir_device);;
     }
     err_register_ir:
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+        misc_deregister(&hw_wifiexcp_device);
+    err_register_wifiexcp:
+        misc_deregister(&hw_bfgexcp_device);
+    err_register_bfgexcp:
+#endif
         misc_deregister(&hw_debug_device);
     err_register_debug:
         misc_deregister(&hw_gnss_device);

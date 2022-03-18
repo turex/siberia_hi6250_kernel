@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_cfgvendor.c
-  版 本 号   : 初稿
-  作    者   : dengwenhua
-  生成日期   : 2016年05月10日
-  最近修改   :
-  功能描述   : Linux cfgvendor接口
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年05月10日
-    作    者   : dengwenhua
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifdef __cplusplus
 #if __cplusplus
@@ -41,21 +24,7 @@ extern oal_uint32 band_5g_enabled;
 
 wal_cfgvendor_radio_stat_stru g_st_wifi_radio_stat;
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_del_radar_channel
- 功能描述  : 删除信道列表中的5G 信道的DFS 信道
- 输入参数  : mac_vendor_cmd_channel_list_stru *pst_channel_list: 信道列表
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年6月22日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void wal_cfgvendor_del_radar_channel(mac_vendor_cmd_channel_list_stru *pst_channel_list)
 {
     oal_uint8 uc_loops;
@@ -89,24 +58,7 @@ OAL_STATIC oal_void wal_cfgvendor_del_radar_channel(mac_vendor_cmd_channel_list_
     oal_memcopy(pst_channel_list->auc_channel_list_5g, auc_tmp_channel_list, uc_channel_idx);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_copy_channel_list
- 功能描述  : 将对应band 的信道列表拷贝到缓冲区
- 输入参数  : mac_vendor_cmd_channel_list_stru *pst_channel_list
-             oal_uint32   band: 指定频段
-             oal_int32  * pl_channel_list :输出信道列表缓冲区
-             oal_uint32 * pul_num_channels:输出信道个数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年6月22日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_list_stru *pst_channel_list,
                                                             oal_uint32   band,
                                                             oal_int32  * pl_channel_list,
@@ -156,23 +108,7 @@ OAL_STATIC oal_uint32 wal_cfgvendor_copy_channel_list(mac_vendor_cmd_channel_lis
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_get_current_channel_list
- 功能描述  : 根据band ，获取当前信道列表
- 输入参数  : oal_uint32 band: bit0:2G信道列表 bit1:5G信道列表
-             oal_int32  al_channel_list
-             oal_uint32 * num_channels
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年5月25日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_cfgvendor_get_current_channel_list(oal_net_device_stru *pst_netdev,
                                                     oal_uint32   band,
                                                     oal_int32  * pl_channel_list,
@@ -391,22 +327,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_get_feature_set(oal_wiphy_stru *wiphy,
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_send_rand_mac_oui
- 功能描述  : 发送随机mac oui到hmac
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_uint8 *auc_random_mac_oui
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月7日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_send_random_mac_oui(oal_net_device_stru *pst_net_dev,
                                              oal_uint8 *auc_random_mac_oui)
 {
@@ -445,23 +366,7 @@ OAL_STATIC oal_int32 wal_send_random_mac_oui(oal_net_device_stru *pst_net_dev,
 
 
 
-/*****************************************************************************
- 函 数 名  : wl_cfgvendor_set_rand_mac_oui
- 功能描述  : 设置随机mac oui
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月7日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_set_random_mac_oui(oal_wiphy_stru *pst_wiphy,
                                                                  oal_wireless_dev_stru *pst_wdev,
                                                                  OAL_CONST oal_void  *p_data,
@@ -495,23 +400,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_set_random_mac_oui(oal_wiphy_stru *pst_wiphy,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_get_feature
- 功能描述  : 获取特性值
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_feature(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -538,23 +427,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_feature(oal_wiphy_stru *wiphy,
     return l_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_get_version
- 功能描述  : 获取driver版本号
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_version(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -582,23 +455,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_version(oal_wiphy_stru *wiphy,
     return l_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_get_ring_status
- 功能描述  :
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 wal_cfgvendor_dbg_get_ring_status(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -628,23 +485,7 @@ oal_int32 wal_cfgvendor_dbg_get_ring_status(oal_wiphy_stru *wiphy,
     return l_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_trigger_mem_dump
- 功能描述  :
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 wal_cfgvendor_dbg_trigger_mem_dump(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -652,23 +493,7 @@ oal_int32 wal_cfgvendor_dbg_trigger_mem_dump(oal_wiphy_stru *wiphy,
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_start_logging
- 功能描述  :
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_dbg_start_logging(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -676,23 +501,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_dbg_start_logging(oal_wiphy_stru *wiphy,
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_dbg_get_ring_data
- 功能描述  :
- 输入参数  : oal_wiphy_stru *pst_wiphy,
-             oal_wireless_dev_stru *pst_wdev,
-             OAL_CONST oal_void  *p_data, oal_int32 l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年8月18日
-    作    者   :
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_ring_data(oal_wiphy_stru *wiphy,
         oal_wireless_dev_stru *wdev, OAL_CONST oal_void  *data, oal_int32 len)
 {
@@ -700,23 +509,7 @@ OAL_STATIC oal_int32 wal_cfgvendor_dbg_get_ring_data(oal_wiphy_stru *wiphy,
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_cfgvendor_lstats_get_info
- 功能描述  : 获取连接状态
- 输入参数  : oal_wiphy_stru         *pst_wiphy
-             oal_wireless_dev_stru  *pst_wdev
-             OAL_CONST oal_void     *p_data
-             oal_int32               l_len
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年9月20日
-    作    者   :
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_int32 wal_cfgvendor_lstats_get_info(oal_wiphy_stru *pst_wiphy,
         oal_wireless_dev_stru *pst_wdev, OAL_CONST oal_void  *p_data, oal_int32 l_len)
 {

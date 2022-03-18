@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : mac_user.h
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   : mac_user.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __MAC_USER_H__
 #define __MAC_USER_H__
@@ -462,42 +445,14 @@ if(!(_cond))\
 /*****************************************************************************
   9 OTHERS定义
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : mac_user_get_ra_lut_index
- 功能描述  : 获取用户对应的ra lut index
- 输入参数  : puc_index_table: 查找表数组
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月7日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint8  mac_user_get_ra_lut_index(oal_uint8 *puc_index_table, oal_uint16 us_start, oal_uint16 us_stop)
 {
     return oal_get_lut_index(puc_index_table,
                              WLAN_ACTIVE_USER_IDX_BMAP_LEN,
                              WLAN_ACTIVE_USER_MAX_NUM, us_start, us_stop);
 }
-/*****************************************************************************
- 函 数 名  : mac_user_del_ra_lut_index
- 功能描述  : 删除用户对应的ra lut index
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月7日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void  mac_user_del_ra_lut_index(oal_uint8 *puc_index_table, oal_uint8 uc_ra_lut_index)
 {
     oal_del_lut_index(puc_index_table, uc_ra_lut_index);
@@ -523,7 +478,7 @@ extern oal_uint32  mac_user_init(
                 oal_uint8       uc_vap_id);
 
 extern oal_uint32 mac_user_set_port(mac_user_stru *pst_mac_user, oal_bool_enum_uint8 en_port_valid);
-
+extern oal_bool_enum_uint8 mac_user_get_port(mac_user_stru *pst_mac_user);
 extern oal_void mac_user_avail_bf_num_spatial_stream(mac_user_stru *pst_mac_user, oal_uint8 uc_value);
 extern oal_void mac_user_set_avail_num_spatial_stream(mac_user_stru *pst_mac_user, oal_uint8 uc_value);
 extern oal_void mac_user_set_num_spatial_stream(mac_user_stru *pst_mac_user, oal_uint8 uc_value);
@@ -553,6 +508,7 @@ extern oal_void mac_user_set_asoc_state(mac_user_stru *pst_mac_user, mac_user_as
 extern oal_void mac_user_set_avail_op_rates(mac_user_stru *pst_mac_user, oal_uint8 uc_rs_nrates, oal_uint8 *puc_rs_rates);
 extern oal_void mac_user_set_vht_hdl(mac_user_stru *pst_mac_user, mac_vht_hdl_stru *pst_vht_hdl);
 extern oal_void mac_user_get_vht_hdl(mac_user_stru *pst_mac_user, mac_vht_hdl_stru *pst_ht_hdl);
+extern oal_void mac_user_set_vht_capable(mac_user_stru *pst_mac_user, oal_bool_enum_uint8 en_vht_capable);
 extern oal_void mac_user_set_ht_hdl(mac_user_stru *pst_mac_user, mac_user_ht_hdl_stru *pst_ht_hdl);
 extern oal_void mac_user_get_ht_hdl(mac_user_stru *pst_mac_user, mac_user_ht_hdl_stru *pst_ht_hdl);
 extern oal_void mac_user_set_ht_capable(mac_user_stru *pst_mac_user, oal_bool_enum_uint8 en_ht_capable);

@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : plat_efuse.h
-  版 本 号   : 初稿
-  作    者   : k00355907
-  生成日期   : 2016年5月12日
-  最近修改   :
-  功能描述   : plat_efuse.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年5月12日
-    作    者   : k00355907
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __PLAT_EFUSE_H__
 #define __PLAT_EFUSE_H__
@@ -42,7 +25,11 @@ extern "C" {
 *****************************************************************************/
 #define GET_EFUSE_CMD          "0x50000744,64"
 #define GET_EFUSE_EC_VERSION   "0x50000770,4"
+#ifndef HISI_WIFI_MISC_TOP_DIR
 #define EFUSE_FILE_PATH        "/data/misc/wifi/efuse"
+#else
+#define EFUSE_FILE_PATH        HISI_WIFI_MISC_TOP_DIR"/wifi/efuse"
+#endif
 #define EFUSE_REG_NUM          (16)
 #define EFUSE_VALUE_WIDTH      (16)
 #define EFUSE_REG_WIDTH        (4)

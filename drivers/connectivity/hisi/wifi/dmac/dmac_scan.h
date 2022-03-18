@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_scan.h
-  版 本 号   : 初稿
-  作    者   : w00196298
-  生成日期   : 2013年10月10日
-  最近修改   :
-  功能描述   : dmac_scan.c 的头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年10月10日
-    作    者   : w00196298
-    修改内容   : 创建文件
-
-******************************************************************************/
 #ifndef __DMAC_WITP_SCAN_H__
 #define __DMAC_WITP_SCAN_H__
 
@@ -60,7 +43,8 @@ extern "C" {
 /*****************************************************************************
   4 全局变量声明
 ****************************************************************************/
-
+extern frw_timeout_stru g_csa_stop_timer;
+extern oal_uint8 g_csa_scan_flag;
 /*****************************************************************************
   6 消息定义
 *****************************************************************************/
@@ -103,11 +87,22 @@ extern oal_uint32  dmac_switch_channel_off(
                 mac_vap_stru        *pst_mac_vap,
                 mac_channel_stru    *pst_dst_chl,
                 oal_uint16           us_protect_time);
+extern oal_uint32  dmac_switch_same_channel_off(
+                mac_device_stru     *pst_mac_device,
+                mac_vap_stru        *pst_mac_vap,
+                oal_uint16           us_protect_time);
+extern oal_uint32  dmac_switch_channel_off_enhanced_self_channel(
+                mac_device_stru     *pst_mac_device,
+                mac_vap_stru        *pst_mac_vap1,
+                mac_vap_stru        *pst_mac_vap2,
+                oal_uint16           us_protect_time);
+
 extern oal_void dmac_scan_begin(mac_device_stru *pst_mac_device);
 extern oal_void dmac_scan_end(mac_device_stru *pst_mac_device);
 extern oal_void  dmac_scan_abort(mac_device_stru *pst_mac_device);
 extern oal_uint32  dmac_scan_after_p2pgo_send_noa(void *p_arg);
-
+extern oal_void  dmac_scan_switch_home_channel_work(mac_device_stru *pst_mac_device);
+extern oal_uint32 dmac_sta_csa_stop_timeout_fn(void *arg);
 
 /* 中断事件处理函数 */
 extern oal_uint32 dmac_scan_channel_statistics_complete(frw_event_mem_stru *pst_event_mem);

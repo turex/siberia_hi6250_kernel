@@ -42,11 +42,11 @@ extern "C" {
 #define RTC_CLK_FREQ_MIN                (32000)
 #define RTC_CLK_FREQ_MAX                (33000)
 #define RF_LINE_TXRX_GAIN_DB_2G_MIN     (-32)
-#define RF_LINE_TXRX_GAIN_DB_5G_MIN     (-12)
+#define RF_LINE_TXRX_GAIN_DB_5G_MIN     (-48)
 #define PSD_THRESHOLD_MIN               (-15)
 #define PSD_THRESHOLD_MAX               (-10)
-#define LNA_GAIN_DB_MIN                 (-10)
-#define LNA_GAIN_DB_MAX                 (20)
+#define LNA_GAIN_DB_MIN                 (-40)
+#define LNA_GAIN_DB_MAX                 (80)
 #define NUM_OF_NV_MAX_TXPOWER           (45)                                /* NVRAM中存储的各协议速率最大发射功率参数的个数 From:24G_11b_1M To:5G_VHT80_MCS7 */
 #define NUM_OF_NV_PARAMS                (2 * NUM_OF_NV_MAX_TXPOWER + 1)     /* NVRAM中存储的参数值的总个数:每项power值对应一项scale，加上dpd开关 */
 #define MAX_TXPOWER_MIN                 (130)                               /* 最大发送功率的最小有效值:130 13.0dbm */
@@ -77,7 +77,7 @@ extern "C" {
 typedef enum
 {
    REGDOMAIN_FCC        = 0,
-   REGDOMAIN_ETSI       = 1,
+   REGDOMAIN_ETSI       = 1,    /* CE 区域国家 */
    REGDOMAIN_JAPAN      = 2,
    REGDOMAIN_COMMON     = 3,
 
@@ -156,6 +156,8 @@ typedef enum
     WLAN_CFG_DTS_BT_CALI_TXPWR_PA_FRE8,         //53
     WLAN_CFG_DTS_BT_CALI_TONE_AMP_GRADE,
 
+    WLAN_CFG_DTS_BAND_EDGE_LIMIT_TXPWR_FIX,    /* FCC 边带信道发送功率修复是否使能 */
+    WLAN_CFG_DTS_5G_IQ_CALI_AGC_CONTROL,       /* 5g iq cali agc调整配置:全0默认,全f自适应调整;其他,固定增益调整,LNA高3bit,VGA低5bit */
     WLAN_CFG_DTS_BUTT,
 }WLAN_CFG_DTS;
 
@@ -269,6 +271,19 @@ typedef enum
 #ifdef _PRE_WLAN_DOWNLOAD_PM
     WLAN_CFG_INIT_DOWNLOAD_RATE_LIMIT_PPS,
 #endif
+    /* TCP ACK 优化 启动、关闭门限 */
+    WLAN_CFG_INIT_TCP_ACK_OPT_ON_TH,
+    WLAN_CFG_INIT_TCP_ACK_OPT_OFF_TH,
+    WLAN_CFG_INIT_BTCOEX_PS_SWITCH,
+
+    /* CE 5G 高频段定制化参数 */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_TXPWR,                         /* 最大发送功率 */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_11A_HT20_VHT20_DBB_SCALING,    /* 20 MHz dbbscale */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_HT40_VHT40_DBB_SCALING,        /* 40 MHz dbbscale */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_VHT80_DBB_SCALING,             /* 80 MHz dbbscale */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_HT40_VHT40_MCS8_9_DBB_COMP,    /* 40 MHz dbbscale MCS8_9 补偿值 */
+    WLAN_CFG_INIT_CE_5G_HIGH_BAND_VHT80_MCS8_9_DBB_COMP,         /* 80 MHz dbbscale MCS8_9 补偿值 */
+
     WLAN_CFG_INIT_BUTT,
 }WLAN_CFG_INIT;
 
@@ -348,10 +363,10 @@ typedef struct
     unsigned char   uc_random_mac_addr_scan;
     /* capab */
     unsigned char   uc_disable_capab_2ght40;
-    unsigned int   ul_lte_gpio_check_switch;
-    unsigned int   ul_lte_ism_priority;
-    unsigned int   ul_lte_rx_act;
-    unsigned int   ul_lte_tx_act;
+    unsigned int    ul_lte_gpio_check_switch;
+    unsigned int    ul_lte_ism_priority;
+    unsigned int    ul_lte_rx_act;
+    unsigned int    ul_lte_tx_act;
 } wlan_customize_stru;
 
 extern wlan_customize_stru g_st_wlan_customize;
@@ -361,6 +376,7 @@ extern char* hwifi_get_country_code(void);
 extern void hwifi_set_country_code(char*, const unsigned int);
 extern int hwifi_get_mac_addr(unsigned char *);
 extern unsigned char* hwifi_get_nvram_params(void);
+extern regdomain_enum hwifi_get_regdomain_from_country_code_1102(const countrycode_t country_code);
 extern int hwifi_is_regdomain_changed(const countrycode_t, const countrycode_t);
 extern int hwifi_atcmd_update_host_nv_params(void);
 

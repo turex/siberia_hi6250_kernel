@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_encap_frame_ap.c
-  版 本 号   : 初稿
-  作    者   : y00184180
-  生成日期   : 2013年6月28日
-  最近修改   :
-  功能描述   : AP模式组帧文件，AP模式特有帧的组帧
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年6月28日
-    作    者   : y00184180
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -53,22 +36,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-/*****************************************************************************
- 函 数 名  : mac_get_assoc_comeback_time
- 功能描述  : 计算得到 assoc rsp 中所需的assoc comeback time
- 输入参数  : pst_mac_vap   : mac vap 指针
-             pst_hmac_user : hamc user 指针
- 输出参数  : 无
- 返 回 值  : 计算得到的assoc comeback time值
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月28日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_get_assoc_comeback_time(mac_vap_stru *pst_mac_vap,
                                                               hmac_user_stru *pst_hmac_user)
 {
@@ -104,21 +72,7 @@ OAL_STATIC oal_uint32 hmac_get_assoc_comeback_time(mac_vap_stru *pst_mac_vap,
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_encap_asoc_rsp_ap
- 功能描述  : 组关联响应帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月9日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_mgmt_encap_asoc_rsp_ap(
                 mac_vap_stru                   *pst_mac_ap,
                 oal_uint8                      *puc_sta_addr,
@@ -313,21 +267,7 @@ oal_uint32 hmac_mgmt_encap_asoc_rsp_ap(
     return us_asoc_rsp_len;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_mgmt_is_challenge_txt_equal
- 功能描述  : 判断两个challenge txt是否相等
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月29日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_mgmt_is_challenge_txt_equal(oal_uint8 *puc_data, oal_uint8 *puc_chtxt)
 {
 
@@ -362,26 +302,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8  hmac_mgmt_is_challenge_txt_equal(oal_
     return OAL_TRUE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_get_user_idx
- 功能描述  : 获取user idx,如果用户不存在，且resend置位的话，将sta加入ap
- 输入参数  : 1.vap指针
-             2.sta的mac地址
-             3.是否为seq1标志位.如果为真，表示如果用户不存在,需要将sta加入ap
- 输出参数  : 1. puc_auth_resend 用户存在的情况下收到seq1,seq1判定为重传帧，
-                置位此标志
-             2. pus_user_index 返回获取到的user idx
 
- 返 回 值  :获取正常或者失败
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_err_code_enum  hmac_encap_auth_rsp_get_user_idx(mac_vap_stru *pst_mac_vap,
                                                 oal_uint8   *puc_mac_addr,
                                                 oal_uint8   uc_is_seq1,
@@ -479,45 +400,26 @@ oal_err_code_enum  hmac_encap_auth_rsp_get_user_idx(mac_vap_stru *pst_mac_vap,
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_seq1
- 功能描述  : 处理seq1的auth req
- 输入参数  : 1.auth_rsp_param 处理auth rsp所需的参数
 
- 输出参数  : 1.puc_code 错误码
-             2.pst_usr_ass_stat auth处理完成之后，置相应的user状态
-
- 返 回 值  :获取正常或者失败
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
-                                                        mac_vap_stru *pst_mac_vap,
-                                                        hmac_auth_rsp_param_stru *pst_auth_rsp_param,
-                                                        oal_uint8 *puc_code,
-                                                        mac_user_asoc_state_enum_uint8 *pst_usr_ass_stat)
+    mac_vap_stru *pst_mac_vap, hmac_auth_rsp_param_stru *pst_auth_rsp_param,
+    oal_uint8 *puc_code, hmac_user_stru *hmac_user_sta)
 {
     *puc_code = MAC_SUCCESSFUL_STATUSCODE;
-    *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+    hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
     /* 如果不是重传 */
     if(OAL_TRUE != pst_auth_rsp_param->uc_auth_resend)
     {
         if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
 
             return HMAC_AP_AUTH_SEQ1_OPEN_ANY;
         }
 
         if(OAL_TRUE == pst_auth_rsp_param->en_is_wep_allowed)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_KEY_SEQ1;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_KEY_SEQ1;
             /* 此处返回后需要wep后操作 */
             return HMAC_AP_AUTH_SEQ1_WEP_NOT_RESEND;
         }
@@ -530,22 +432,18 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
     /* 检查用户状态 */
     if((pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_ASSOC) && (pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM))
     {
-        /*DTS2015122909216,当开启PMF功能时,收到已关联用户的Auth帧,不改变关联状态 */
-        if (OAL_TRUE == pst_mac_vap->pst_mib_info->st_wlan_mib_privacy.en_dot11RSNAMFPC)
-        {
-            *pst_usr_ass_stat = MAC_USER_STATE_ASSOC;
-        }
-        else
-        {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
-        }
+        OAM_WARNING_LOG1(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,
+            "{hmac_encap_auth_rsp_seq1::user assiociated rx auth req, do not change user[%d] state.}",
+            hmac_user_sta->st_user_base_info.us_assoc_id);
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_ASSOC;
+        hmac_user_sta->assoc_ap_up_tx_auth_req = OAL_TRUE;
 
         return HMAC_AP_AUTH_DUMMY;
     }
 
     if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
 
         return HMAC_AP_AUTH_SEQ1_OPEN_ANY;
     }
@@ -553,7 +451,7 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
     if(OAL_TRUE == pst_auth_rsp_param->en_is_wep_allowed)
     {
         /* seq为1 的认证帧重传 */
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         return HMAC_AP_AUTH_SEQ1_WEP_RESEND;
     }
     /* 不支持算法 */
@@ -561,50 +459,32 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq1(
     return HMAC_AP_AUTH_BUTT;
 
 }
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_seq3
- 功能描述  : 处理seq3的auth req
- 输入参数  : 1.auth_rsp_param 处理auth rsp所需的参数
 
- 输出参数  : 1.puc_code 错误码
-             2.pst_usr_ass_stat auth处理完成之后，置相应的user状态
-
- 返 回 值  :获取正常或者失败
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq3(
                                                 mac_vap_stru *pst_mac_vap,
                                                 hmac_auth_rsp_param_stru *pst_auth_rsp_param,
                                                 oal_uint8 *puc_code,
-                                                mac_user_asoc_state_enum_uint8 *pst_usr_ass_stat)
+                                                hmac_user_stru *hmac_user_sta)
 {
 
 
     /* 如果不存在，返回错误 */
     if (OAL_FALSE == pst_auth_rsp_param->uc_auth_resend)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_BUTT;
     }
     /* 检查用户状态 */
     if((pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_ASSOC) && (pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM))
     {
-        /*DTS2015122909216,当开启PMF功能时,收到已关联用户的Auth帧,不改变关联状 态 */
         if (OAL_TRUE == pst_mac_vap->pst_mib_info->st_wlan_mib_privacy.en_dot11RSNAMFPC)
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_ASSOC;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_ASSOC;
         }
         else
         {
-            *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+            hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         }
 
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
@@ -613,56 +493,39 @@ hmac_ap_auth_process_code_enum_uint8   hmac_encap_auth_rsp_seq3(
 
     if(pst_auth_rsp_param->us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_OPEN_ANY;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_AUTH_KEY_SEQ1)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_COMPLETE;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_AUTH_COMPLETE)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_COMPLETE;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_COMPLETE;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_COMPLETE;
     }
 
     if(pst_auth_rsp_param->en_user_asoc_state == MAC_USER_STATE_ASSOC)
     {
-        *pst_usr_ass_stat = MAC_USER_STATE_AUTH_KEY_SEQ1;
+        hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_AUTH_KEY_SEQ1;
         *puc_code = MAC_SUCCESSFUL_STATUSCODE;
         return HMAC_AP_AUTH_SEQ3_WEP_ASSOC;
     }
 
     /* 不支持算法 */
-    *pst_usr_ass_stat = MAC_USER_STATE_BUTT;
+    hmac_user_sta->st_user_base_info.en_user_asoc_state = MAC_USER_STATE_BUTT;
     *puc_code = MAC_UNSUPT_ALG;
     return HMAC_AP_AUTH_BUTT;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_seq3
- 功能描述  : 处理seq3的auth req
- 输入参数  : 1.auth_rsp_param 处理auth rsp所需的参数数组
 
- 输出参数  : 1.puc_code 错误码
-             2.pst_usr_ass_stat auth处理完成之后，置相应的user状态
-
- 返 回 值  :获取正常或者失败
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_auth_rsp_fun hmac_encap_auth_rsp_get_func(oal_uint16 us_auth_seq)
 {
     hmac_auth_rsp_fun        st_auth_rsp_fun;
@@ -682,23 +545,7 @@ hmac_auth_rsp_fun hmac_encap_auth_rsp_get_func(oal_uint16 us_auth_seq)
     return st_auth_rsp_fun;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_support
- 功能描述  : 判断认证类型是否支持
- 输入参数  : 1.pst_hmac_vap vap指针
-             2. us_auth_type 认证类型
- 输出参数  :
 
- 返 回 值  :OAL_SUCC-支持，其他-不支持
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_encap_auth_rsp_support(hmac_vap_stru *pst_hmac_vap, oal_uint16 us_auth_type)
 {
 
@@ -716,21 +563,7 @@ oal_uint32 hmac_encap_auth_rsp_support(hmac_vap_stru *pst_hmac_vap, oal_uint16 u
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tid_clear
- 功能描述  : 删除hmac tid相关的信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月13日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_tid_clear(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_user)
 {
     mac_device_stru   *pst_device;
@@ -827,28 +660,7 @@ oal_void hmac_tid_clear(mac_vap_stru *pst_mac_vap, hmac_user_stru *pst_hmac_user
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_encap_auth_rsp_ap
- 功能描述  : 封装auth rsp帧
- 输入参数  : 1. vap指针
-             2. puc_auth_req auth_req
-             3. challenge txt
- 输出参数  : 1. pst_auth_rsp auth_rsp缓冲
 
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2013年6月28日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-2.日    期   : 2014年1月10日
-    作    者   : z00260280
-    修改内容   : 重构
-
-*****************************************************************************/
 oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_auth_rsp, oal_netbuf_stru *pst_auth_req, oal_uint8 *puc_chtxt)
 {
     oal_uint16       us_auth_rsp_len        = 0;
@@ -960,7 +772,6 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
     OAM_WARNING_LOG4(pst_mac_vap->uc_vap_id, OAM_SF_AUTH, "{hmac_encap_auth_rsp::user mac:%02X:XX:XX:%02X:%02X:%02X}",
                                 auc_addr2[0],auc_addr2[3],auc_addr2[4],auc_addr2[5]);
 
-    /* DTS2015092402932,判断对端mac地址是否为有效，不能为全0 */
     if(mac_addr_is_zero(auc_addr2))
     {
         OAM_WARNING_LOG4(pst_mac_vap->uc_vap_id, OAM_SF_AUTH, "{hmac_encap_auth_rsp::user mac:%02X:XX:XX:%02X:%02X:%02X is all 0 and invaild!}",
@@ -1029,6 +840,14 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
     pst_tx_ctl->us_tx_user_idx = us_user_index;
     pst_tx_ctl->us_mpdu_len    = us_auth_rsp_len;
 
+    if (pst_hmac_user_sta->st_user_base_info.en_user_asoc_state == MAC_USER_STATE_ASSOC &&
+        (us_auth_type != WLAN_WITP_AUTH_OPEN_SYSTEM ||
+        (us_auth_type == WLAN_WITP_AUTH_OPEN_SYSTEM && us_auth_seq != WLAN_AUTH_TRASACTION_NUM_ONE))) {
+        OAM_WARNING_LOG2(pst_mac_vap->uc_vap_id, OAM_SF_AUTH,
+            "{hmac_encap_auth_rsp::auth recv invalid seq, auth seq [%d], auth type[%d]}", us_auth_seq, us_auth_type);
+        return 0;
+    }
+
     /* 判断算法是否支持 */
     ul_alg_suppt = hmac_encap_auth_rsp_support(pst_hmac_vap, us_auth_type);
     if(OAL_SUCC != ul_alg_suppt)
@@ -1060,7 +879,7 @@ oal_uint16  hmac_encap_auth_rsp(mac_vap_stru *pst_mac_vap, oal_netbuf_stru *pst_
         ul_auth_proc_rst = st_auth_rsp_handle.st_auth_rsp_fun(pst_mac_vap,
                                                 &st_auth_rsp_handle.st_auth_rsp_param,
                                                 &puc_frame[4],
-                                                &pst_hmac_user_sta->st_user_base_info.en_user_asoc_state);
+                                                pst_hmac_user_sta);
     #ifdef _PRE_DEBUG_MODE_USER_TRACK
         mac_user_change_info_event(pst_hmac_user_sta->st_user_base_info.auc_user_mac_addr,
                                    pst_mac_vap->uc_vap_id,

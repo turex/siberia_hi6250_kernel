@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_roam_main.c
-  版 本 号   : 初稿
-  作    者   : guyanjie 00260350
-  生成日期   : 2015年3月18日
-  最近修改   :
-  功能描述   : 漫游模块主要对其他模块接口实现
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年3月18日
-    作    者   : guyanjie 00260350
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -72,21 +55,7 @@ OAL_STATIC oal_uint32  hmac_roam_handle_scan_result(hmac_roam_info_stru *pst_roa
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_roam_fsm_init
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void hmac_roam_fsm_init(oal_void)
 {
     oal_uint32  ul_state;
@@ -110,23 +79,7 @@ OAL_STATIC oal_void hmac_roam_fsm_init(oal_void)
     g_hmac_roam_main_fsm_func[ROAM_MAIN_STATE_CONNECTING][ROAM_MAIN_FSM_EVENT_CONNECT_SUCC]   = hmac_roam_to_new_bss;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_fsm_action
- 功能描述  : 调用漫游主状态机函数表
- 输入参数  : pst_hmac_vap: hmac vap
-             en_event: 事件类型
-             p_param: 输入参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-************* ****************************************************************/
 oal_uint32  hmac_roam_main_fsm_action(hmac_roam_info_stru *pst_roam_info, roam_main_fsm_event_type_enum en_event, oal_void *p_param)
 {
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_roam_info))
@@ -147,21 +100,7 @@ oal_uint32  hmac_roam_main_fsm_action(hmac_roam_info_stru *pst_roam_info, roam_m
     return g_hmac_roam_main_fsm_func[pst_roam_info->en_main_state][en_event](pst_roam_info, p_param);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_change_state
- 功能描述  : 改变状态机状态
- 输入参数  : pst_roam_info
-             en_roam_main_state
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-1.日    期   : 2015年3月18日
-  作    者   : g00260350
-  修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_roam_main_change_state(hmac_roam_info_stru *pst_roam_info, roam_main_state_enum_uint8 en_state)
 {
     if (pst_roam_info)
@@ -172,21 +111,7 @@ OAL_STATIC oal_void  hmac_roam_main_change_state(hmac_roam_info_stru *pst_roam_i
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_timeout
- 功能描述  : 超时处理函数
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_roam_main_timeout(oal_void *p_arg)
 {
     hmac_roam_info_stru *pst_roam_info;
@@ -203,21 +128,7 @@ OAL_STATIC oal_uint32 hmac_roam_main_timeout(oal_void *p_arg)
     return hmac_roam_main_fsm_action(pst_roam_info, ROAM_MAIN_FSM_EVENT_TIMEOUT, OAL_PTR_NULL);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_renew_privacy
- 功能描述  : 为了兼容不同加密方式的ap之间的漫游，需要对本vap的加密属性最大初始化
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月12日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_roam_renew_privacy(hmac_vap_stru *pst_hmac_vap, mac_bss_dscr_stru *pst_bss_dscr)
 {
     oal_uint32                          ul_ret;
@@ -283,21 +194,7 @@ OAL_STATIC oal_uint32 hmac_roam_renew_privacy(hmac_vap_stru *pst_hmac_vap, mac_b
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_init
- 功能描述  : roam模块控制信息初始化
- 输入参数  : pst_hmac_vap 需要初始化roam模块的vap，默认参数配置
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_init(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_info_stru    *pst_roam_info;
@@ -379,21 +276,7 @@ oal_uint32 hmac_roam_init(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_info_init
- 功能描述  : roam过程信息初始化
- 输入参数  : pst_hmac_vap 需要初始化roam模块的vap，默认参数配置
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月21日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_info_init(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_info_stru    *pst_roam_info;
@@ -449,21 +332,7 @@ oal_uint32 hmac_roam_info_init(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_exit
- 功能描述  : roam模块控制信息卸载
- 输入参数  : pst_hmac_vap 需要卸载roam模块的vap
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_exit(hmac_vap_stru *pst_hmac_vap)
 {
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_hmac_vap))
@@ -496,21 +365,7 @@ oal_uint32 hmac_roam_exit(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_show_info
- 功能描述  : roam模块信息查询
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_show_info(hmac_vap_stru *pst_hmac_vap)
 {
     oal_int8               *pc_print_buff;
@@ -548,21 +403,7 @@ oal_uint32 hmac_roam_show_info(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_connect_start_timer
- 功能描述  : 如果定时器已存在，重启，否则创建定时器
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void hmac_roam_main_start_timer(hmac_roam_info_stru *pst_roam_info, oal_uint32 ul_timeout)
 {
     frw_timeout_stru            *pst_timer = &(pst_roam_info->st_timer);
@@ -579,21 +420,7 @@ OAL_STATIC oal_void hmac_roam_main_start_timer(hmac_roam_info_stru *pst_roam_inf
                            pst_roam_info->pst_hmac_vap->st_vap_base_info.ul_core_id);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_connect_del_timer
- 功能描述  : 立即删除roam connect定时器
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_main_del_timer(hmac_roam_info_stru *pst_roam_info)
 {
     OAM_INFO_LOG0(0, OAM_SF_ROAM, "{hmac_roam_main_del_timer.}");
@@ -601,21 +428,7 @@ OAL_STATIC oal_uint32  hmac_roam_main_del_timer(hmac_roam_info_stru *pst_roam_in
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_enable
- 功能描述  : roam模块使能
- 输入参数  : uc_enable 0:关闭 1:打开
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_enable(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_enable)
 {
     hmac_roam_info_stru   *pst_roam_info;
@@ -647,21 +460,7 @@ oal_uint32 hmac_roam_enable(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_enable)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_org
- 功能描述  : roam模块设置漫游信道正交
- 输入参数  : uc_scan_band 0:关闭 1:打开
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_org(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_scan_orthogonal)
 {
     hmac_roam_info_stru   *pst_roam_info;
@@ -686,21 +485,7 @@ oal_uint32 hmac_roam_org(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_scan_orthogon
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_band
- 功能描述  : roam模块设置漫游频段
- 输入参数  : uc_scan_band 0:关闭 1:打开
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_band(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_scan_band)
 {
     hmac_roam_info_stru   *pst_roam_info;
@@ -725,21 +510,7 @@ oal_uint32 hmac_roam_band(hmac_vap_stru *pst_hmac_vap, oal_uint8 uc_scan_band)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_start
- 功能描述  : 发起一次漫游
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_start(hmac_vap_stru *pst_hmac_vap,oal_bool_enum_uint8  en_no_scan)
 {
     oal_uint32             ul_ret;
@@ -790,21 +561,7 @@ oal_uint32 hmac_roam_start(hmac_vap_stru *pst_hmac_vap,oal_bool_enum_uint8  en_n
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_show
- 功能描述  : 发起一次漫游
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_show(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_info_stru             *pst_roam_info;
@@ -837,21 +594,7 @@ oal_uint32 hmac_roam_show(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_null_fn
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_main_null_fn(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     OAM_ERROR_LOG0(0, OAM_SF_ROAM, "{hmac_roam_main_null_fn .}");
@@ -859,21 +602,7 @@ OAL_STATIC oal_uint32  hmac_roam_main_null_fn(hmac_roam_info_stru *pst_roam_info
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_scan_comp_cb
- 功能描述  : wpa_supplicant下发的扫描请求的回调函数，用于对扫描完成时对结果的处理
- 输入参数  : void  *p_scan_record，扫描记录，包括扫描发起者信息和扫描结果
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月20日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_roam_scan_comp_cb(void  *p_scan_record)
 {
     hmac_scan_record_stru           *pst_scan_record = (hmac_scan_record_stru *)p_scan_record;
@@ -919,21 +648,7 @@ OAL_STATIC oal_void  hmac_roam_scan_comp_cb(void  *p_scan_record)
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_scan_init
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_scan_init(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32              ul_ret;
@@ -991,21 +706,7 @@ OAL_STATIC oal_uint32  hmac_roam_scan_init(hmac_roam_info_stru *pst_roam_info, o
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_roam_scan_channel
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_scan_channel(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32              ul_ret;
@@ -1032,21 +733,7 @@ OAL_STATIC oal_uint32  hmac_roam_scan_channel(hmac_roam_info_stru *pst_roam_info
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_check_bkscan_result
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月25日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_check_bkscan_result(hmac_vap_stru *pst_hmac_vap, void *p_scan_record)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -1106,21 +793,7 @@ oal_uint32  hmac_roam_check_bkscan_result(hmac_vap_stru *pst_hmac_vap, void *p_s
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_check_scan_result
- 功能描述  :
- 输入参数  :
- 输出参数  : mac_bss_dscr_stru **ppst_bss_dscr_out
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_check_scan_result(hmac_roam_info_stru *pst_roam_info, oal_void *p_param, mac_bss_dscr_stru **ppst_bss_dscr_out)
 {
     oal_uint32               ul_ret;
@@ -1181,7 +854,6 @@ OAL_STATIC oal_uint32  hmac_roam_check_scan_result(hmac_roam_info_stru *pst_roam
     ul_ret = hmac_check_capability_mac_phy_supplicant(&(pst_hmac_vap->st_vap_base_info), pst_bss_dscr);
     if (OAL_SUCC != ul_ret)
     {
-        /* DTS2016052803102 MAC/PHY 能力不做严格检查 */
         OAM_WARNING_LOG1(0, OAM_SF_ROAM, "{hmac_roam_check_scan_result::check mac and phy capability fail[%d]!}\r\n", ul_ret);
     }
 
@@ -1190,21 +862,7 @@ OAL_STATIC oal_uint32  hmac_roam_check_scan_result(hmac_roam_info_stru *pst_roam
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_handle_scan_result
- 功能描述  : 处理漫游扫描结果
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_handle_scan_result(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     mac_bss_dscr_stru       *pst_bss_dscr   = OAL_PTR_NULL;
@@ -1267,21 +925,7 @@ OAL_STATIC oal_uint32  hmac_roam_handle_scan_result(hmac_roam_info_stru *pst_roa
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_check_state
- 功能描述  : 参数检查接口
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_main_check_state(hmac_roam_info_stru *pst_roam_info,
                                                               mac_vap_state_enum_uint8 en_vap_state,
                                                               roam_main_state_enum_uint8 en_main_state)
@@ -1318,21 +962,7 @@ OAL_STATIC oal_uint32  hmac_roam_main_check_state(hmac_roam_info_stru *pst_roam_
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_main_clear
- 功能描述  : 清理、释放 roam main 相关状态、buff、timer
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_roam_main_clear(hmac_roam_info_stru *pst_roam_info)
 {
     /* 清理状态 */
@@ -1342,21 +972,7 @@ OAL_STATIC oal_void  hmac_roam_main_clear(hmac_roam_info_stru *pst_roam_info)
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_resume_pm
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_resume_pm(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32  ul_ret = OAL_SUCC;
@@ -1372,21 +988,7 @@ OAL_STATIC oal_uint32  hmac_roam_resume_pm(hmac_roam_info_stru *pst_roam_info, o
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_resume_security_port
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_resume_security_port(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32              ul_ret      = OAL_SUCC;
@@ -1426,21 +1028,7 @@ OAL_STATIC oal_uint32  hmac_roam_resume_security_port(hmac_roam_info_stru *pst_r
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_scan_timeout
- 功能描述  : 扫描超时
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月07日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_scan_timeout(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32               ul_ret;
@@ -1456,23 +1044,10 @@ OAL_STATIC oal_uint32  hmac_roam_scan_timeout(hmac_roam_info_stru *pst_roam_info
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_connecting_timeout
- 功能描述  : roam 在尝试 connect 之后的错误处理。
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_connecting_timeout(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
+    oal_bool_enum_uint8 need_post_stop_event = OAL_TRUE;
     oal_uint32       ul_ret         = OAL_SUCC;
 
     ul_ret = hmac_roam_main_check_state(pst_roam_info, MAC_VAP_STATE_ROAMING, ROAM_MAIN_STATE_CONNECTING);
@@ -1490,8 +1065,12 @@ OAL_STATIC oal_uint32  hmac_roam_connecting_timeout(hmac_roam_info_stru *pst_roa
                        "{hmac_roam_handle_fail_connect_phase:: hmac_roam_to_old_bss fail[%d]!}", ul_ret);
     }
 
+    if (pst_roam_info->st_connect.en_state == ROAM_CONNECT_STATE_HANDSHAKING) {
+        need_post_stop_event = OAL_FALSE;/* 握手失败不需要恢复device漫游状态 */
+    }
+
     /* 切换vap的状态为UP，恢复用户节能，恢复发送 */
-    ul_ret = hmac_fsm_call_func_sta(pst_roam_info->pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, OAL_PTR_NULL);
+    ul_ret = hmac_fsm_call_func_sta(pst_roam_info->pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, (oal_void *)&need_post_stop_event);
 
     if (OAL_SUCC != ul_ret)
     {
@@ -1504,21 +1083,7 @@ OAL_STATIC oal_uint32  hmac_roam_connecting_timeout(hmac_roam_info_stru *pst_roa
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_connecting_fail
- 功能描述  : roam 在尝试 connect 之后的错误处理。
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月06日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_connecting_fail(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32               ul_ret;
@@ -1534,23 +1099,10 @@ OAL_STATIC oal_uint32  hmac_roam_connecting_fail(hmac_roam_info_stru *pst_roam_i
     return hmac_roam_connecting_timeout(pst_roam_info, p_param);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_handle_fail_handshake_phase
- 功能描述  : roam 在尝试 handshake 之后的错误处理。
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月08日
-    作    者   : l00350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_handle_fail_handshake_phase(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
+    oal_bool_enum_uint8 need_post_stop_event = OAL_FALSE;/* 握手失败不需要恢复device漫游状态 */
     oal_uint32       ul_ret;
 
     ul_ret = hmac_roam_main_check_state(pst_roam_info, MAC_VAP_STATE_ROAMING, ROAM_MAIN_STATE_CONNECTING);
@@ -1569,8 +1121,7 @@ OAL_STATIC oal_uint32  hmac_roam_handle_fail_handshake_phase(hmac_roam_info_stru
     }
 
     /* 切换vap的状态为UP，恢复用户节能，恢复发送 */
-    ul_ret = hmac_fsm_call_func_sta(pst_roam_info->pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, OAL_PTR_NULL);
-
+    ul_ret = hmac_fsm_call_func_sta(pst_roam_info->pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, (oal_void *)&need_post_stop_event);
     if (OAL_SUCC != ul_ret)
     {
         OAM_ERROR_LOG1(pst_roam_info->pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ROAM,
@@ -1604,21 +1155,7 @@ OAL_STATIC oal_uint32  hmac_roam_handle_fail_handshake_phase(hmac_roam_info_stru
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_connect_to_bss
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_connect_to_bss(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     hmac_vap_stru           *pst_hmac_vap  = pst_roam_info->pst_hmac_vap;
@@ -1705,21 +1242,7 @@ OAL_STATIC oal_uint32  hmac_roam_connect_to_bss(hmac_roam_info_stru *pst_roam_in
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_to_old_bss
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_to_old_bss(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     oal_uint32                  ul_ret          = OAL_SUCC;
@@ -1831,25 +1354,12 @@ OAL_STATIC oal_uint32  hmac_roam_to_old_bss(hmac_roam_info_stru *pst_roam_info, 
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_to_new_bss
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_to_new_bss(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     hmac_vap_stru           *pst_hmac_vap  = pst_roam_info->pst_hmac_vap;
     hmac_user_stru          *pst_hmac_user = pst_roam_info->pst_hmac_user;
+    oal_bool_enum_uint8      need_post_stop_event = OAL_TRUE;
     oal_uint32               ul_ret;
 
     ul_ret = hmac_roam_main_check_state(pst_roam_info, MAC_VAP_STATE_ROAMING, ROAM_MAIN_STATE_CONNECTING);
@@ -1867,7 +1377,7 @@ OAL_STATIC oal_uint32  hmac_roam_to_new_bss(hmac_roam_info_stru *pst_roam_info, 
     hmac_roam_main_del_timer(pst_roam_info);
 
     /* 切换vap的状态为UP，恢复用户节能，恢复发送 */
-    ul_ret = hmac_fsm_call_func_sta(pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, OAL_PTR_NULL);
+    ul_ret = hmac_fsm_call_func_sta(pst_hmac_vap, HMAC_FSM_INPUT_ROAMING_STOP, (oal_void *)&need_post_stop_event);
     if (OAL_SUCC != ul_ret)
     {
         OAM_WARNING_LOG1(pst_hmac_vap->st_vap_base_info.uc_vap_id, OAM_SF_ROAM, "{hmac_roam_to_new_bss::hmac_fsm_call_func_sta fail! erro code is %u}", ul_ret);
@@ -1885,21 +1395,7 @@ OAL_STATIC oal_uint32  hmac_roam_to_new_bss(hmac_roam_info_stru *pst_roam_info, 
 }
 
 #if 0
-/*****************************************************************************
- 函 数 名  : hmac_roam_to_new_bss_fail
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_to_new_bss_fail(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     /* 漫游失败先关闭漫游主定时器 */
@@ -1908,21 +1404,7 @@ OAL_STATIC oal_uint32  hmac_roam_to_new_bss_fail(hmac_roam_info_stru *pst_roam_i
     return hmac_roam_to_old_bss(pst_roam_info, p_param);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_stop
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_stop(hmac_roam_info_stru *pst_roam_info, oal_void *p_param)
 {
     hmac_vap_stru           *pst_hmac_vap   = pst_roam_info->pst_hmac_vap;
@@ -1956,21 +1438,7 @@ OAL_STATIC oal_uint32  hmac_roam_stop(hmac_roam_info_stru *pst_roam_info, oal_vo
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_flush_buf
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_roam_flush_buf(struct work_struct *pst_work)
 {
     hmac_roam_buf_stru                *pst_roam_buf;
@@ -2015,21 +1483,7 @@ OAL_STATIC oal_uint32  hmac_roam_flush_buf(struct work_struct *pst_work)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_pause_user
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_pause_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -2070,21 +1524,7 @@ oal_uint32  hmac_roam_pause_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_resume_user
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -2119,22 +1559,7 @@ oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_ignore_rssi_trigger
- 功能描述  : 暂停漫游rssi检测触发扫描，
-             防止在弱信号下非漫游场景时频繁上报trigger事件
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_ignore_rssi_trigger(hmac_vap_stru *pst_hmac_vap, oal_bool_enum_uint8 en_val)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2187,22 +1612,7 @@ oal_uint32  hmac_roam_ignore_rssi_trigger(hmac_vap_stru *pst_hmac_vap, oal_bool_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_pause_user
- 功能描述  : 1、通知内核协议栈暂停数据发送，
-             2、关闭低功耗，防止漫游期间进入低功耗模式
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_pause_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2292,22 +1702,7 @@ oal_uint32  hmac_roam_pause_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_resume_user
- 功能描述  : 1、通知内核协议栈恢复数据发送，
-             2、使能低功耗
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2315,10 +1710,11 @@ oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param
     oal_uint32                        ul_ret;
     oal_uint8                         uc_vap_id;
     oal_uint8                         uc_roaming_mode;
+    oal_bool_enum_uint8               need_post_stop_event;
 
-    if (pst_hmac_vap == OAL_PTR_NULL)
+    if (pst_hmac_vap == OAL_PTR_NULL || p_param == OAL_PTR_NULL)
     {
-        OAM_ERROR_LOG0(0, OAM_SF_ROAM, "{hmac_roam_resume_user::vap null!}");
+        OAM_ERROR_LOG0(0, OAM_SF_ROAM, "{hmac_roam_resume_user::vap or param is null!}");
         return OAL_ERR_CODE_ROAM_INVALID_VAP;
     }
 
@@ -2349,11 +1745,15 @@ oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param
         return OAL_SUCC;
     }
 
-    uc_roaming_mode = 0;
-    ul_ret = hmac_config_send_event(&pst_hmac_vap->st_vap_base_info, WLAN_CFGID_SET_ROAMING_MODE, OAL_SIZEOF(oal_uint8), (oal_uint8 *)&uc_roaming_mode);
-    if (OAL_SUCC != ul_ret)
-    {
-        OAM_ERROR_LOG1(uc_vap_id, OAM_SF_CFG, "{hmac_roam_resume_user::send event[WLAN_CFGID_SET_ROAMING_MODE] failed[%d].}", ul_ret);
+    /* 握手失败不需要重新恢复用户 */
+    need_post_stop_event = *(oal_bool_enum_uint8 *)p_param;
+    if (need_post_stop_event == OAL_TRUE) {
+        uc_roaming_mode = 0;
+        ul_ret = hmac_config_send_event(&pst_hmac_vap->st_vap_base_info, WLAN_CFGID_SET_ROAMING_MODE, OAL_SIZEOF(oal_uint8), (oal_uint8 *)&uc_roaming_mode);
+        if (OAL_SUCC != ul_ret)
+        {
+            OAM_ERROR_LOG1(uc_vap_id, OAM_SF_CFG, "{hmac_roam_resume_user::send event[WLAN_CFGID_SET_ROAMING_MODE] failed[%d].}", ul_ret);
+        }
     }
 
     hmac_fsm_change_state(pst_hmac_vap, MAC_VAP_STATE_UP);
@@ -2369,21 +1769,7 @@ oal_uint32  hmac_roam_resume_user(hmac_vap_stru *pst_hmac_vap, oal_void *p_param
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_scan_complete
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_scan_complete(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2425,41 +1811,13 @@ oal_uint32 hmac_roam_scan_complete(hmac_vap_stru *pst_hmac_vap)
     return hmac_roam_main_fsm_action(pst_roam_info, ROAM_MAIN_FSM_EVENT_SCAN_RESULT, (void *)pst_scan_bss_mgmt);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_tbtt_handle
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  hmac_roam_tbtt_handle(hmac_vap_stru *pst_hmac_vap)
 {
     //hmac_roam_connect_rx_tbtt(pst_hmac_vap);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_trigger_handle
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_trigger_handle(hmac_vap_stru *pst_hmac_vap, oal_int8 c_rssi)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -2494,21 +1852,7 @@ oal_uint32 hmac_roam_trigger_handle(hmac_vap_stru *pst_hmac_vap, oal_int8 c_rssi
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_rx_mgmt
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_sta_roam_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param)
 {
     dmac_wlan_crx_event_stru *pst_crx_event;
@@ -2518,41 +1862,13 @@ oal_uint32  hmac_sta_roam_rx_mgmt(hmac_vap_stru *pst_hmac_vap, oal_void *p_param
     hmac_roam_connect_rx_mgmt(pst_hmac_vap, pst_crx_event);
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_roam_add_key_done
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  hmac_roam_add_key_done(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_connect_key_done(pst_hmac_vap);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_roam_wpas_connect_state_notify
- 功能描述  : wpas 关联状态通知函数
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月19日
-    作    者   : l0350000
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  hmac_roam_wpas_connect_state_notify(hmac_vap_stru *pst_hmac_vap, wpas_connect_state_enum_uint32 conn_state)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2613,21 +1929,7 @@ oal_void  hmac_roam_wpas_connect_state_notify(hmac_vap_stru *pst_hmac_vap, wpas_
 }
 
 #ifdef _PRE_WLAN_FEATURE_11R
-/*****************************************************************************
- 函 数 名  : hmac_roam_reassoc
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_reassoc(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_info_stru              *pst_roam_info;
@@ -2659,21 +1961,7 @@ oal_uint32 hmac_roam_reassoc(hmac_vap_stru *pst_hmac_vap)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_roam_rx_ft_action
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_roam_rx_ft_action(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *pst_netbuf)
 {
     dmac_wlan_crx_event_stru st_crx_event;
@@ -2686,21 +1974,7 @@ oal_uint32 hmac_roam_rx_ft_action(hmac_vap_stru *pst_hmac_vap, oal_netbuf_stru *
 }
 
 #endif //_PRE_WLAN_FEATURE_11R
-/*****************************************************************************
- 函 数 名  : hmac_roam_connect_complete
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_roam_connect_complete(hmac_vap_stru *pst_hmac_vap, oal_uint32 ul_result)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -2740,21 +2014,7 @@ oal_void hmac_roam_connect_complete(hmac_vap_stru *pst_hmac_vap, oal_uint32 ul_r
 }
 
 #if 0
-/*****************************************************************************
- 函 数 名  : hmac_roam_rx_complete
- 功能描述  :
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_roam_rx_complete(hmac_vap_stru *pst_hmac_vap, oal_uint32 ul_reslut)
 {
     hmac_roam_info_stru     *pst_roam_info;
@@ -2790,21 +2050,7 @@ oal_void hmac_roam_rx_complete(hmac_vap_stru *pst_hmac_vap, oal_uint32 ul_reslut
 }
 
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_roam_timeout_test
- 功能描述  : 测试函数
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月18日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_roam_timeout_test(hmac_vap_stru *pst_hmac_vap)
 {
     hmac_roam_connect_timeout(pst_hmac_vap->pul_roam_info);

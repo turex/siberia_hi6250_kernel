@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hal_proxysta.c
-  版 本 号   : 初稿
-  作    者   : gaolin g00196511
-  生成日期   : 2016年3月15日
-  最近修改   :
-  功能描述   : Proxy STA 特性驱动相关函数
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2016年3月15日
-    作    者   : gaolin g00196511
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -48,20 +31,7 @@ extern "C" {
 /* repeater mgr struct */
 OAL_STATIC hmac_psta_mgr_stru  g_st_psta_mgr;
 #if  (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
-/*****************************************************************************
- 函 数 名  : hmac_psta_fdb_change_handler
- 功能描述  : handler of fdb changing
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月18日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_psta_fdb_change_handler(struct br_fdb_change_info *info)
 {
     vamp_nlc_msg_stru  st_rsp;
@@ -73,41 +43,14 @@ OAL_STATIC oal_void  hmac_psta_fdb_change_handler(struct br_fdb_change_info *inf
     oam_netlink_kernel_send((oal_uint8 *)&st_rsp, st_rsp.uc_size, OAM_NL_CMD_PSTA);
 }
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_psta_receive_msg
- 功能描述  : recv msg from app_vamp
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月18日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32  hmac_psta_receive_msg(oal_uint8 *puc_data, oal_uint32 ul_len)
 {
     // TODO
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_find_net_dev
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月26日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_psta_find_net_dev(hmac_psta_rep_stru       *pst_dev_psta,
                                                  oal_uint8                *puc_mac_addr,
                                                  oal_net_device_stru     **ppst_net_device)
@@ -139,21 +82,7 @@ OAL_STATIC oal_uint32  hmac_psta_find_net_dev(hmac_psta_rep_stru       *pst_dev_
 
     return OAL_FAIL;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_process
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_psta_tx_process(oal_netbuf_stru *pst_buf, mac_vap_stru **ppst_vap)
 {
     mac_ether_header_stru  *pst_ether_header;
@@ -205,21 +134,7 @@ oal_uint32 hmac_psta_tx_process(oal_netbuf_stru *pst_buf, mac_vap_stru **ppst_va
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_rx_process
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_rx_process(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hmac_vap)
 {
     mac_ether_header_stru   *pst_ether_header;
@@ -299,22 +214,7 @@ oal_uint32  hmac_psta_rx_process(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hm
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_init_vap
- 功能描述  : 初始化psta
- 输入参数  : pst_hmac_vap
-             pst_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_init_vap(hmac_vap_stru *pst_hmac_vap, mac_cfg_add_vap_param_stru *pst_param)
 {
     pst_hmac_vap->st_psta.uc_rep_id = pst_param->uc_rep_id;
@@ -324,21 +224,7 @@ oal_uint32  hmac_psta_init_vap(hmac_vap_stru *pst_hmac_vap, mac_cfg_add_vap_para
 
     return mac_psta_init_vap(&pst_hmac_vap->st_vap_base_info, pst_param);
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_add_vap
- 功能描述  : 添加psta
- 输入参数  : pst_hmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_add_vap(hmac_vap_stru *pst_hmac_vap)
 {
     oal_uint8        uc_hash_value;
@@ -398,21 +284,7 @@ oal_uint32  hmac_psta_add_vap(hmac_vap_stru *pst_hmac_vap)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_del_vap
- 功能描述  : 删除psta
- 输入参数  : pst_hmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_del_vap(hmac_vap_stru *pst_hmac_vap)
 {
     oal_uint32                   uc_hash_value;
@@ -493,40 +365,12 @@ oal_uint32  hmac_psta_del_vap(hmac_vap_stru *pst_hmac_vap)
     oal_rw_lock_write_unlock(&pst_rep->st_lock);
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_write_proc
- 功能描述  : proc write hook
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32   hmac_psta_write_proc (oal_file_stru *pst_file, const oal_int8 *pc_buffer, oal_uint32 ul_len, oal_void *p_data)
 {
     return -1;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_read_proc
- 功能描述  : proc read hook
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 hmac_psta_read_proc(char *page, char **start, off_t off, int count, int *eof, void *data)
 {
     hmac_psta_rep_stru  *pst_rep;
@@ -580,40 +424,12 @@ oal_int32 hmac_psta_read_proc(char *page, char **start, off_t off, int count, in
     *eof = 1;
     return -1;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_get_rep
- 功能描述  : get rep of vap
- 输入参数  : pst_hmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_psta_rep_stru *hmac_psta_get_rep(hmac_vap_stru *pst_hmac_vap)
 {
     return g_st_psta_mgr.ast_rep + pst_hmac_vap->st_psta.uc_rep_id;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_get_msta
- 功能描述  : choose msta for vap
- 输入参数  : pst_hmac_vap
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 hmac_vap_stru *hmac_psta_get_msta(hmac_vap_stru *pst_hmac_vap)
 {
     oal_dlist_head_stru *pst_list;
@@ -628,21 +444,7 @@ hmac_vap_stru *hmac_psta_get_msta(hmac_vap_stru *pst_hmac_vap)
     return OAL_PTR_NULL;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_rep_init
- 功能描述  : init repeater
- 输入参数  : pst_rep
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void    hmac_psta_rep_init(hmac_psta_rep_stru *pst_rep)
 {
     oal_uint32  ul_idx;
@@ -660,21 +462,7 @@ oal_void    hmac_psta_rep_init(hmac_psta_rep_stru *pst_rep)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_mgr_init
- 功能描述  : init repeater mgr
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_mgr_init(oal_void)
 {
     OAL_STATIC  oal_bool_enum_uint8 en_inited = OAL_FALSE;
@@ -709,21 +497,7 @@ oal_uint32  hmac_psta_mgr_init(oal_void)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_mgr_exit
- 功能描述  : exit repeater mgr
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年03月15日
-    作    者   : gaolin g00196511
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_mgr_exit(oal_void)
 {
 #if  (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
@@ -738,21 +512,7 @@ oal_uint32  hmac_psta_mgr_exit(oal_void)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_rx_checksum
- 功能描述  : 更新checksum
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月29日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint16  hmac_psta_rx_checksum(oal_uint16 us_osum,
                                   oal_uint8  uc_omac[6],
                                   oal_uint8  uc_nmac[6])
@@ -778,21 +538,7 @@ oal_uint16  hmac_psta_rx_checksum(oal_uint16 us_osum,
     return us_nsum;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_rx_arp_mat
- 功能描述  : arp包地址转换
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月11日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_psta_rx_arp_mat(mac_vap_stru            *pst_mac_vap,
                                                       mac_ether_header_stru   *pst_ether_header,
                                                       mac_device_stru         *pst_mac_device,
@@ -929,23 +675,7 @@ OAL_STATIC oal_uint32 hmac_psta_rx_arp_mat(mac_vap_stru            *pst_mac_vap,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_rx_ip_mat
- 功能描述  : ip包地址转换，主要包括以下两种报文的处理:
-             1.DHCP报文的处理；
-             2.其他IP类型报文的处理
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月11日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_psta_rx_ip_mat(mac_vap_stru           *pst_mac_vap,
                                                      mac_ether_header_stru  *pst_ether_header,
                                                      mac_device_stru        *pst_mac_device,
@@ -1144,21 +874,7 @@ OAL_STATIC oal_uint32 hmac_psta_rx_ip_mat(mac_vap_stru           *pst_mac_vap,
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_rx_mat
- 功能描述  : ARP、DHCP、ICMPv6等包，上报网桥前地址转换函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月25日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_rx_mat(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hmac_vap)
 {
     mac_vap_stru            *pst_mac_vap;
@@ -1253,21 +969,7 @@ oal_uint32  hmac_psta_rx_mat(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hmac_v
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_checksum
- 功能描述  : 计算报文的校验和
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月29日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint16  hmac_psta_tx_checksum(oal_uint16   us_protocol,
                                                  oal_uint16   us_len,
                                                  oal_uint8    auc_src_addr[],
@@ -1327,21 +1029,7 @@ OAL_STATIC oal_uint16  hmac_psta_tx_checksum(oal_uint16   us_protocol,
     return ((oal_uint16) ul_sum);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_arp_mat
- 功能描述  : arp包地址转换
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_psta_tx_arp_mat(mac_vap_stru *pst_mac_vap,
                                                       oal_uint8 *puc_eth_body,
                                                       oal_uint32 ul_pkt_len,
@@ -1413,21 +1101,7 @@ OAL_STATIC oal_uint32 hmac_psta_tx_arp_mat(mac_vap_stru *pst_mac_vap,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_ip_mat
- 功能描述  : ip包地址转换
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_psta_tx_ip_mat(mac_vap_stru           *pst_mac_vap,
                                                      mac_ether_header_stru  *pst_ether_header,
                                                      oal_uint8              *puc_eth_body,
@@ -1563,21 +1237,7 @@ OAL_STATIC oal_uint32 hmac_psta_tx_ip_mat(mac_vap_stru           *pst_mac_vap,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_icmpv6_mat
- 功能描述  : icmpv6包地址转换
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月8日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_psta_tx_icmpv6_mat(mac_vap_stru *pst_mac_vap,
                                                            oal_uint8 *puc_eth_body,
                                                            oal_uint32 ul_pkt_len,
@@ -1692,21 +1352,7 @@ OAL_STATIC oal_uint32 hmac_psta_tx_icmpv6_mat(mac_vap_stru *pst_mac_vap,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_tx_mat
- 功能描述  : ARP、DHCP、ICMPv6等包的地址转换 发送前地址转换函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月25日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_tx_mat(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hmac_vap)
 {
     mac_ether_header_stru  *pst_ether_header;
@@ -1796,20 +1442,7 @@ oal_uint32  hmac_psta_tx_mat(oal_netbuf_stru *pst_buf, hmac_vap_stru *pst_hmac_v
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_pause_bss
- 功能描述  : MAIN STA发起关联时PAUSE掉所有UP状态的AP
- 输入参数  : hmac_vap_stru *pst_hmac_vap,
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月24日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32 hmac_psta_pause_bss(hmac_vap_stru *pst_hmac_vap)
 {
     if (!pst_hmac_vap)
@@ -1825,23 +1458,7 @@ oal_uint32 hmac_psta_pause_bss(hmac_vap_stru *pst_hmac_vap)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_resume_bss
- 功能描述  : MAIN STA发起关联时DOWN掉所有UP状态的AP
- 输入参数  : hmac_vap_stru *pst_hmac_vap,
-             mac_channel_stru *pst_channel,
-             wlan_protocol_enum_uint8 en_proto
 
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年1月24日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32 hmac_psta_resume_bss(hmac_vap_stru *pst_hmac_vap, mac_channel_stru *pst_channel, wlan_protocol_enum_uint8 en_proto)
 {
     if (OAL_SUCC == hmac_chan_start_bss(pst_hmac_vap, pst_channel, en_proto))
@@ -1852,21 +1469,7 @@ oal_uint32 hmac_psta_resume_bss(hmac_vap_stru *pst_hmac_vap, mac_channel_stru *p
     return OAL_FAIL;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_psta_proc_wait_join
- 功能描述  : MAIN STA发起关联时DOWN掉所有UP状态的AP
- 输入参数  : hmac_vap_stru *pst_hmac_sta,
-             hmac_join_req_stru *pst_join_req
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月24日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32  hmac_psta_proc_wait_join(hmac_vap_stru *pst_hmac_sta, hmac_join_req_stru *pst_join_req)
 {
     mac_device_stru                     *pst_mac_device;
@@ -1926,22 +1529,7 @@ oal_uint32  hmac_psta_proc_wait_join(hmac_vap_stru *pst_hmac_sta, hmac_join_req_
 
     return ul_ret;
 }
-/*****************************************************************************
- 函 数 名  : hmac_psta_proc_join_result
- 功能描述  : MAIN STA关联成功后，UP所有被DOWN掉的AP
- 输入参数  : hmac_vap_stru *pst_hmac_sta
-             oal_bool_enum_uint8 en_succ
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月24日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_psta_proc_join_result(hmac_vap_stru *pst_hmac_sta, oal_bool_enum_uint8 en_succ)
 {
     mac_device_stru                     *pst_mac_device;

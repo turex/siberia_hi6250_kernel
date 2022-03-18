@@ -1,20 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_tcp_opt.h
-  版 本 号   : 初稿
-  作    者   : zengjun
-  生成日期   : 2015年5月16日
-  最近修改   :
-  功能描述   : hmac_dfs.c 的头文件
-  函数列表   :
-  修改历史   :
-1.日    期   : 2015年5月16日
-  作    者   : zengjun
-  修改内容   : 创建文件
-******************************************************************************/
 
 #ifndef __HMAC_TCP_OPT_H__
 #define __HMAC_TCP_OPT_H__
@@ -56,6 +40,7 @@ extern "C" {
 /*****************************************************************************
   4 全局变量声明
 *****************************************************************************/
+extern hmac_tcp_ack_opt_th_params g_st_tcp_ack_opt_th_params;
 
 
 /*****************************************************************************
@@ -103,14 +88,12 @@ oal_tcp_ack_type_enum_uint8 hmac_tcp_opt_get_tcp_ack_type(hmac_vap_stru    *pst_
                                              oal_ip_header_stru     *pst_ip_hdr,
                                              hcc_chan_type dir,
                                              oal_uint16 us_index);
-oal_bool_enum_uint8 hmac_judge_rx_netbuf_classify(oal_netbuf_stru *pst_netbuff);
-oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap);
+oal_bool_enum_uint8 hmac_judge_rx_netbuf_classify(mac_llc_snap_stru *pst_snap, oal_uint32 buf_len);
+oal_bool_enum_uint8 hmac_judge_rx_netbuf_is_tcp_ack(mac_llc_snap_stru *pst_snap, oal_uint32 buf_len);
 oal_bool_enum_uint8 hmac_judge_tx_netbuf_is_tcp_ack(oal_ether_header_stru *ps_ethmac_hdr);
 oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_rx_get_tcp_ack(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, oal_uint16 *p_us_index, oal_uint8 dir);
 oal_tcp_ack_type_enum_uint8  hmac_tcp_opt_tx_get_tcp_ack(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, oal_uint16 *p_us_index, oal_uint8 dir);
 oal_uint16 hmac_tcp_opt_tcp_ack_list_filter(hmac_vap_stru    *pst_hmac_vap, hmac_tcp_opt_queue type,hcc_chan_type dir, oal_netbuf_head_stru  *head);
-oal_uint16 hmac_tcp_opt_rx_tcp_ack_filter(void *hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, void* data);
-oal_uint16 hmac_tcp_opt_tx_tcp_ack_filter(void *hmac_device, hmac_tcp_opt_queue type,hcc_chan_type dir, void* data);
 oal_uint32 hmac_tcp_opt_tcp_ack_filter(oal_netbuf_stru *skb, hmac_vap_stru    *pst_hmac_vap, hcc_chan_type dir);
 
 void hmac_trans_queue_filter(hmac_vap_stru    *pst_hmac_vap, oal_netbuf_head_stru  *head_t,
@@ -122,6 +105,8 @@ oal_bool_enum_uint8 hmac_tcp_ack_need_schedule(void);
 oal_void hmac_sched_transfer(void);
 oal_int32 hmac_set_hmac_tcp_ack_process_func(hmac_tcp_ack_process_func p_func);
 oal_int32 hmac_set_hmac_tcp_ack_need_schedule(hmac_tcp_ack_need_schedule_func p_func);
+oal_void hmac_tcp_ack_opt_switch_ctrol(oal_uint32 ul_count);
+
 
 /*****************************************************************************
   11 内联函数定义

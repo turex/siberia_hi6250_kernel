@@ -950,7 +950,7 @@ int32 check_device_board_name(void)
     int32 i = 0;
     for (i = 0; i < BOARD_VERSION_BOTT; i++)
     {
-        if (0 == strncmp(device_board_version_list[i].name, g_board_info.chip_type, strlen(device_board_version_list[i].name)))
+        if (0 == strncmp(device_board_version_list[i].name, g_board_info.chip_type, HI11XX_SUBCHIP_NAME_LEN_MAX))
         {
             g_device_subchip_type = i;
             return BOARD_SUCC;

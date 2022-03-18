@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_vap.c
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   :
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -117,21 +100,7 @@ extern oal_void hmac_del_virtual_inf_worker(oal_work_stru *pst_del_virtual_inf_w
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : hmac_vap_init
- 功能描述  : 初始化要添加的hmac vap的一些特性信息
- 输入参数  : 指向要添加的vap的指针
- 输出参数  : 无
- 返 回 值  : 成功或者失败原因
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月24日
-    作    者   : 康国昌
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_init(
                 hmac_vap_stru              *pst_hmac_vap,
                 oal_uint8                   uc_chip_id,
@@ -292,7 +261,7 @@ oal_uint32  hmac_vap_init(
     pst_hmac_vap->uc_in_queue_id  = 0;
     pst_hmac_vap->uc_out_queue_id = 1;
     oal_atomic_set(&pst_hmac_vap->ul_tx_event_num,1);  /* ul_tx_event_num初始值修改为1，防止hmac_tx_post_event可能连续抛两个以上事件 */
-    pst_hmac_vap->ul_tx_quata = 256;  /* DTS2015080703041，将quata从1修改为256,目的是防止小包下行流量低,四个vap流量为0及内存泄露问题可以通过提高事件优先级解决 */
+    pst_hmac_vap->ul_tx_quata = 256;
     oal_spin_lock_init(&pst_hmac_vap->st_smp_lock);
 #endif
 
@@ -332,21 +301,7 @@ oal_uint32  hmac_vap_init(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_get_priv_cfg
- 功能描述  : 获取hmac_vap结构体中的私有配置项
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_get_priv_cfg(mac_vap_stru *pst_mac_vap, hmac_vap_cfg_priv_stru **ppst_cfg_priv)
 {
     hmac_vap_stru   *pst_hmac_vap;
@@ -370,21 +325,7 @@ oal_uint32  hmac_vap_get_priv_cfg(mac_vap_stru *pst_mac_vap, hmac_vap_cfg_priv_s
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_get_desired_country
- 功能描述  : 读取期望的国家
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月22日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int8*  hmac_vap_get_desired_country(oal_uint8 uc_vap_id)
 {
     hmac_vap_stru   *pst_hmac_vap;
@@ -399,21 +340,7 @@ oal_int8*  hmac_vap_get_desired_country(oal_uint8 uc_vap_id)
     return pst_hmac_vap->ac_desired_country;
 }
 #ifdef _PRE_WLAN_FEATURE_11D
-/*****************************************************************************
- 函 数 名  : hmac_vap_get_updata_rd_by_ie_switch
- 功能描述  : 读取是否根据关联ap更新国家码信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月17日
-    作    者   : zhangxiang
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_get_updata_rd_by_ie_switch(oal_uint8 uc_vap_id,oal_bool_enum_uint8 *us_updata_rd_by_ie_switch)
 {
     hmac_vap_stru   *pst_hmac_vap;
@@ -429,21 +356,7 @@ oal_uint32  hmac_vap_get_updata_rd_by_ie_switch(oal_uint8 uc_vap_id,oal_bool_enu
     return OAL_SUCC;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_vap_get_net_device
- 功能描述  : 通过vap id获取 net_device
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月6日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_net_device_stru  *hmac_vap_get_net_device(oal_uint8 uc_vap_id)
 {
     hmac_vap_stru   *pst_hmac_vap;
@@ -460,21 +373,7 @@ oal_net_device_stru  *hmac_vap_get_net_device(oal_uint8 uc_vap_id)
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_set_puc_asoc_req_ie_buff_null
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月26日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_free_asoc_req_ie_ptr(oal_uint8 uc_vap_id)
 {
     hmac_vap_stru   *pst_hmac_vap;
@@ -499,21 +398,7 @@ oal_uint32  hmac_vap_free_asoc_req_ie_ptr(oal_uint8 uc_vap_id)
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_creat_netdev
- 功能描述  : 获取hmac_vap结构体中的私有配置项
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_creat_netdev(hmac_vap_stru *pst_hmac_vap, oal_int8 *puc_netdev_name, oal_int8 *puc_mac_addr)
 
 {
@@ -570,21 +455,7 @@ oal_uint32  hmac_vap_creat_netdev(hmac_vap_stru *pst_hmac_vap, oal_int8 *puc_net
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_destroy
- 功能描述  : 销毁hmac vap的处理函数
- 输入参数  : 指向要销毁的vap指针
- 输出参数  : 无
- 返 回 值  : 成功或者失败原因
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月30日
-    作    者   : chenyan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_vap_destroy(hmac_vap_stru *pst_hmac_vap)
 {
     mac_cfg_down_vap_param_stru   st_down_vap;
@@ -637,22 +508,7 @@ oal_uint32  hmac_vap_destroy(hmac_vap_stru *pst_hmac_vap)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
 
- 函 数 名  : hmac_vap_check_ht_capabilities_ap
- 功能描述  : 检查请求关联的STA的 HT Capabilities element
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2013年7月8日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint16 hmac_vap_check_ht_capabilities_ap(
                 hmac_vap_stru                   *pst_hmac_vap,
                 oal_uint8                       *puc_payload,
@@ -799,22 +655,7 @@ oal_uint16 hmac_vap_check_ht_capabilities_ap(
     return MAC_SUCCESSFUL_STATUSCODE;
 }
 
-/*****************************************************************************
 
- 函 数 名  : hmac_vap_check_vht_capabilities_ap
- 功能描述  : 检查请求关联的STA的 VHT Capabilities element
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年5月8日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint16 hmac_vap_check_vht_capabilities_ap(
                 hmac_vap_stru                   *pst_hmac_vap,
                 oal_uint8                       *puc_payload,
@@ -880,22 +721,7 @@ oal_uint16 hmac_vap_check_vht_capabilities_ap(
     return MAC_SUCCESSFUL_STATUSCODE;
 }
 
-/*****************************************************************************
 
- 函 数 名  : hmac_search_txbf_cap_ie_ap
- 功能描述  : 检查请求关联的STA的 TXBF Capabilities element
- 输入参数  :
- 输出参数  :
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : x00226265
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  hmac_search_txbf_cap_ie_ap(mac_user_ht_hdl_stru *pst_ht_hdl,
 								     oal_uint32            ul_info_elem)
 {
@@ -924,21 +750,7 @@ oal_void  hmac_search_txbf_cap_ie_ap(mac_user_ht_hdl_stru *pst_ht_hdl,
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_search_ht_cap_ie_ap
- 功能描述  : 在关联请求请求中搜索HT Cap IE
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月10日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_search_ht_cap_ie_ap(
                 hmac_vap_stru               *pst_hmac_vap,
                 hmac_user_stru              *pst_hmac_user_sta,
@@ -1132,21 +944,7 @@ oal_uint32  hmac_search_ht_cap_ie_ap(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_addba_check
- 功能描述  : 判断该用户对应的TID是否已经建立BA会话
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_TRUE代表可以建立BA会话，OAL_FALSE表示不可以建立BA会话
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年4月11日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_vap_addba_check(
                 hmac_vap_stru    *pst_hmac_vap,
                 hmac_user_stru   *pst_hmac_user,
@@ -1221,21 +1019,7 @@ oal_bool_enum_uint8 hmac_vap_addba_check(
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_net_stopall
- 功能描述  : 停止所有VAP队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_vap_net_stopall(oal_void)
 {
     oal_uint8 uc_vap_id;
@@ -1258,21 +1042,7 @@ oal_void hmac_vap_net_stopall(oal_void)
 }
 
 #ifdef _PRE_WLAN_FEATURE_OFFLOAD_FLOWCTL
-/*****************************************************************************
- 函 数 名  : hmac_flowctl_check_device_is_sta_mode
- 功能描述  : 判断当前device是否工作在sta模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_flowctl_check_device_is_sta_mode(oal_void)
 {
     mac_device_stru         *pst_dev;
@@ -1280,7 +1050,6 @@ oal_bool_enum_uint8 hmac_flowctl_check_device_is_sta_mode(oal_void)
     oal_uint8                uc_vap_index;
     oal_bool_enum_uint8      en_device_is_sta = OAL_FALSE;
 
-    /* check 各VAP状态，只要有VAP工作在STA模式(包括BSS_STA或者P2P client)，则认为该device工作在sta模式 */
     pst_dev = mac_res_get_dev(0);
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_dev))
     {
@@ -1312,21 +1081,7 @@ oal_bool_enum_uint8 hmac_flowctl_check_device_is_sta_mode(oal_void)
     return en_device_is_sta;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_net_start_subqueue
- 功能描述  : 使能某个VAP队列的某个队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void hmac_vap_wake_subq(oal_uint8 uc_vap_id, oal_uint16 us_queue_idx)
 {
     oal_net_device_stru    *pst_net_device = NULL;
@@ -1354,21 +1109,7 @@ OAL_STATIC oal_void hmac_vap_wake_subq(oal_uint8 uc_vap_id, oal_uint16 us_queue_
     oal_net_wake_subqueue(pst_net_device, us_queue_idx);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_net_start_subqueue
- 功能描述  : 使能所有VAP队列的某个队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_vap_net_start_subqueue(oal_uint16 us_queue_idx)
 {
     oal_uint8               uc_vap_id;
@@ -1399,21 +1140,7 @@ oal_void hmac_vap_net_start_subqueue(oal_uint16 us_queue_idx)
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_stop_subq
- 功能描述  : 停止某个VAP队列的某个队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_vap_stop_subq(oal_uint8 uc_vap_id, oal_uint16 us_queue_idx)
 {
     oal_net_device_stru    *pst_net_device = NULL;
@@ -1442,21 +1169,7 @@ OAL_STATIC oal_void  hmac_vap_stop_subq(oal_uint8 uc_vap_id, oal_uint16 us_queue
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_net_stop_subqueue
- 功能描述  : 使能所有VAP队列的某个队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_vap_net_stop_subqueue(oal_uint16 us_queue_idx)
 {
     oal_uint8               uc_vap_id;
@@ -1486,21 +1199,7 @@ oal_void hmac_vap_net_stop_subqueue(oal_uint16 us_queue_idx)
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_net_startall
- 功能描述  : 使能所有VAP队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月19日
-    作    者   : Z00262551
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_vap_net_startall(oal_void)
 {
     oal_uint8 uc_vap_id;
@@ -1523,25 +1222,7 @@ oal_void hmac_vap_net_startall(oal_void)
 }
 
 #ifdef _PRE_WLAN_FEATURE_OPMODE_NOTIFY
-/*****************************************************************************
- 函 数 名  : hmac_check_opmode_notify
- 功能描述  : 检查请求关联的STA的Operating Mode Notification
- 输入参数  : hmac_vap_stru    *pst_hmac_vap --VAP指针
-             oal_uint8        *puc_mac_hdr, --帧头指针
-             oal_uint8        *puc_payload  --payload指针
-             oal_uint16        us_info_elem_offset--偏移长度
-             oal_uint32        ul_msg_len----信息长度
-             hmac_user_stru   *pst_hmac_user_sta --用户指针
- 输出参数  : 无
- 返 回 值  : oal_uint16
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月10日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_uint32 hmac_check_opmode_notify(
                 hmac_vap_stru                   *pst_hmac_vap,
                 oal_uint8                       *puc_mac_hdr,
@@ -1600,21 +1281,7 @@ oal_uint32 hmac_check_opmode_notify(
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_P2P
-/*****************************************************************************
- 函 数 名  : hmac_del_virtual_inf_worker
- 功能描述  : cfg80211 删除虚拟接口工作队列，防止去注册网络设备时程序挂死。
- 输入参数  : oal_work_stru *pst_del_virtual_inf_work
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月26日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_del_virtual_inf_worker(oal_work_stru *pst_del_virtual_inf_work)
 {
     oal_net_device_stru         *pst_net_dev;
@@ -1667,21 +1334,7 @@ oal_void hmac_del_virtual_inf_worker(oal_work_stru *pst_del_virtual_inf_work)
 }
 #endif	/* _PRE_WLAN_FEATURE_P2P */
 
-/*****************************************************************************
- 函 数 名  : hmac_handle_disconnect_rsp
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月10日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_handle_disconnect_rsp(hmac_vap_stru *pst_hmac_vap, hmac_user_stru *pst_hmac_user,
                                                   mac_reason_code_enum_uint16  en_disasoc_reason)
 {
@@ -1709,20 +1362,7 @@ oal_void hmac_handle_disconnect_rsp(hmac_vap_stru *pst_hmac_vap, hmac_user_stru 
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_vap_get_pmksa
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2016年4月8日
-    作    者   : g00260350
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 oal_uint8 * hmac_vap_get_pmksa(hmac_vap_stru *pst_hmac_vap, oal_uint8 *puc_bssid)
 {
     hmac_pmksa_cache_stru              *pst_pmksa_cache = OAL_PTR_NULL;
@@ -1763,21 +1403,7 @@ oal_uint8 * hmac_vap_get_pmksa(hmac_vap_stru *pst_hmac_vap, oal_uint8 *puc_bssid
     return OAL_PTR_NULL;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_tx_get_mac_vap
- 功能描述  : 获取VAP，并判断VAP状态
- 输入参数  : pst_event event结构体
- 输出参数  : pst_vap_stru VAP结构体
- 返 回 值  :
- 调用函数  : hmac_tx_wlan_to_wlan_ap
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月14日
-    作    者   : c00178899
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_tx_get_mac_vap(oal_uint8 uc_vap_id, mac_vap_stru **pst_vap_stru)
 {
     mac_vap_stru         *pst_vap;

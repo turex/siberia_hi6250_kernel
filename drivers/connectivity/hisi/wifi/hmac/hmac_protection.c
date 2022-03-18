@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_protection.c
-  版 本 号   : 初稿
-  作    者   : 曹海彬
-  生成日期   : 2014年1月18日
-  最近修改   :
-  功能描述   : 放置与保护相关的函数
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2014年1月18日
-    作    者   : 曹海彬
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -51,22 +34,7 @@ extern "C" {
 OAL_STATIC oal_uint32 hmac_protection_set_mode(
                                  mac_vap_stru *pst_mac_vap,
                                  wlan_prot_mode_enum_uint8 en_prot_mode);
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_autoprot
- 功能描述  : 设置VAP自动保护机制是否开启
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
-             en_mode      : 0 :设置自动保护机制关闭， 1:设置自动保护机制打开
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
  oal_uint32 hmac_protection_set_autoprot(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 en_mode)
 {
     oal_uint32      ul_ret = OAL_SUCC;
@@ -106,23 +74,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_rtscts_mechanism
- 功能描述  : 设置rts-cts保护机制是否开启及保护范围
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
-             en_flag      : 0:关闭rts cts保护机制   / 1: 打开rts cts保护机制
-             en_prot_mode : 指示保护级别(rts cts机制可以做erp保护，也可以做ht保护)
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_protection_set_rtscts_mechanism(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 en_flag, wlan_prot_mode_enum_uint8 en_prot_mode)
 {
     oal_uint32 ul_ret = OAL_SUCC;
@@ -138,22 +90,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_rtscts_mechanism(mac_vap_stru *pst_mac
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_erp_protection
- 功能描述  : 设置erp保护是否开启
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
-             en_flag      : 0:关闭erp保护   / 1: 打开erp保护
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_uint32 hmac_protection_set_erp_protection(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 en_flag)
 {
     oal_uint32 ul_ret = OAL_SUCC;
@@ -163,22 +100,7 @@ OAL_STATIC OAL_INLINE oal_uint32 hmac_protection_set_erp_protection(mac_vap_stru
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_lsigtxop_check
- 功能描述  : 查询是否可以使用lsigtxop保护
- 输入参数  : pst_mac_vap : mac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_bool_enum : 0: 不可以使用lsig txop保护
-                             1: 可以使用lsig txop保护
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_bool_enum hmac_protection_lsigtxop_check(mac_vap_stru *pst_mac_vap)
 {
     mac_user_stru  *pst_mac_user;
@@ -214,22 +136,7 @@ OAL_STATIC oal_bool_enum hmac_protection_lsigtxop_check(mac_vap_stru *pst_mac_va
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_update_ht_protection
- 功能描述  : 由于en_dot11LSIGTXOPFullProtectionActivated值发生变化，
-             需要更新HT protection的机制， lsig txop protection 或者 rts cts protection
- 输入参数  : pst_mac_vap : mac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_protection_update_ht_protection(mac_vap_stru *pst_mac_vap)
 {
     oal_uint32    ul_ret      = OAL_SUCC;
@@ -280,22 +187,7 @@ OAL_STATIC oal_uint32 hmac_protection_update_ht_protection(mac_vap_stru *pst_mac
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_ht_protection
- 功能描述  : 设置ht保护是否开启
- 输入参数  : pst_mac_vap : mac vap结构体指针
-             en_flag      : 0:关闭ht保护   / 1: 打开ht保护
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_protection_set_ht_protection(mac_vap_stru *pst_mac_vap, oal_switch_enum_uint8 en_flag)
 {
     oal_uint32      ul_ret = OAL_SUCC;
@@ -367,21 +259,7 @@ oal_bool_enum_uint8 hmac_protection_need_sync(mac_vap_stru *pst_mac_vap,
     return OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_mode
- 功能描述  : 同步保护相关的参数到Dmac
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月7日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-***************************************************************************/
 OAL_STATIC oal_uint32 hmac_protection_sync_data(mac_vap_stru *pst_mac_vap)
 {
     mac_h2d_protection_stru           st_h2d_prot;
@@ -413,22 +291,7 @@ OAL_STATIC oal_uint32 hmac_protection_sync_data(mac_vap_stru *pst_mac_vap)
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_set_mode
- 功能描述  : 设置vap的保护类型
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
-             en_prot_mode : 保护类型
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 hmac_protection_set_mode(
                                  mac_vap_stru *pst_mac_vap,
                                  wlan_prot_mode_enum_uint8 en_prot_mode)
@@ -501,21 +364,7 @@ OAL_STATIC oal_uint32 hmac_protection_set_mode(
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_update_mib_ap
- 功能描述  : 更新AP保护相关mib量
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_update_mib_ap(mac_vap_stru *pst_mac_vap)
 {
     oal_uint32           ul_ret         = OAL_SUCC;
@@ -578,21 +427,7 @@ oal_uint32 hmac_protection_update_mib_ap(mac_vap_stru *pst_mac_vap)
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_update_mode_ap
- 功能描述  : 根据mac vap结构体统计值更新AP保护模式
- 输入参数  : pst_mac_vap : mac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_update_mode_ap(mac_vap_stru *pst_mac_vap)
 {
     oal_uint32                ul_ret             = OAL_SUCC;
@@ -640,22 +475,7 @@ oal_uint32 hmac_protection_update_mode_ap(mac_vap_stru *pst_mac_vap)
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_update_mode_sta
- 功能描述  : 根据保存在user结构体中的AP信息更新STA保护模式
- 输入参数  : mac_vap_stru        : mac VAP结构体， 保存sta信息
-             pst_mac_sta         : mac user结构体， 保存ap信息
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_update_mode_sta(mac_vap_stru *pst_mac_vap_sta, hmac_user_stru *pst_hmac_user)
 {
     wlan_prot_mode_enum_uint8 en_protection_mode = WLAN_PROT_NO;
@@ -677,21 +497,7 @@ oal_uint32 hmac_protection_update_mode_sta(mac_vap_stru *pst_mac_vap_sta, hmac_u
     return hmac_protection_set_mode(pst_mac_vap_sta, en_protection_mode);
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_obss_aging_ap
- 功能描述  : OBSS老化处理， 本函数定期执行(5000ms 执行一次)
- 输入参数  : pst_mac_vap : mac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月18日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_obss_aging_ap(mac_vap_stru *pst_mac_vap)
 {
     oal_uint32    ul_ret               = OAL_SUCC;
@@ -736,22 +542,7 @@ oal_uint32 hmac_protection_obss_aging_ap(mac_vap_stru *pst_mac_vap)
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_del_user_stat_legacy_ap
- 功能描述  : 删除保护模式相关user统计(legacy)
- 输入参数  : pst_mac_vap  : mac vap结构体指针
-             pst_mac_user : mac user结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_protection_del_user_stat_legacy_ap(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
     mac_protection_stru    *pst_protection = &(pst_mac_vap->st_protection);
@@ -797,22 +588,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_legacy_ap(mac_vap_stru *pst
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_del_user_stat_ht_ap
- 功能描述  : 删除保护模式相关user统计(ht)
- 输入参数  : pst_mac_vap  : mac vap结构体指针
-             pst_mac_user : mac user结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
     mac_user_ht_hdl_stru   *pst_ht_hdl     = &(pst_mac_user->st_ht_hdl);
@@ -880,22 +656,7 @@ OAL_STATIC oal_uint32  hmac_protection_del_user_stat_ht_ap(mac_vap_stru *pst_mac
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_del_user_stat_ap
- 功能描述  : 删除保护模式相关user统计
- 输入参数  : pst_mac_vap  : mac vap结构体指针
-             pst_mac_user : mac user结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  hmac_protection_del_user_stat_ap(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
     hmac_protection_del_user_stat_legacy_ap(pst_mac_vap, pst_mac_user);
@@ -904,23 +665,7 @@ OAL_STATIC oal_void  hmac_protection_del_user_stat_ap(mac_vap_stru *pst_mac_vap,
 
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_del_user
- 功能描述  : AP:删除user统计， 并更新保护模式
-             STA: 更新为无保护模式
- 输入参数  : pst_mac_vap  : mac vap结构体指针
-             pst_mac_user : mac user结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_del_user(mac_vap_stru *pst_mac_vap, mac_user_stru *pst_mac_user)
 {
     oal_uint32 ul_ret = OAL_SUCC;
@@ -952,21 +697,7 @@ oal_uint32 hmac_protection_del_user(mac_vap_stru *pst_mac_vap, mac_user_stru *ps
     return ul_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_obss_aging_ap
- 功能描述  : OBSS老化处理， 本函数定期对device每个VAP进行保护老化处理(5000ms 执行一次)
- 输入参数  : p_arg : 定时器传入的指针参数
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月28日
-    作    者   : w00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  hmac_protection_obss_update_timer(void *p_arg)
 {
     mac_device_stru     *pst_mac_device;
@@ -1004,21 +735,7 @@ oal_uint32  hmac_protection_obss_update_timer(void *p_arg)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_protection_obss_aging_ap
- 功能描述  : 启动OBSS老化处理定时器
- 输入参数  : pst_hmac_vap : hmac vap结构体指针
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月28日
-    作    者   : w00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 hmac_protection_start_timer(hmac_vap_stru  *pst_hmac_vap)
 {
     mac_device_stru                *pst_mac_device;

@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : mac_device.c
-  版 本 号   : 初稿
-  作    者   : huxiaotong
-  生成日期   : 2012年10月19日
-  最近修改   :
-  功能描述   : board、chip、device对应操作函数实现的源文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -55,21 +38,7 @@ oal_bool_enum_uint8 g_en_wmmac_switch = OAL_FALSE;
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : dmac_device_exit
- 功能描述  : 卸载device的操作函数(调用之前，已从chip上删除)
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 成功或者失败原因
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_exit(mac_device_stru *pst_device)
 {
     if (OAL_UNLIKELY(OAL_PTR_NULL == pst_device))
@@ -99,21 +68,7 @@ oal_uint32  mac_device_exit(mac_device_stru *pst_device)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_chip_exit
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_chip_exit(mac_board_stru *pst_board, mac_chip_stru *pst_chip)
 {
 #if 0
@@ -152,21 +107,7 @@ oal_uint32  mac_chip_exit(mac_board_stru *pst_board, mac_chip_stru *pst_chip)
 }
 
 
-/*****************************************************************************
- 函 数 名  : mac_board_exit
- 功能描述  : 释放全局变量包含的结构体
- 输入参数  : board对象指针
- 输出参数  : 无
- 返 回 值  : 成功或失败
- 调用函数  : mac_chip_destroy、oal_bit_find_first_bit_one_byte、oal_bit_clear_bit_one_byte
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年10月19日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_board_exit(mac_board_stru *pst_board)
 {
 #if 0
@@ -211,21 +152,7 @@ oal_uint32  mac_board_exit(mac_board_stru *pst_board)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_max_band
- 功能描述  : FPGA只支持最大40M的带宽
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月8日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 wlan_bw_cap_enum_uint8 mac_device_max_band(oal_void)
 {
 #if ((_PRE_WLAN_CHIP_ASIC != _PRE_WLAN_CHIP_VERSION))
@@ -235,21 +162,7 @@ wlan_bw_cap_enum_uint8 mac_device_max_band(oal_void)
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_init
- 功能描述  : 初始化device级别参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月8日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_ver, oal_uint8 uc_chip_id, oal_uint8 uc_device_id)
 {
     if (OAL_PTR_NULL == pst_mac_device)
@@ -366,11 +279,8 @@ oal_uint32  mac_device_init(mac_device_stru *pst_mac_device, oal_uint32 ul_chip_
     pst_mac_device->bit_su_bfmee     = OAL_TRUE;
     pst_mac_device->bit_rx_stbc      = 1;                       /* 支持2个空间流 */
 
-#if defined(_PRE_PRODUCT_ID_HI110X_DEV) || defined(_PRE_PRODUCT_ID_HI110X_HOST)
-    pst_mac_device->bit_mu_bfmee     = OAL_TRUE;
-#else
+    /* 关闭MU-BFMEE */
     pst_mac_device->bit_mu_bfmee     = OAL_FALSE;
-#endif
 
 #else
     pst_mac_device->bit_tx_stbc      = OAL_FALSE;
@@ -453,21 +363,7 @@ oal_uint32  mac_board_init(mac_board_stru *pst_board)
 }
 
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_another_up_vap
- 功能描述  : 寻找另一个UP状态的VAP
- 输入参数  : pst_mac_device: device
- 输出参数  : ppst_mac_vap  : vap
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年7月15日
-    作    者   : huchikun
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 mac_vap_stru * mac_device_find_another_up_vap(mac_device_stru *pst_mac_device, oal_uint8 uc_vap_id_self)
 {
     oal_uint8       uc_vap_idx;
@@ -502,21 +398,7 @@ mac_vap_stru * mac_device_find_another_up_vap(mac_device_stru *pst_mac_device, o
     return OAL_PTR_NULL;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_up_vap
- 功能描述  : 寻找处在UP状态的VAP
- 输入参数  : pst_mac_device: device
- 输出参数  : ppst_mac_vap  : vap
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_find_up_vap(mac_device_stru *pst_mac_device, mac_vap_stru **ppst_mac_vap)
 {
     oal_uint8       uc_vap_idx;
@@ -554,21 +436,7 @@ oal_uint32  mac_device_find_up_vap(mac_device_stru *pst_mac_device, mac_vap_stru
     return OAL_FAIL;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_2up_vap
- 功能描述  : 寻找处在UP状态的两个VAP
- 输入参数  : pst_mac_device: device
- 输出参数  : ppst_mac_vap  : vap
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_find_2up_vap(
                 mac_device_stru *pst_mac_device,
                 mac_vap_stru   **ppst_mac_vap1,
@@ -616,19 +484,7 @@ oal_uint32  mac_device_find_2up_vap(
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_fcs_dbac_state_check
- 功能描述  : 检查是否属于DBAC场景
- 输入参数  : pst_device : mac device结构体指针
- 输出参数  : 无
- 返 回 值  : MAC_FCS_DBAC_IGNORE or MAC_FCS_DBAC_NEED_CLOSE or MAC_FCS_DBAC_NEED_OPEN
- 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2016年6月29日
-    作    者   : d00223710
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 oal_uint32  mac_fcs_dbac_state_check(mac_device_stru *pst_mac_device)
 {
     mac_vap_stru *pst_mac_vap1;
@@ -649,21 +505,7 @@ oal_uint32  mac_fcs_dbac_state_check(mac_device_stru *pst_mac_device)
     return MAC_FCS_DBAC_NEED_OPEN;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_up_vap
- 功能描述  : 寻找处在UP状态的AP VAP
- 输入参数  : pst_mac_device: device
- 输出参数  : ppst_mac_vap  : vap
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月15日
-    作    者   : xiaoyuren
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_find_up_ap(mac_device_stru *pst_mac_device, mac_vap_stru **ppst_mac_vap)
 {
     oal_uint8       uc_vap_idx;
@@ -692,21 +534,7 @@ oal_uint32  mac_device_find_up_ap(mac_device_stru *pst_mac_device, mac_vap_stru 
     return OAL_FAIL;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_up_sta
- 功能描述  : 寻找处在UP状态的STA
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月23日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_find_up_sta(mac_device_stru *pst_mac_device, mac_vap_stru **ppst_mac_vap)
 {
     oal_uint8       uc_vap_idx;
@@ -739,21 +567,7 @@ oal_uint32  mac_device_find_up_sta(mac_device_stru *pst_mac_device, mac_vap_stru
 }
 
 
-/*****************************************************************************
- 函 数 名  : mac_device_find_up_p2p_go
- 功能描述  : 寻找处在UP状态的 P2P_GO
- 输入参数  : pst_mac_device: device
- 输出参数  : ppst_mac_vap  : vap
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月11日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_find_up_p2p_go(mac_device_stru *pst_mac_device, mac_vap_stru **ppst_mac_vap)
 {
     oal_uint8       uc_vap_idx;
@@ -782,21 +596,7 @@ oal_uint32  mac_device_find_up_p2p_go(mac_device_stru *pst_mac_device, mac_vap_s
     return OAL_FAIL;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_calc_up_vap_num
- 功能描述  : 计算up的vap个数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月17日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_calc_up_vap_num(mac_device_stru *pst_mac_device)
 {
     mac_vap_stru                  *pst_vap;
@@ -831,21 +631,7 @@ oal_uint32  mac_device_calc_up_vap_num(mac_device_stru *pst_mac_device)
 }
 
 #ifdef _PRE_WLAN_FEATURE_PROXYSTA
-/*****************************************************************************
- 函 数 名  : mac_find_main_proxysta
- 功能描述  : 查找main sta结构体
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年01月27日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 mac_vap_stru *mac_find_main_proxysta(mac_device_stru *pst_mac_device)
 {
     oal_uint8       uc_vap_idx;
@@ -879,21 +665,7 @@ mac_vap_stru *mac_find_main_proxysta(mac_device_stru *pst_mac_device)
 }
 #endif
 
-/*****************************************************************************
-函 数 名 : mac_device_calc_work_vap_num
-功能描述 : 计算work的vap个数
-输入参数 : 无
-输出参数 : 无
-返 回 值 :
-调用函数 :
-被调函数 :
 
-修改历史 :
-1.日 期 : 2015年12月2日
-作 者 : zhangyu
-修改内容 : 新生成函数
-
-*****************************************************************************/
 oal_uint32 mac_device_calc_work_vap_num(mac_device_stru *pst_mac_device)
 {
     mac_vap_stru *pst_vap;
@@ -919,21 +691,7 @@ oal_uint32 mac_device_calc_work_vap_num(mac_device_stru *pst_mac_device)
     return ul_work_vap_num;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_is_p2p_connected
- 功能描述  : 判断p2p设备是否关连
- 输入参数  : pst_mac_device: device
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月1日
-    作    者   : xiaoyuren
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_is_p2p_connected(mac_device_stru *pst_mac_device)
 {
     oal_uint8       uc_vap_idx;
@@ -956,21 +714,7 @@ oal_uint32  mac_device_is_p2p_connected(mac_device_stru *pst_mac_device)
     return OAL_FAIL;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_vap_id
- 功能描述  : 基于device增量或者删除一个vap，并且维护vap记数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月7日
-    作    者   : 张炜 64406
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void mac_device_set_vap_id(mac_device_stru *pst_mac_device, mac_vap_stru *pst_mac_vap,  oal_uint8 uc_vap_idx, wlan_vap_mode_enum_uint8 en_vap_mode, wlan_p2p_mode_enum_uint8 en_p2p_mode, oal_uint8 is_add_vap)
 {
 #ifdef _PRE_WLAN_FEATURE_P2P
@@ -1105,41 +849,13 @@ oal_void  mac_device_set_dfs(mac_device_stru *pst_mac_device, oal_bool_enum_uint
 #endif
 }
 #endif
-/*****************************************************************************
- 函 数 名  : mac_device_get_all_rates
- 功能描述  : 获取所有速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void* mac_device_get_all_rates(mac_device_stru *pst_dev)
 {
     return (oal_void *)pst_dev->st_mac_rates_11g;
 }
 #ifdef _PRE_WLAN_FEATURE_HILINK
-/*****************************************************************************
- 函 数 名  : mac_device_clear_fbt_scan_list
- 功能描述  : 清除fbt扫描列表
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月16日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_clear_fbt_scan_list(mac_device_stru *pst_mac_dev, oal_uint8 *puc_param)
 {
 
@@ -1171,21 +887,7 @@ oal_uint32  mac_device_clear_fbt_scan_list(mac_device_stru *pst_mac_dev, oal_uin
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_fbt_scan_sta
- 功能描述  : 侦听指定sta
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月18日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_uint32  mac_device_set_fbt_scan_sta(mac_device_stru *pst_mac_dev, mac_fbt_scan_sta_addr_stru *pst_fbt_scan_sta)
 {
@@ -1244,21 +946,7 @@ oal_uint32  mac_device_set_fbt_scan_sta(mac_device_stru *pst_mac_dev, mac_fbt_sc
 
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_fbt_scan_interval
- 功能描述  : 快速切换侦听时长配置
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月15日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_set_fbt_scan_interval(mac_device_stru *pst_mac_dev, oal_uint32 ul_scan_interval)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_info;
@@ -1280,21 +968,7 @@ oal_uint32  mac_device_set_fbt_scan_interval(mac_device_stru *pst_mac_dev, oal_u
 }
 
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_fbt_scan_channel
- 功能描述  : 快速切换侦听信道配置
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月15日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_set_fbt_scan_channel(mac_device_stru *pst_mac_dev, oal_uint8 uc_fbt_scan_channel)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_info;
@@ -1314,21 +988,7 @@ oal_uint32  mac_device_set_fbt_scan_channel(mac_device_stru *pst_mac_dev, oal_ui
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_fbt_scan_report_period
- 功能描述  : 快速切换侦听上报时间配置
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月15日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_set_fbt_scan_report_period(mac_device_stru *pst_mac_dev, oal_uint32 ul_fbt_scan_report_period)
 {
     mac_fbt_scan_mgmt_stru     *pst_fbt_scan_info;
@@ -1348,23 +1008,7 @@ oal_uint32  mac_device_set_fbt_scan_report_period(mac_device_stru *pst_mac_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_device_set_fbt_scan_enable
- 功能描述  : 配置快速切换侦听未关联用户功能开关
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             us_len     : 参数长度
-             puc_param  : 参数指针 1表示开启，0表示关闭
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月25日
-    作    者   : luolingzhi 00225940
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_device_set_fbt_scan_enable(mac_device_stru *pst_mac_device, oal_uint8 uc_cfg_fbt_scan_enable)
 {
 

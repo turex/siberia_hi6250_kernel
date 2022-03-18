@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : mac_resource.c
-  版 本 号   : 初稿
-  作    者   : c00178899
-  生成日期   : 2013年5月8日
-  最近修改   :
-  功能描述   : MAC资源池主文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年5月8日
-    作    者   : c00178899
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -62,21 +45,7 @@ mac_res_stru    g_st_mac_res;
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : mac_res_check_spec
- 功能描述  : 初始化MAC资源池内容
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_check_spec(oal_void)
 {
     oal_uint32  ul_ret = OAL_SUCC;
@@ -144,21 +113,7 @@ oal_uint32  mac_res_check_spec(oal_void)
 
 #if (defined(_PRE_PRODUCT_ID_HI110X_DEV))
 
-/*****************************************************************************
- 函 数 名  : mac_res_user_init
- 功能描述  : 用户资源池初始化
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_user_init(oal_void)
 {
     oal_uint16      us_max_asoc_user_per_board;
@@ -288,21 +243,7 @@ oal_uint32  mac_res_user_init(oal_void)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : mac_res_exit
- 功能描述  : 资源池退出，释放动态申请的内存
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_exit(void)
 {
     OAL_MEM_FREE((g_st_mac_res.st_user_res.pst_user_info), OAL_TRUE);
@@ -319,21 +260,7 @@ oal_uint32  mac_res_exit(void)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : mac_res_init
- 功能描述  : 初始化MAC资源池内容
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_init(oal_void)
 {
     oal_uint        ul_loop;
@@ -394,21 +321,7 @@ oal_uint32  mac_res_init(oal_void)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_free_mac_user
- 功能描述  : 释放对应HMAC USER的内存
- 输入参数  : 对应HMAC USER内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月9日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_mac_user(oal_uint16 us_idx)
 {
     if (OAL_UNLIKELY(us_idx >= MAC_RES_MAX_USER_NUM))
@@ -433,21 +346,7 @@ oal_uint32  mac_res_free_mac_user(oal_uint16 us_idx)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_free_hmac_vap
- 功能描述  : 释放对应HMAC VAP的内存
- 输入参数  : 对应HMAC VAP内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月9日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_mac_vap(oal_uint32 ul_idx)
 {
     if (OAL_UNLIKELY(ul_idx >= WLAN_VAP_SUPPORT_MAX_NUM_LIMIT))
@@ -477,21 +376,7 @@ oal_uint32  mac_res_free_mac_vap(oal_uint32 ul_idx)
 mac_res_mem_user_stru g_ast_mac_user_res[MAC_RES_MAX_USER_NUM];
 #endif
 
-/*****************************************************************************
- 函 数 名  : mac_res_user_init
- 功能描述  : 用户资源池初始化
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_user_init(oal_void)
 {
     oal_uint16      us_max_asoc_user_per_board;
@@ -631,21 +516,7 @@ oal_uint32  mac_res_user_init(oal_void)
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : mac_res_exit
- 功能描述  : 资源池退出，释放动态申请的内存
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_exit(void)
 {
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1102_HOST)
@@ -671,21 +542,7 @@ oal_uint32  mac_res_exit(void)
 }
 
 
-/*****************************************************************************
- 函 数 名  : mac_res_init
- 功能描述  : 初始化MAC资源池内容
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : OAL_SUCC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_init(oal_void)
 {
     oal_uint        ul_loop;
@@ -748,21 +605,7 @@ oal_uint32  mac_res_init(oal_void)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_free_mac_user
- 功能描述  : 释放对应HMAC USER的内存
- 输入参数  : 对应HMAC USER内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月9日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_mac_user(oal_uint16 us_idx)
 {
     if (OAL_UNLIKELY(us_idx >= MAC_RES_MAX_USER_NUM))
@@ -790,21 +633,7 @@ oal_uint32  mac_res_free_mac_user(oal_uint16 us_idx)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_free_hmac_vap
- 功能描述  : 释放对应HMAC VAP的内存
- 输入参数  : 对应HMAC VAP内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月9日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_mac_vap(oal_uint32 ul_idx)
 {
     if (OAL_UNLIKELY(ul_idx >= WLAN_VAP_SUPPORT_MAX_NUM_LIMIT))
@@ -835,21 +664,7 @@ oal_uint32  mac_res_free_mac_vap(oal_uint32 ul_idx)
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : mac_res_free_hash
- 功能描述  : 释放对应HASH的内存
- 输入参数  : 对应HASH内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_hash(oal_uint32 ul_hash_idx)
 {
     if (OAL_UNLIKELY(ul_hash_idx >= (oal_uint32)(g_us_max_asoc_user * MAC_RES_MAX_DEV_NUM)))
@@ -879,21 +694,7 @@ oal_uint32  mac_res_free_hash(oal_uint32 ul_hash_idx)
 
 
 
-/*****************************************************************************
- 函 数 名  : mac_set_max_asoc_user
- 功能描述  : 设置最大关联用户数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_set_max_asoc_user(oal_uint16 us_num)
 {
     g_us_max_asoc_user = us_num;
@@ -903,21 +704,7 @@ oal_uint32  mac_res_set_max_asoc_user(oal_uint16 us_num)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_res_alloc_dmac_dev
- 功能描述  : 获取一个DEV资源
- 输入参数  : 无
- 输出参数  : DEV内存索引值
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
  oal_uint32  mac_res_alloc_dmac_dev(oal_uint8    *puc_dev_idx)
 {
     oal_uint  ul_dev_idx_temp;
@@ -948,21 +735,7 @@ oal_uint32  mac_res_set_max_asoc_user(oal_uint16 us_num)
     return OAL_SUCC;
 }
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : mac_res_alloc_hmac_dev
- 功能描述  : 获取一个DEV资源
- 输入参数  : 无
- 输出参数  : DEV内存索引值
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月25日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
  oal_uint32  mac_res_alloc_hmac_dev(oal_uint8    *puc_dev_idx)
 {
     oal_uint  ul_dev_idx_temp;
@@ -993,21 +766,7 @@ oal_uint32  mac_res_set_max_asoc_user(oal_uint16 us_num)
     return OAL_SUCC;
 }
 #else
-/*****************************************************************************
- 函 数 名  : mac_res_alloc_hmac_dev
- 功能描述  : 获取一个DEV资源
- 输入参数  : 无
- 输出参数  : DEV内存索引值
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_alloc_hmac_dev(oal_uint32    ul_dev_idx)
 {
     if (OAL_UNLIKELY(ul_dev_idx >= MAC_RES_MAX_DEV_NUM))
@@ -1023,21 +782,7 @@ oal_uint32  mac_res_alloc_hmac_dev(oal_uint32    ul_dev_idx)
     return OAL_SUCC;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : mac_res_free_dev
- 功能描述  : 释放对应DEV的内存
- 输入参数  : 对应DEV内存索引
- 输出参数  : 无
- 返 回 值  : OAL_SUCC/OAL_FAIL
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月8日
-    作    者   : chenwenfeng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  mac_res_free_dev(oal_uint32 ul_dev_idx)
 {
     if (OAL_UNLIKELY(ul_dev_idx >= MAC_RES_MAX_DEV_NUM))
@@ -1068,21 +813,7 @@ oal_uint32  mac_res_free_dev(oal_uint32 ul_dev_idx)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : mac_get_max_asoc_user
- 功能描述  : 读取最大关联用户数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 最大关联用户数
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #if (!defined(_PRE_PRODUCT_ID_HI110X_DEV))
     OAL_INLINE oal_uint16  mac_res_get_max_asoc_user(oal_void)
 #else

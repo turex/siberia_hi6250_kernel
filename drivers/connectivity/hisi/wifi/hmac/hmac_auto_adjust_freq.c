@@ -1,23 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_auto_adjust_freq.c
-  版 本 号   : 初稿
-  作    者   : wangtd
-  生成日期   : 2015年3月4日
-  最近修改   :
-  功能描述   : 性能维测
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2015年3月4日
-    作    者   : Wlan_mib_temp
-    修改内容   : 创建文件
-  2.日    期   : 2015年8月15日
-    作    者   : sunxiaolin
-    修改内容   : 添加thruput bypass TX方向维测点
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -56,9 +37,17 @@ extern "C" {
 #undef  THIS_FILE_ID
 #define THIS_FILE_ID OAM_FILE_ID_MAC_AUTO_ADJUST_FREQ_C
 
+
+#define HMAC_AUTO_FREQ_NORMAL_CPU   0
+#define HMAC_AUTO_FREQ_BUSY_CPU     1
+
+#define HMAC_AUTO_FREQ_CPU_NUM      4
+
 /*****************************************************************************
   2 全局变量定义
 *****************************************************************************/
+extern hmac_rxdata_thread_stru     g_st_rxdata_thread;
+
 #ifndef WIN32
 OAL_STATIC oal_uint32 pre_jiffies            = 0;
 OAL_STATIC oal_uint32 g_adjust_count            = 0;
@@ -131,22 +120,7 @@ oal_uint32 g_ul_orig_ddr_max_freq;
 #define spin_unlock_bh(mux)
 #endif
 
-/*****************************************************************************
- 函 数 名  : hmac_set_auto_freq_mod
- 功能描述  : 设置auto freq使能
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32 * pst_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 hmac_set_auto_freq_mod(oal_uint8 uc_freq_enable)
 {
     g_freq_lock_control.uc_lock_mod = uc_freq_enable;
@@ -161,22 +135,7 @@ oal_uint8 hmac_set_auto_freq_mod(oal_uint8 uc_freq_enable)
     }
     return 0;
 }
-/*****************************************************************************
- 函 数 名  : hmac_set_auto_freq_debug_print
- 功能描述  : 设置auto freq使能
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32 * pst_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_set_auto_freq_debug_print(oal_bool_enum_uint8 en_debug_print)
 {
     OAM_WARNING_LOG1(0,OAM_SF_ANY,"{hmac_set_auto_freq_debug_print en_debug_print = %d!}",g_freq_lock_control.en_debug_print);
@@ -184,21 +143,7 @@ oal_bool_enum_uint8 hmac_set_auto_freq_debug_print(oal_bool_enum_uint8 en_debug_
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_set_auto_freq_process_func
- 功能描述  : 设置hcc中自动调频的回调函数
- 输入参数  : hmac_auto_freq_process_func p_func
- 输出参数  : 无
- 返 回 值  : oal_int32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月18日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32 hmac_set_auto_freq_process_func(oal_void)
 {
     struct alg_process_func_handler* pst_alg_process_func_handler;
@@ -223,22 +168,7 @@ oal_int32 hmac_set_auto_freq_process_func(oal_void)
 }
 
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
-/*****************************************************************************
- 函 数 名  : hmac_get_cpu_freq_raw
- 功能描述  : 获取CPU主频值
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32 * pst_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_get_cpu_freq_raw(oal_uint8 uc_freq_type, oal_uint32 * pst_ul_freq_value)
 {
     struct file* filp = NULL;
@@ -273,22 +203,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_get_cpu_freq_raw(oal_uint8 uc_fre
     return 0;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_get_cpu_freq_raw
- 功能描述  : 设置CPU主频值
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32 * pst_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_set_cpu_freq_raw(oal_uint8 uc_freq_type, oal_uint32 ul_freq_value)
 {
     struct file* filp = NULL;
@@ -320,22 +235,7 @@ oal_bool_enum_uint8 hmac_set_cpu_freq_raw(oal_uint8 uc_freq_type, oal_uint32 ul_
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_get_ddr_freq_raw
- 功能描述  : 获取DDR主频值
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32* ul_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_get_ddr_freq_raw(oal_uint8 uc_freq_type, oal_uint32 * pst_ul_freq_value)
 {
     struct file* filp = NULL;
@@ -371,22 +271,7 @@ OAL_STATIC OAL_INLINE oal_bool_enum_uint8 hmac_get_ddr_freq_raw(oal_uint8 uc_fre
 }
 
 
-/*****************************************************************************
- 函 数 名  : hmac_set_ddr_freq_raw
- 功能描述  : 设置DDR主频值
- 输入参数  : oal_uint8 uc_freq_type
-             oal_uint32 ul_freq_value
- 输出参数  : 无
- 返 回 值  : OAL_STATIC OAL_INLINE oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_bool_enum_uint8 hmac_set_ddr_freq_raw(oal_uint8 uc_freq_type, oal_uint32 ul_freq_value)
 {
 #if 0
@@ -420,8 +305,63 @@ oal_bool_enum_uint8 hmac_set_ddr_freq_raw(oal_uint8 uc_freq_type, oal_uint32 ul_
     return 0;
 }
 #endif
+
+
+oal_void  hmac_auto_freq_set_thread_affinity(oal_uint32 ul_total_sdio_rate)
+{
+#ifdef CONFIG_NR_CPUS
+#if (CONFIG_NR_CPUS > HMAC_AUTO_FREQ_CPU_NUM)
+    OAL_STATIC oal_uint32 ul_current_cpu = HMAC_AUTO_FREQ_NORMAL_CPU;
+    struct cpumask cpu_mask;
+
+    if ((ul_total_sdio_rate >= g_host_speed_freq_level[FREQ_HIGHEST].ul_speed_level)
+        && (HMAC_AUTO_FREQ_NORMAL_CPU == ul_current_cpu))
+    {
+        cpumask_setall(&cpu_mask);
+        ul_current_cpu = HMAC_AUTO_FREQ_BUSY_CPU;
+        /* 设置wifi 线程到CPU4~7 */
+        cpumask_clear_cpu(0, &cpu_mask);
+        cpumask_clear_cpu(1, &cpu_mask);
+        cpumask_clear_cpu(2, &cpu_mask);
+        cpumask_clear_cpu(3, &cpu_mask);
+    }
+    else if ((ul_total_sdio_rate <= g_host_speed_freq_level[FREQ_HIGHER].ul_speed_level)
+        && (HMAC_AUTO_FREQ_BUSY_CPU == ul_current_cpu))
+    {
+        cpumask_setall(&cpu_mask);
+        ul_current_cpu = HMAC_AUTO_FREQ_NORMAL_CPU;
+        /* 设置wifi 线程到CPU1~3 */
+        cpumask_clear_cpu(0, &cpu_mask);
+        cpumask_clear_cpu(4, &cpu_mask);
+        cpumask_clear_cpu(5, &cpu_mask);
+        cpumask_clear_cpu(6, &cpu_mask);
+        cpumask_clear_cpu(7, &cpu_mask);
+    }
+    else
+    {
+        return;
+    }
+
+    if (OAL_PTR_NULL != g_st_rxdata_thread.pst_rxdata_thread)
+    {
+        set_cpus_allowed_ptr(g_st_rxdata_thread.pst_rxdata_thread, &cpu_mask);
+    }
+
+    if (OAL_PTR_NULL != hcc_get_default_handler()->hcc_transer_info.hcc_transfer_thread)
+    {
+        set_cpus_allowed_ptr(hcc_get_default_handler()->hcc_transer_info.hcc_transfer_thread, &cpu_mask);
+    }
+#endif  /* CONFIG_NR_CPUS > HMAC_AUTO_FREQ_CPU_NUM */
+#endif  /* CONFIG_NR_CPUS */
+}
+
+
 oal_void hmac_adjust_freq_to_level(oal_void)
 {
+    /* 根据帧速率调整wifi 线程绑定大核/小核 */
+    hmac_auto_freq_set_thread_affinity(g_freq_lock_control.ul_total_sdio_rate);
+
+#if 0
     oal_uint8 uc_req_lock_level = g_freq_lock_control.uc_req_lock_level;
 
     OAM_WARNING_LOG2(0,OAM_SF_PWR,"{hmac_adjust_freq_to_level: freq to [%d][%d]}",g_freq_lock_control.uc_curr_lock_level,uc_req_lock_level);
@@ -438,18 +378,10 @@ oal_void hmac_adjust_freq_to_level(oal_void)
     }
 
     g_freq_lock_control.uc_curr_lock_level = uc_req_lock_level;
+#endif
 }
 
-/*****************************************************************************
- 函 数 名  : hwifi_perform_calc_rwtotal_throughput
- 功能描述  : 统计SDIO层所有数据(包括收发)的吞吐量
-             返回SDIO层的收发速率
- 修改历史      :
-  1.日    期   : 2013年8月14日
-    作    者   : 张华 00209041
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 void hmac_perform_calc_rwtotal_throughput(oal_uint32 ul_rxtx_total,oal_uint32 ul_sdio_dur_us)
 {
     if(0 != ul_sdio_dur_us)
@@ -575,21 +507,7 @@ oal_void hmac_adjust_freq(oal_void)
         g_adjust_count = 0;
     }
 }
-/*****************************************************************************
- 函 数 名  : hmac_wifi_init_freq_threshold
- 功能描述  : 初始化门限值,和定制化接口
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : oal_void
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月17日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_wifi_init_freq_threshold(void)
 {
 }
@@ -615,21 +533,7 @@ oal_void hmac_wifi_auto_ddr_exit(oal_void)
     g_pst_wifi_auto_ddr = NULL;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : hmac_wifi_auto_freq_ctrl_init
- 功能描述  : 调频模块初始化
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_wifi_auto_freq_ctrl_init(void)
 {
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
@@ -660,21 +564,7 @@ oal_void hmac_wifi_auto_freq_ctrl_init(void)
     }
 #endif
 }
-/*****************************************************************************
- 函 数 名  : hmac_wifi_auto_freq_ctrl_deinit
- 功能描述  : 调频模块去初始化
- 输入参数  : void
- 输出参数  : 无
- 返 回 值  : oal_bool_enum_uint8
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月14日
-    作    者   : zengjun 00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void hmac_wifi_auto_freq_ctrl_deinit(void)
 {
 #if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
@@ -729,6 +619,12 @@ oal_uint32 hmac_hcc_auto_freq_process(oal_void)
     {
         hmac_adjust_freq();
     }
+
+#ifdef _PRE_WLAN_TCP_OPT
+    /* 根据流量pps 来控制 启动/关闭 TCP_ACK 优化功能 */
+    hmac_tcp_ack_opt_switch_ctrol(ul_return_total_count);
+#endif  /* _PRE_WLAN_TCP_OPT */
+
     g_ul_wifi_rxtx_total = 0;
     return ul_return_total_count;
 }

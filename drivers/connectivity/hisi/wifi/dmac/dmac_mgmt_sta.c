@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : dmac_mgmt_sta.c
-  版 本 号   : 初稿
-  作    者   : zhangheng
-  生成日期   : 2013年6月7日
-  最近修改   :
-  功能描述   : sta侧管理帧处理
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年6月7日
-    作    者   : zhangheng
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -57,23 +40,7 @@ extern "C" {
   3 函数实现
 *****************************************************************************/
 
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_wmm_update_edca_machw_sta
- 功能描述  : STA模式下VAP更新EDCA寄存器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 成功或错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月25日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-  2.日    期   : 2015年4月29日
-    作    者   : s00304087
-    修改内容   : 02新增同步hmac mib参数
-*****************************************************************************/
 oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_mem)
 {
     frw_event_stru                      *pst_event;
@@ -119,8 +86,7 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
     {
         pst_dmac_sta->st_vap_base_info.pst_mib_info->st_wlan_mib_sta_config.en_dot11QosOptionImplemented = OAL_FALSE;
 
-        /* DTS2016090905626 Del Code 多VAP共存时STA不支持WMM，关闭硬件EDCA功能，GO启动支持WMM，未开启硬件EDCA功能，
-           导致硬件仅发送VO队列数据，其他队列数据不发送，内存耗尽 */
+        
    #if 0
         /*去使能EDCA*/
         hal_disable_machw_edca(pst_device->pst_device_stru);
@@ -213,17 +179,7 @@ oal_uint32 dmac_mgmt_wmm_update_edca_machw_sta(frw_event_mem_stru  *pst_event_me
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_chan_adjust_bandwidth_sta
- 功能描述  : 根据AP和(STA)自身的能力，计算准备要切换到的带宽模式
- 输入参数  : pst_mac_vap  : MAC VAP结构体指针，指向STA
- 输出参数  : pen_bandwidth: 更新后的带宽模式
- 返 回 值  : 无+ 调用函数  :+ 被调函数  :
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 OAL_STATIC oal_void  dmac_chan_adjust_bandwidth_sta(mac_vap_stru *pst_mac_vap, wlan_channel_bandwidth_enum_uint8 *pen_bandwidth)
 {
     wlan_channel_bandwidth_enum_uint8   en_curr_bandwidth;
@@ -281,21 +237,7 @@ OAL_STATIC oal_void  dmac_chan_adjust_bandwidth_sta(mac_vap_stru *pst_mac_vap, w
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_chan_multi_select_channel_mac
- 功能描述  : 遍历device下所有VAP，设置SW/MAC/PHY/RF中的信道和带宽，使VAP工作在新信道上
- 输入参数  : pst_mac_vap : MAC VAP结构体指针
-             uc_channel  : 将要被设置的信道号
-             en_bandwidth: 将要被设置的带宽模式
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2014年4月3日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint8 uc_channel, wlan_channel_bandwidth_enum_uint8 en_bandwidth)
 {
     oal_uint8          uc_vap_idx;
@@ -400,35 +342,21 @@ oal_void  dmac_chan_multi_select_channel_mac(mac_vap_stru *pst_mac_vap, oal_uint
         }
     }
 }
+mac_channel_stru g_st_old_channel = {0};    /* vap所在的信道 */
 
-/*****************************************************************************
- 函 数 名  : dmac_chan_sta_switch_channel
- 功能描述  : STA切换信道
- 输入参数  : pst_mac_vap: MAC VAP结构体指针，指向sta
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-*****************************************************************************/
 oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
 {
     wlan_channel_bandwidth_enum_uint8   en_new_bandwidth = WLAN_BAND_WIDTH_20M;
     wlan_bw_cap_enum_uint8              en_bwcap_vap;
     mac_user_stru                      *pst_mac_user;
     dmac_user_stru                     *pst_dmac_user;
-
-    mac_channel_stru                    st_old_channel;    /* vap所在的信道 */
     mac_scan_req_stru                   st_scan_req_params;
 
     if (WLAN_BAND_WIDTH_BUTT != pst_mac_vap->st_ch_switch_info.en_new_bandwidth)
     {
         dmac_chan_adjust_bandwidth_sta(pst_mac_vap, &en_new_bandwidth);
     }
-    oal_memcopy(&st_old_channel, &pst_mac_vap->st_channel, OAL_SIZEOF(st_old_channel));
+    oal_memcopy(&g_st_old_channel, &pst_mac_vap->st_channel, OAL_SIZEOF(g_st_old_channel));
 
     /* 禁止硬件全部发送直到STA信道切换完毕 */
     dmac_chan_disable_machw_tx(pst_mac_vap);
@@ -481,27 +409,23 @@ oal_void  dmac_chan_sta_switch_channel(mac_vap_stru *pst_mac_vap)
         dmac_tx_delete_ba(pst_dmac_user);
     }
 
-    dmac_trigger_csa_scan(&st_scan_req_params, pst_mac_vap, &st_old_channel);
+    dmac_trigger_csa_scan(&st_scan_req_params, pst_mac_vap, &g_st_old_channel);
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_handle_tbtt_chan_mgmt_sta
- 功能描述  : STA侧TBTT中断中进行信道管理
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针，指向sta
- 输出参数  : 无+ 返 回 值  : 无+ 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2014年3月13日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
 {
     mac_vap_stru *pst_mac_vap = &(pst_dmac_vap->st_vap_base_info);
+    mac_scan_req_stru st_scan_req_params;
 
     if ((OAL_FALSE == mac_mib_get_SpectrumManagementImplemented(pst_mac_vap)) || (OAL_TRUE == pst_mac_vap->st_ch_switch_info.bit_bad_ap))
     {
         return;
+    }
+
+    if ((OAL_TRUE == g_csa_scan_flag) && (pst_mac_vap->st_ch_switch_info.uc_new_ch_swt_cnt == 0) &&
+        (OAL_FALSE == pst_mac_vap->st_ch_switch_info.en_channel_swt_cnt_zero)) {
+        dmac_trigger_csa_scan(&st_scan_req_params, pst_mac_vap, &g_st_old_channel);
     }
 
     /* 如果AP发送的CSA IE中的"信道切换计数"为零，则立即切换信道 */
@@ -543,17 +467,7 @@ oal_void  dmac_handle_tbtt_chan_mgmt_sta(dmac_vap_stru *pst_dmac_vap)
     }
 }
 
-/*****************************************************************************
- 函 数 名  : dmac_mgmt_is_active_htsta
- 功能描述  : 判断sta是否为活跃sta
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针，指向sta
- 输出参数  : 无+ 返 回 值  : 无+ 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2015年3月30日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 oal_uint8  dmac_mgmt_is_active_htsta(mac_vap_stru *pst_mac_vap)
 {
     //TODO 目前该函数始终返回true, 如有必要在此处加上判断sta是否为活跃ht sta的代码
@@ -561,17 +475,7 @@ oal_uint8  dmac_mgmt_is_active_htsta(mac_vap_stru *pst_mac_vap)
 }
 
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-/*****************************************************************************
- 函 数 名  : dmac_mgmg_need_obss_scan
- 功能描述  : 判断是否需要启动obss scan
- 输入参数  : pst_hmac_vap: HMAC VAP结构体指针，指向sta
- 输出参数  : 无+ 返 回 值  : 无+ 调用函数  :
- 被调函数  :
- 修改历史      :
-  1.日    期   : 2015年3月30日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 oal_uint8  dmac_mgmt_need_obss_scan(mac_vap_stru *pst_mac_vap)
 {
     mac_device_stru                     *pst_device;
@@ -597,7 +501,6 @@ oal_uint8  dmac_mgmt_need_obss_scan(mac_vap_stru *pst_mac_vap)
     }
 #endif
 
-    //l00311403 当前vht不启用obss扫描,关联状态下vap有up和pause两种状态,扫描时pause,obss扫描会被停掉
     if ( (WLAN_VAP_MODE_BSS_STA == pst_mac_vap->en_vap_mode) &&
          ((MAC_VAP_STATE_UP == pst_mac_vap->en_vap_state) || (MAC_VAP_STATE_PAUSE == pst_mac_vap->en_vap_state)) &&
          (WLAN_BAND_2G == pst_mac_vap->st_channel.en_band)&&
@@ -612,22 +515,7 @@ oal_uint8  dmac_mgmt_need_obss_scan(mac_vap_stru *pst_mac_vap)
 
     return OAL_FALSE;
 }
-/*****************************************************************************
- 函 数 名  : dmac_ie_proc_obss_scan_ie
- 功能描述  : 处理Overlapping BSS Scan Parameters IE，并更新STA相应MIB项
- 输入参数  : pst_mac_vap: MAC VAP结构体指针
-             puc_payload: 指向Overlapping BSS Scan Parameters IE的指针
- 输出参数  : 无
- 返 回 值  :
- 调用函数  : OAL_SUCC或其它错误码
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月6日
-    作    者   : liuzhengqi
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  dmac_ie_proc_obss_scan_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_payload)
 {
     dmac_vap_stru *pst_dmac_vap;
@@ -667,27 +555,7 @@ oal_uint32  dmac_ie_proc_obss_scan_ie(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_
     return OAL_SUCC;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_update_ht_params
- 功能描述  : STA收到Beacon帧后，处理HT相关信息元素
- 输入参数  : pst_mac_vap    : MAC VAP结构体指针，指向STA
-             puc_payload    : 指向Beacon帧体的指针
-             us_frame_len   : Beacon帧体的长度(不包括帧头)
-             us_frame_offset: Beacon帧中第一个IE相对帧体地址的偏移
- 输出参数  : pst_mac_user   : MAC USER结构体指针，指向AP
- 返 回 值  : oal_bool_enum_uint8:相关信息是否有改变，是否需要同步?
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月3日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-  2.日    期   : 2016年4月6日
-    作    者   : liuzhengqi
-    修改内容   : 下移到device
-
-*****************************************************************************/
 oal_uint32 dmac_sta_up_update_ht_params(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_payload,
                                                    oal_uint16 us_frame_len,mac_user_stru *pst_mac_user)
 {
@@ -725,26 +593,7 @@ oal_uint32 dmac_sta_up_update_ht_params(mac_vap_stru *pst_mac_vap, oal_uint8 *pu
 
     return ul_change;
 }
-/*****************************************************************************
- 函 数 名  : dmac_sta_up_update_vht_params
- 功能描述  : STA收到Beacon帧后，处理VHT相关信息元素
- 输入参数  : pst_mac_vap    : MAC VAP结构体指针，指向STA
-             puc_payload    : 指向Beacon帧体的指针
-             us_frame_len   : Beacon帧体的长度(不包括帧头)
-             us_frame_offset: Beacon帧中第一个IE相对帧体地址的偏移
- 输出参数  : MAC USER结构体指针，指向AP
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月18日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-  2.日    期   : 2016年4月6日
-    作    者   : liuzhengqi
-    修改内容   : 下移到device
-*****************************************************************************/
 oal_uint32 dmac_sta_up_update_vht_params(mac_vap_stru *pst_mac_vap, oal_uint8 *puc_payload,
                                                    oal_uint16   us_frame_len,mac_user_stru *pst_mac_user)
 {

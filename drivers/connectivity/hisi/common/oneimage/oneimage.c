@@ -48,7 +48,7 @@ bool is_my_chip(void)
 {
 #ifdef CONFIG_HWCONNECTIVITY
     if (!isMyConnectivityChip(CHIP_TYPE_HI110X)) {
-        PS_PRINT_ERR("cfg dev board chip type is not match, skip driver init\n");
+        PS_PRINT_ERR("cfg dev board chip type is not match hisi, skip driver init\n");
         return false;
     } else {
         PS_PRINT_INFO("cfg dev board type is matched with hisi, continue\n");
@@ -58,9 +58,40 @@ bool is_my_chip(void)
     return true;
 #endif
 }
-#endif
 
-#if (_PRE_OS_VERSION_LINUX == _PRE_OS_VERSION)
+bool is_hisi_chiptype(int32 chip)
+{
+#ifdef CONFIG_HWCONNECTIVITY
+    int32 ret= BOARD_FAIL;
+
+    if(false == is_my_chip())
+    {
+        return false;
+    }
+
+    ret = get_device_board_version();
+    if (BOARD_FAIL == ret)
+    {
+        PS_PRINT_ERR("sub chip type init fail\n");
+         return false;
+    }
+
+    if (chip != g_device_subchip_type)
+    {
+        PS_PRINT_ERR("hi11xx sub chip type is not match, skip driver init\n");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+#else
+    return true;
+#endif
+}
+
+EXPORT_SYMBOL(is_hisi_chiptype);
+
 bool is_my_nfc_chip(void)
 {
 #ifdef CONFIG_HWCONNECTIVITY

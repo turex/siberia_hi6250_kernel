@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : hmac_ext_if.h
-  版 本 号   : 初稿
-  作    者   : 康国昌
-  生成日期   : 2012年9月20日
-  最近修改   :
-  功能描述   : hmac对外公共接口头文件
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2012年9月20日
-    作    者   : 康国昌
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 #ifndef __HMAC_EXT_IF_H__
 #define __HMAC_EXT_IF_H__
@@ -372,6 +355,27 @@ typedef struct
     oal_uint8                          mgmt_frame_id;
 }oal_mgmt_tx_stru;
 
+#ifdef _PRE_WLAN_WAKEUP_SRC_PARSE
+extern   oal_uint8   g_uc_print_data_wakeup;
+extern   oal_void    hmac_parse_packet(oal_netbuf_stru *pst_netbuf_eth);
+
+#define WIFI_WAKESRC_TAG "plat:wifi_wake_src,"
+#define IPADDR(addr) \
+        ((oal_uint8*)&addr)[0], \
+        ((oal_uint8*)&addr)[3]
+
+#define IPADDR6(addr) \
+        ntohs((addr).s6_addr16[0]), \
+        ntohs((addr).s6_addr16[7])
+
+#define IPV6_ADDRESS_SIZEINBYTES 0x10
+
+struct ieee8021x_hdr {
+    oal_uint8 version;
+    oal_uint8 type;
+    oal_uint16 length;
+};
+#endif
 
 /*****************************************************************************
   8 UNION定义
@@ -540,7 +544,7 @@ extern oal_uint32  hmac_config_set_freq_skew(mac_vap_stru *pst_mac_vap, oal_uint
 #ifdef _PRE_DEBUG_MODE
 extern oal_uint32  hmac_config_adjust_ppm(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 #endif //#ifdef _PRE_DEBUG_MODE
-extern oal_uint32  hmac_config_pcie_pm_level(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
+extern oal_uint32  hmac_config_rx_filter_frag(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 extern oal_uint32  hmac_config_reg_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 extern oal_uint32  hmac_config_dbb_scaling_amend(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 
@@ -944,6 +948,11 @@ oal_uint32 hmac_config_vendor_cmd_get_channel_list(mac_vap_stru *pst_mac_vap, oa
 extern oal_uint32  hmac_config_get_ant_info(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 extern oal_uint32  hmac_config_double_ant_switch(mac_vap_stru *pst_mac_vap, oal_uint16 us_len, oal_uint8 *puc_param);
 #endif
+
+#ifdef _PRE_WLAN_WAKEUP_SRC_PARSE
+extern  oal_void hmac_print_data_wakeup_en(oal_bool_enum_uint8 uc_en);
+#endif
+
 #ifdef __cplusplus
     #if __cplusplus
         }

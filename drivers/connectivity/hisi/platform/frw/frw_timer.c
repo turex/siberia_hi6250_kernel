@@ -1,21 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2011, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : frw_timer.c
-  版 本 号   : 初稿
-  作    者   : t00231215
-  生成日期   : 2013年7月5日
-  最近修改   :
-  功能描述   : 定时器处理
-  函数列表   :
-  修改历史   :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 创建文件
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -63,21 +46,7 @@ OAL_STATIC OAL_INLINE oal_void __frw_timer_immediate_destroy_timer(oal_uint32 ul
                                                                                oal_uint32 ul_line_num,
                                                                                frw_timeout_stru *pst_timeout);
 
-/*****************************************************************************
- 函 数 名  : frw_timer_sys_start
- 功能描述  : frw系统timer启动，wifi开启的时候调用。加spinlock锁保护全局open标记。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年1月10日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_void  frw_timer_sys_start(void)
 {
@@ -100,22 +69,7 @@ oal_void  frw_timer_sys_start(void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_sys_stop
- 功能描述  : frw系统timer停止，wifi close的时候调用。加spinlock锁保护全局open标记。
-             oal_timer_delete_sync接口按内核要求需要放在spinlock锁外面，否则会死锁。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年1月10日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_void  frw_timer_sys_stop(void)
 {
@@ -137,22 +91,7 @@ oal_void  frw_timer_sys_stop(void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_sys_restart
- 功能描述  : frw系统timer重启，timer回调接口中调用来重新启动timer。加spinlock锁保护全局open标记。
-             当open标记为true时，才重启。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2017年1月10日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_void  frw_timer_sys_restart(void)
 {
@@ -174,21 +113,7 @@ oal_void  frw_timer_sys_restart(void)
 
 
 
-/*****************************************************************************
- 函 数 名  : frw_timer_init
- 功能描述  : 初始化定时器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月8日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_init(oal_uint32 ul_delay, oal_timer_func p_func, oal_uint ui_arg)
 {
     oal_uint32 ul_core_id;
@@ -208,41 +133,13 @@ oal_void  frw_timer_init(oal_uint32 ul_delay, oal_timer_func p_func, oal_uint ui
 #endif
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_exit
- 功能描述  : 定时器退出函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月25日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_exit(oal_void)
 {
     oal_timer_delete_sync(&g_st_timer);
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_restart
- 功能描述  : 重启sys timer
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月25日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_restart(oal_void)
 {
     /* 重启定时器*/
@@ -256,21 +153,7 @@ oal_void  frw_timer_restart(oal_void)
     g_ul_need_restart = OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_stop
- 功能描述  : 停止sys timer
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年2月25日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_void  frw_timer_stop(oal_void)
 {
@@ -283,21 +166,7 @@ oal_void  frw_timer_stop(oal_void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_dump
- 功能描述  : 将所有定时器dump出来
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年9月2日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_void  frw_timer_dump(oal_uint32 ul_core_id)
 {
     oal_dlist_head_stru   *pst_timeout_entry;
@@ -342,21 +211,7 @@ OAL_STATIC oal_void  frw_timer_dump(oal_uint32 ul_core_id)
 
 
 #if 0
-/*****************************************************************************
- 函 数 名  : frw_timer_check_list
- 功能描述  : 遍历定时器链表，是否已经断链
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月1日
-    作    者   : d00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  frw_timer_check_list(oal_void)
 {
     oal_dlist_head_stru   *pst_timeout_entry;
@@ -376,21 +231,7 @@ OAL_STATIC oal_uint32  frw_timer_check_list(oal_void)
     return OAL_SUCC;
 }
 #endif
-/*****************************************************************************
- 函 数 名  : oal_timer_timeout_proc
- 功能描述  : 遍历timer链表执行到期超时函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
 {
     oal_dlist_head_stru *pst_timeout_entry;
@@ -574,21 +415,7 @@ oal_uint32  frw_timer_timeout_proc(frw_event_mem_stru *pst_timeout_event)
 
 
 
-/*****************************************************************************
- 函 数 名  : frw_timer_add_timer
- 功能描述  : 删除定时器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_add_timer(frw_timeout_stru *pst_timeout)
 {
     if (OAL_PTR_NULL == pst_timeout)
@@ -600,24 +427,7 @@ oal_void  frw_timer_add_timer(frw_timeout_stru *pst_timeout)
     oal_dlist_add_tail(&pst_timeout->st_entry, &g_ast_timer_list[pst_timeout->ul_core_id]);
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_create_timer
- 功能描述  : 启动定时器
- 输入参数  : en_is_periodic: 该定时器是否需要周期循环
-             en_module_id: 模块 ID维测用
-             p_timeout_arg :定时器超时处理函数需要的入参
-             us_timeout: 超时时间
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_create_timer(
 							oal_uint32 ul_file_id,
                             oal_uint32 ul_line_num,
@@ -667,21 +477,7 @@ oal_void  frw_timer_create_timer(
     return;
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_destroy_timer
- 功能描述  : 删除定时器(每15ms轮询删除)
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_destroy_timer(oal_uint32 ul_file_id,
                                        oal_uint32 ul_line_num,
                                        frw_timeout_stru *pst_timeout)
@@ -704,21 +500,7 @@ oal_void  frw_timer_destroy_timer(oal_uint32 ul_file_id,
     // oam_report_timer_track(ul_file_id, ul_line_num, OAM_TIMER_TRACK_TYPE_DESTROY);
 }
 
-/*****************************************************************************
- 函 数 名  : __frw_timer_immidate_destroy_timer
- 功能描述  : 立即删除定时器，无锁
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月24日
-    作    者   : g00306640
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC OAL_INLINE oal_void __frw_timer_immediate_destroy_timer(oal_uint32 ul_file_id,
                                                     oal_uint32 ul_line_num,
                                                     frw_timeout_stru *pst_timeout)
@@ -750,24 +532,7 @@ OAL_STATIC OAL_INLINE oal_void __frw_timer_immediate_destroy_timer(oal_uint32 ul
 }
 
 
-/*****************************************************************************
- 函 数 名  : frw_timer_immidate_destroy_timer
- 功能描述  : 立即删除定时器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-  2.日    期   : 2015年4月24日
-    作    者   : g00306640
-    修改内容   : 加锁处理
-
-*****************************************************************************/
 oal_void  frw_timer_immediate_destroy_timer(oal_uint32 ul_file_id,
                                                     oal_uint32 ul_line_num,
                                                     frw_timeout_stru *pst_timeout)
@@ -777,21 +542,7 @@ oal_void  frw_timer_immediate_destroy_timer(oal_uint32 ul_file_id,
     oal_spin_unlock_bh(&g_ast_timer_list_spinlock[pst_timeout->ul_core_id]);
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_restart_timer
- 功能描述  : 重启定时器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月8日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_restart_timer(frw_timeout_stru *pst_timeout, oal_uint32 ul_timeout, oal_bool_enum_uint8  en_is_periodic)
 {
     if (OAL_PTR_NULL == pst_timeout)
@@ -809,21 +560,7 @@ oal_void  frw_timer_restart_timer(frw_timeout_stru *pst_timeout, oal_uint32 ul_t
 }
 
 
-/*****************************************************************************
- 函 数 名  : frw_timer_stop_timer
- 功能描述  : 停止定时器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月8日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_stop_timer(frw_timeout_stru *pst_timeout)
 {
     if (OAL_PTR_NULL == pst_timeout)
@@ -835,21 +572,7 @@ oal_void  frw_timer_stop_timer(frw_timeout_stru *pst_timeout)
     pst_timeout->en_is_enabled = OAL_FALSE;
 }
 
-/*****************************************************************************
- 函 数 名  : hmac_board_timer0_timeout_proc
- 功能描述  : 15毫秒定时中断处理
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年11月20日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint8 g_uc_timer_pause = OAL_FALSE;
 #if defined(_PRE_FRW_TIMER_BIND_CPU) && defined(CONFIG_NR_CPUS)
 oal_uint32 g_ul_frw_timer_cpu_count[CONFIG_NR_CPUS] = {0};
@@ -958,22 +681,7 @@ oal_void  frw_timer_timeout_proc_event(oal_uint ui_arg)
 }
 
 
-/*****************************************************************************
- 函 数 名  : frw_timer_delete_all_timer
- 功能描述  : 将定时器链表中的所有定时器删除，用于异常时外部模块清理定时器
-             不能在定时器回调函数中调用
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : 无
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月26日
-    作    者   : z00274374
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 oal_void  frw_timer_delete_all_timer(oal_void)
 {
@@ -1009,21 +717,7 @@ oal_void  frw_timer_delete_all_timer(oal_void)
 
 }
 
-/*****************************************************************************
- 函 数 名  : frw_timer_dump_timer
- 功能描述  : 打印所有timer的维测信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月16日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_void  frw_timer_dump_timer(oal_uint32 ul_core_id)
 {
     oal_dlist_head_stru *pst_dlist_entry;

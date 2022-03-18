@@ -258,6 +258,9 @@ int32 ps_exe_sys_func(struct ps_core_s *ps_core_d, uint8 *buf_ptr)
 
         break;
     case SYS_INF_MEM_DUMP_COMPLETE:
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+        bfgx_memdump_finish();
+#endif
         get_exception_info_reference(&pst_exception_data);
         if (NULL != pst_exception_data)
         {
@@ -516,6 +519,9 @@ int32 ps_push_skb_debug_queue(struct ps_core_s *ps_core_d, const uint8 *buf_ptr,
 int32 ps_recv_mem_dump_size_data(struct ps_core_s *ps_core_d, uint8 *buf_ptr)
 {
     uint16 dump_mem_size = 0;
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+    uint16 rx_pkt_total_len = 0;
+#endif
 
     if (NULL == ps_core_d)
     {
@@ -531,10 +537,14 @@ int32 ps_recv_mem_dump_size_data(struct ps_core_s *ps_core_d, uint8 *buf_ptr)
 
     dump_mem_size = buf_ptr[1]*0x100;
     dump_mem_size = dump_mem_size + buf_ptr[0];
-
     PS_PRINT_INFO("prepare to recv bfgx mem size [%d]!\n", dump_mem_size);
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+    rx_pkt_total_len = ps_core_d->rx_pkt_total_len - sizeof(struct ps_packet_head) - sizeof(struct ps_packet_end);
+    bfgx_notice_hal_memdump();
+    bfgx_memdump_enquenue(buf_ptr, rx_pkt_total_len);
+#else
     prepare_to_recv_bfgx_stack(dump_mem_size);
-
+#endif
     return 0;
 }
 
@@ -561,7 +571,11 @@ int32 ps_recv_mem_dump_data(struct ps_core_s *ps_core_d, uint8 *buf_ptr, uint32 
         if (rx_pkt_total_len <= MEM_DUMP_RX_MAX_FRAME)
         {
             PS_PRINT_INFO("recv bfgx stack size [%d]!\n", rx_pkt_total_len);
+#ifdef HI110X_HAL_MEMDUMP_ENABLE
+            bfgx_memdump_enquenue(buf_ptr, rx_pkt_total_len);
+#else
             bfgx_recv_dev_mem(buf_ptr, rx_pkt_total_len);
+#endif
         }
     }
     else if (SUBSYS_WIFI == system)
@@ -1449,13 +1463,13 @@ int32 ps_core_recv(void *disc_data, const uint8 *data, int32 count)
 #ifdef PLATFORM_DEBUG_ENABLE
     if (g_uart_rx_dump)
     {
-        if(NULL != ps_core_d->rx_data_fp)
+        if(!IS_ERR_OR_NULL(ps_core_d->rx_data_fp))
         {
             vfs_write(ps_core_d->rx_data_fp, data, count, &ps_core_d->rx_data_fp->f_pos);
         }
         else
         {
-            PS_PRINT_WARNING("uart rx dump dir not make or uart not translate data\n");
+            PS_PRINT_WARNING("uart rx dump dir not make or uart not translate data, fp_err_code(%ld)\n", PTR_ERR(ps_core_d->rx_data_fp));
         }
     }
 #endif

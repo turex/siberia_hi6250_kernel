@@ -2351,21 +2351,7 @@ oal_int32 hcc_flow_off_callback(oal_void* data)
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : hcc_credit_update_callback
- 功能描述  : D2H_MSG_CREDIT_UPDATE msg对应的处理函数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月5日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_int32  hcc_credit_update_callback(oal_void* data)
 {
     oal_uint8           uc_large_cnt;

@@ -1,18 +1,4 @@
-/******************************************************************************
 
-                  版权所有 (C), 2001-2022, 华为技术有限公司
-
- ******************************************************************************
-  文 件 名   : wal_linux_ioctl_debug.c
-  版 本 号   : 初稿
-  作    者   : z00262551
-  生成日期   : 2016年4月8日
-  最近修改   :
-  功能描述   : linux ioctl配置调试命令
-  函数列表   :
-  修改历史   :
-
-******************************************************************************/
 
 
 #ifdef __cplusplus
@@ -112,22 +98,7 @@ extern OAL_CONST wal_ioctl_alg_cfg_stru g_ast_alg_cfg_map[];
 /*****************************************************************************
   3 函数实现
 *****************************************************************************/
-/*****************************************************************************
- 函 数 名  : wal_hipriv_global_log_switch
- 功能描述  : 配置全局日志开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月19日,星期一
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_global_log_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int32                   l_switch_val;
@@ -154,21 +125,7 @@ OAL_STATIC oal_uint32  wal_hipriv_global_log_switch(oal_net_device_stru *pst_net
     return oam_log_set_global_switch((oal_switch_enum_uint8)l_switch_val);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_vap_log_switch
- 功能描述  : 配置VAP级别日志开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月3日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_vap_log_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     mac_vap_stru               *pst_mac_vap;
@@ -203,22 +160,7 @@ OAL_STATIC oal_uint32  wal_hipriv_vap_log_switch(oal_net_device_stru *pst_net_de
     return oam_log_set_vap_switch(pst_mac_vap->uc_vap_id, (oal_switch_enum_uint8)l_switch_val);
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_feature_log_level
- 功能描述  : 特性INFO日志级别开关配置
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月20日,星期二
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_feature_log_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     mac_vap_stru                       *pst_mac_vap;
@@ -308,23 +250,7 @@ OAL_STATIC oal_uint32  wal_hipriv_feature_log_switch(oal_net_device_stru *pst_ne
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_log_ratelimit
- 功能描述  : printk流控参数配置
-             支持开关 超时时间与流量的参数配置
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月21日,星期三
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_log_ratelimit(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oam_ratelimit_stru                  st_ratelimit;
@@ -386,22 +312,7 @@ OAL_STATIC oal_uint32  wal_hipriv_log_ratelimit(oal_net_device_stru *pst_net_dev
 }
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_log_lowpower
- 功能描述  : sdt log低功耗模式开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月21日,星期三
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_log_lowpower(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -458,22 +369,7 @@ OAL_STATIC oal_uint32  wal_hipriv_log_lowpower(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pm_switch
- 功能描述  : 低功耗全局使能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月21日,星期三
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_pm_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -531,21 +427,7 @@ OAL_STATIC oal_uint32  wal_hipriv_pm_switch(oal_net_device_stru *pst_net_dev, oa
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ucast_data_dscr_param
- 功能描述  : 设置描述符参数配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月31日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ucast_data_dscr_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -615,21 +497,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ucast_data_dscr_param(oal_net_device_stru 
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_bcast_data_dscr_param
- 功能描述  : 设置描述符参数配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : 00184180 yaorui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_bcast_data_dscr_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -698,21 +566,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_bcast_data_dscr_param(oal_net_device_stru 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ucast_mgmt_dscr_param
- 功能描述  : 设置单播管理帧的速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : 00184180 yaorui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ucast_mgmt_dscr_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -810,21 +664,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ucast_mgmt_dscr_param(oal_net_device_stru 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_mbcast_mgmt_dscr_param
- 功能描述  : 设置组播、广播管理帧的速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月22日
-    作    者   : 00184180 yaorui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_mbcast_mgmt_dscr_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -923,21 +763,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_mbcast_mgmt_dscr_param(oal_net_device_stru
 }
 
 #ifdef _PRE_WLAN_FEATURE_11D
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rd_by_ie_switch
- 功能描述  :设置是否根据获取的关联ap的国家码更新自己的国家码
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月17日
-    作    者   : zhangxiang
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_set_rd_by_ie_switch(oal_net_device_stru *pst_net_dev,oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -982,22 +808,7 @@ oal_uint32  wal_hipriv_set_rd_by_ie_switch(oal_net_device_stru *pst_net_dev,oal_
 }
 #endif
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_nss
- 功能描述  : 设置空间流个数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年3月12日
-     作    者   : y00196452
-     修改内容   : 新生成函数
-
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_nss(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #ifdef _PRE_WLAN_CHIP_TEST
@@ -1072,21 +883,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_nss(oal_net_device_stru *pst_net_dev, oal_
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rfch
- 功能描述  : 设置通道
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月12日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_rfch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #ifdef _PRE_WLAN_CHIP_TEST
@@ -1165,21 +962,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_rfch(oal_net_device_stru *pst_net_dev, oal
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_always_tx
- 功能描述  : 数据常发
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月12日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_always_tx(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #if defined (_PRE_WLAN_CHIP_TEST) || defined (_PRE_WLAN_FEATURE_ALWAYS_TX)
@@ -1307,21 +1090,7 @@ OAL_STATIC oal_uint32  wal_hipriv_always_tx(oal_net_device_stru *pst_net_dev, oa
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_thruput
- 功能描述  : 获取芯片吞吐量信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月28日
-    作    者   : 曹海彬
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_thruput(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -1384,21 +1153,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_thruput(oal_net_device_stru *pst_net_dev, 
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_freq_skew
- 功能描述  : 设置频率纠偏参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月24日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_freq_skew(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -1467,22 +1222,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_freq_skew(oal_net_device_stru *pst_net_dev
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_adjust_ppm
- 功能描述  : 设置ppm
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年9月9日
-    作    者   : pwx287475
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_adjust_ppm(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -1546,21 +1286,7 @@ OAL_STATIC oal_uint32  wal_hipriv_adjust_ppm(oal_net_device_stru *pst_net_dev, o
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_event_switch
- 功能描述  : event打印开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月5日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_event_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -1644,21 +1370,7 @@ OAL_STATIC oal_uint32 wal_hipriv_start_dpd(oal_net_device_stru *pst_net_dev, oal
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ota_beacon_switch
- 功能描述  : 设置是否上报beacon帧的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月7日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ota_beacon_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -1700,21 +1412,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ota_beacon_switch(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ota_rx_dscr_switch
- 功能描述  : 设置是否上报rx描述符的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月19日
-    作    者   : z00285102
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ota_rx_dscr_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -1758,21 +1456,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ota_rx_dscr_switch(oal_net_device_stru *pst_ne
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ether_switch
- 功能描述  : 设置以太网上报开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月23日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ether_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -1839,21 +1523,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ether_switch(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_80211_ucast_switch
- 功能描述  : 设置80211单播帧上报开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月24日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_80211_ucast_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -1954,21 +1624,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_80211_ucast_switch(oal_net_device_stru *ps
 }
 
 #ifdef _PRE_WLAN_FEATURE_TXOPPS
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_txop_ps_machw
- 功能描述  : 配置mac txop ps使能寄存器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月16日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_txop_ps_machw(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2037,21 +1693,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_txop_ps_machw(oal_net_device_stru *pst_net
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_80211_mcast_switch
- 功能描述  : 设置80211组播帧上报开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月24日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_80211_mcast_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2142,22 +1784,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_80211_mcast_switch(oal_net_device_stru *ps
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_all_80211_ucast
- 功能描述  : 设置所有用户的80211单播帧上报开关，此开关设置以后，所有用户上报策略
-             相同
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月24日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_all_80211_ucast(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -2254,22 +1881,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_all_80211_ucast(oal_net_device_stru *pst_n
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_all_ether_switch
- 功能描述  : 设置所有用户的以太网帧上报开关，此开关设置以后，所有用户上报策略
-             相同
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月24日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_all_ether_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -2310,21 +1922,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_all_ether_switch(oal_net_device_stru *pst_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_dhcp_arp_switch
- 功能描述  : 设置发送广播dhcp和arp开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月27日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_dhcp_arp_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2370,22 +1968,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_dhcp_arp_switch(oal_net_device_stru *pst_n
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_report_vap_info
- 功能描述  : 根据下发的对应标记位，上报对应的vap信息
- 输入参数  : oal_net_device_stru *pst_net_dev,
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年7月20日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_report_vap_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2432,21 +2015,7 @@ OAL_STATIC oal_uint32  wal_hipriv_report_vap_info(oal_net_device_stru *pst_net_d
 #endif //#ifdef _PRE_DEBUG_MODE
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rssi_switch
- 功能描述  : 设置打印接收报文的rssi的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月6日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_rssi_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2509,21 +2078,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_rssi_switch(oal_net_device_stru *pst_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_probe_switch
- 功能描述  : 设置probe request和probe response上报的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月30日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_probe_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2603,21 +2158,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_probe_switch(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_mpdu_num
- 功能描述  : 获取device和每一个tid下当前mpdu数目
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月17日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_mpdu_num(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -2663,26 +2204,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_mpdu_num(oal_net_device_stru *pst_net_dev,
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_all_ota
- 功能描述  : 设置所有用户帧上报的所有开关，如果是1，则上报所有类型帧的帧内容，
-             cb字段，描述符；如果是0，则什么都不上报
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月17日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-  1.日    期   : 2015年1月23日
-    作    者   : w00316376
-    修改内容   : 增加抛事件到wal层处理
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_all_ota(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_ret;
@@ -2723,21 +2245,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_all_ota(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_oam_output
- 功能描述  : 设置oam模块的输出位置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月3日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_oam_output(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -2788,21 +2296,7 @@ OAL_STATIC oal_uint32  wal_hipriv_oam_output(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ampdu_start
- 功能描述  : 开启ampdu调测命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月7日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ampdu_start(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                 st_write_msg;
@@ -2882,21 +2376,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ampdu_start(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_auto_ba_switch
- 功能描述  : 开启自动BA会话的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月20日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_auto_ba_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -2951,21 +2431,7 @@ OAL_STATIC oal_uint32  wal_hipriv_auto_ba_switch(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_profiling_switch
- 功能描述  : 开启自动BA会话的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月20日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_profiling_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -3020,21 +2486,7 @@ OAL_STATIC oal_uint32  wal_hipriv_profiling_switch(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_addba_req
- 功能描述  : 建立BA会话的调测命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月7日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_addba_req(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -3160,21 +2612,7 @@ OAL_STATIC oal_uint32  wal_hipriv_addba_req(oal_net_device_stru *pst_net_dev, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_delba_req
- 功能描述  : 删除BA会话的调测命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月7日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_delba_req(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -3274,21 +2712,7 @@ OAL_STATIC oal_uint32  wal_hipriv_delba_req(oal_net_device_stru *pst_net_dev, oa
 }
 
 #ifdef _PRE_WLAN_FEATURE_WMMAC
-/*****************************************************************************
- 函 数 名  : wal_hipriv_addts_req
- 功能描述  : 发送ADDTS REQ的调测命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月13日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_addts_req(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                   st_write_msg;
@@ -3506,21 +2930,7 @@ OAL_STATIC oal_uint32  wal_hipriv_addts_req(oal_net_device_stru *pst_net_dev, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_delts
- 功能描述  : 发送DELTS的调测命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月13日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_delts(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                   st_write_msg;
@@ -3575,21 +2985,7 @@ OAL_STATIC oal_uint32  wal_hipriv_delts(oal_net_device_stru *pst_net_dev, oal_in
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_wmmac_switch
- 功能描述  : 设置WMMAC的开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月13日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_wmmac_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                   st_write_msg;
@@ -3639,21 +3035,7 @@ OAL_STATIC oal_uint32  wal_hipriv_wmmac_switch(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_reassoc_req
- 功能描述  : 设置发送重关联请求帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年9月24日
-    作    者   : l00357925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_reassoc_req(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -3682,21 +3064,7 @@ OAL_STATIC oal_uint32  wal_hipriv_reassoc_req(oal_net_device_stru *pst_net_dev, 
 
 
 #endif
-/*****************************************************************************
- 函 数 名  : wal_hipriv_mem_info
- 功能描述  : 打印执行内存池信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月29日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_mem_info(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     oal_int8                     auc_token[WAL_HIPRIV_CMD_NAME_MAX_LEN];
@@ -3727,21 +3095,7 @@ OAL_STATIC oal_uint32  wal_hipriv_mem_info(oal_net_device_stru *pst_cfg_net_dev,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_mem_leak
- 功能描述  : 检查指定内存池泄漏内存块(hipriv "Hisilicon0 memleak poolid")
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年5月29日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_mem_leak(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     oal_int8                     auc_token[WAL_HIPRIV_CMD_NAME_MAX_LEN];
@@ -3779,21 +3133,7 @@ OAL_STATIC oal_uint32  wal_hipriv_mem_leak(oal_net_device_stru *pst_cfg_net_dev,
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC == _PRE_MULTI_CORE_MODE)
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_mem_leak
- 功能描述  : 检查指定内存池泄漏内存块(hipriv "Hisilicon0 memleak poolid")
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年12月30日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_device_mem_leak(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                st_write_msg;
@@ -3839,21 +3179,7 @@ OAL_STATIC oal_uint32  wal_hipriv_device_mem_leak(oal_net_device_stru *pst_cfg_n
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_memory_info
- 功能描述  : 检查host侧与device侧内存池使用状况
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月23日
-    作    者   : l00324381
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_memory_info(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                        ul_off_set;
@@ -3912,21 +3238,7 @@ OAL_STATIC oal_uint32  wal_hipriv_memory_info(oal_net_device_stru *pst_cfg_net_d
 #endif
 
 
-/*****************************************************************************
- 函 数 名  : wal_get_dbb_scaling_index
- 功能描述  : 获取dbb scaling对应的索引值
 
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年1月11日
-    作    者   : liuweiqiang
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_int8  wal_get_dbb_scaling_index(oal_uint8 uc_band,
                                                                     oal_uint8 uc_bw,
                                                                     oal_int8 *pc_mcs_type,
@@ -4068,21 +3380,7 @@ OAL_STATIC oal_int8  wal_get_dbb_scaling_index(oal_uint8 uc_band,
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_dbb_scaling_amend_calc
- 功能描述  : 通过修改dbb scaling 寄存器值修改TX Power
 
- 输入参数  : sh hipriv.sh "wlan0 dbb_scaling_amend band 0 bw 20 mcs 0 287"
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2016年1月11日
-    作    者   : liuweiqiang
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_dbb_scaling_amend_calc(oal_int8 *pc_param, mac_cfg_dbb_scaling_stru *pst_dbb_scaling)
 {
     oal_int8                *pc_token;
@@ -4217,21 +3515,7 @@ OAL_STATIC oal_uint32  wal_dbb_scaling_amend_calc(oal_int8 *pc_param, mac_cfg_db
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dbb_scaling_amend
- 功能描述  : 调整dbb scaling值: hipriv "wlan0 dbb_scaling_amend <param name> <value>"
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月9日
-    作    者   : liuweiqiang
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dbb_scaling_amend(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -4271,22 +3555,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dbb_scaling_amend(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_chain_beacon_switch
- 功能描述  : 调整beacon帧的发送策略(0表示关闭双路轮流发送，1表示开启)
- 输入参数  : pst_net_dev : net_device
-             pc_param    : 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月13日
-    作    者   : daihu 00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_beacon_chain_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -4350,22 +3619,7 @@ OAL_STATIC oal_uint32  wal_hipriv_beacon_chain_switch(oal_net_device_stru *pst_n
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_2040_channel_switch_prohibited
- 功能描述  : 设置20/40共存是否禁止信道切换
- 输入参数  : pst_net_dev : net_device
-             pc_param    : 参数
- 输出参数  : 无
- 返 回 值  : OAL_SUCC或其它错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月18日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_2040_channel_switch_prohibited(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -4418,21 +3672,7 @@ OAL_STATIC oal_uint32  wal_hipriv_2040_channel_switch_prohibited(oal_net_device_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_FortyMHzIntolerant
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月5日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_FortyMHzIntolerant(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -4486,21 +3726,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_FortyMHzIntolerant(oal_net_device_stru *ps
 }
 
 #ifdef _PRE_PLAT_FEATURE_CUSTOMIZE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_lauch_cap
- 功能描述  : 读取发射能力命令
- 输入参数  : pst_net_dev: net device
- 输出参数  : pc_extra   : 读取到的发射能力
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月27日
-    作    者   : w00346925
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_lauch_cap(oal_net_device_stru *pst_net_dev,oal_int8 *pc_param)
 {
     wal_msg_query_stru           st_query_msg;
@@ -4527,21 +3753,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_lauch_cap(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dev_customize_info
- 功能描述  : show device customize info
- 输入参数  :
- 输出参数  : 无
- 返 回 值  : OAL_SUCC 或 失败错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月22日
-    作    者   : h00349274
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dev_customize_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -4570,21 +3782,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dev_customize_info(oal_net_device_stru *pst_ne
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_txpower
- 功能描述  : 设置目标功率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月26日
-    作    者   : f00290085
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_txpower(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -4649,22 +3847,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_txpower(oal_net_device_stru *pst_net_dev, 
 }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,44))
-/*****************************************************************************
- 函 数 名  : wal_ioctl_set_beacon_interval
- 功能描述  : 设置beacon interval
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月20日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_ioctl_set_beacon_interval(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -4716,21 +3899,7 @@ OAL_STATIC oal_uint32  wal_ioctl_set_beacon_interval(oal_net_device_stru *pst_ne
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_start_vap
- 功能描述  : 私有up命令，代替ifconfig up。3sta场景时，第三个sta无法up，可用此命令up
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月6日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_start_vap(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     OAM_ERROR_LOG0(0, OAM_SF_CFG, "DEBUG:: priv start enter.");
@@ -4739,21 +3908,7 @@ OAL_STATIC oal_uint32  wal_hipriv_start_vap(oal_net_device_stru *pst_net_dev, oa
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_amsdu_start
- 功能描述  : 配置命令开启并配置amsdu参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_amsdu_start(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -4820,21 +3975,7 @@ OAL_STATIC oal_uint32  wal_hipriv_amsdu_start(oal_net_device_stru *pst_net_dev, 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_list_ap
- 功能描述  : 打印STA扫描到的AP列表
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_list_ap(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -4861,21 +4002,7 @@ OAL_STATIC oal_uint32  wal_hipriv_list_ap(oal_net_device_stru *pst_net_dev, oal_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_list_sta
- 功能描述  : 打印AP侧关联的STA信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年7月22日
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_list_sta(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -4903,22 +4030,7 @@ OAL_STATIC oal_uint32  wal_hipriv_list_sta(oal_net_device_stru *pst_net_dev, oal
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_list_channel
- 功能描述  : 显示设备支持的信道列表
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32  OAL_STATIC
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月27日,星期五
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_list_channel(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -4946,21 +4058,7 @@ OAL_STATIC oal_uint32  wal_hipriv_list_channel(oal_net_device_stru *pst_net_dev,
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_regdomain_pwr_priv
- 功能描述  : 设置管制域最大发送功率
- 输入参数  :
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月27日,星期五
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_set_regdomain_pwr_priv(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                  ul_off_set;
@@ -5001,21 +4099,7 @@ OAL_STATIC oal_uint32 wal_hipriv_set_regdomain_pwr_priv(oal_net_device_stru *pst
     return (oal_uint32)l_ret;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_start_scan
- 功能描述  : 触发sta初始扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_start_scan(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -5051,21 +4135,7 @@ OAL_STATIC oal_uint32  wal_hipriv_start_scan(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_start_scan
- 功能描述  : 触发sta初始扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_start_join(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -5105,21 +4175,7 @@ OAL_STATIC oal_uint32  wal_hipriv_start_join(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_start_deauth
- 功能描述  : 触发去认证
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_start_deauth(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -5146,21 +4202,7 @@ OAL_STATIC oal_uint32  wal_hipriv_start_deauth(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_start_deauth
- 功能描述  : 触发sta初始扫描
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_timer(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -5187,21 +4229,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_timer(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 #endif //#ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_kick_user
- 功能描述  : 删除1个用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_kick_user(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5253,21 +4281,7 @@ OAL_STATIC oal_uint32  wal_hipriv_kick_user(oal_net_device_stru *pst_net_dev, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pause_tid
- 功能描述  : 删除1个用户
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_pause_tid(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5338,21 +4352,7 @@ OAL_STATIC oal_uint32  wal_hipriv_pause_tid(oal_net_device_stru *pst_net_dev, oa
 }
 
 #ifdef _PRE_WLAN_FEATURE_OFFLOAD_FLOWCTL
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_hipkt_stat
- 功能描述  : 获取高优先级报文的统计情况
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_hipkt_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -5383,21 +4383,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_hipkt_stat(oal_net_device_stru *pst_net_de
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_flowctl_param
- 功能描述  : 设置be,bk,vi,vo的每次调度报文个数，lowwater_line, high_waterline
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年08月24日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_flowctl_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -5481,21 +4467,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_flowctl_param(oal_net_device_stru *pst_net
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_flowctl_stat
- 功能描述  : 获取流控相关状态信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年08月24日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_flowctl_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -5527,21 +4499,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_flowctl_stat(oal_net_device_stru *pst_net_
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_auto_ba_switch
- 功能描述  : 开启或关闭amsdu ampdu联合发送
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月20日
-    作    者   : tanghuichao
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ampdu_amsdu_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -5596,41 +4554,13 @@ OAL_STATIC oal_uint32  wal_hipriv_ampdu_amsdu_switch(oal_net_device_stru *pst_ne
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_event_queue_info
- 功能描述  : 查询事件队列的信息，上报给SDT
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月27日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_event_queue_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return frw_event_queue_info();
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_user_vip
- 功能描述  : 设置用户的vip flag;
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年07月22日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_user_vip(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5692,21 +4622,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_user_vip(oal_net_device_stru *pst_net_dev,
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_vap_host
- 功能描述  : 设置vap的host flag;
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年07月22日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_vap_host(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5753,21 +4669,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_vap_host(oal_net_device_stru *pst_net_dev,
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_bar
- 功能描述  : 指定用户指定tid 发送bar
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_bar(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5825,21 +4727,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_bar(oal_net_device_stru *pst_net_dev, oal
     return OAL_SUCC;
 }
 #endif //#ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ampdu_tx_on
- 功能描述  : 开启或关闭ampdu发送功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_amsdu_tx_on(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -5885,21 +4773,7 @@ OAL_STATIC oal_uint32  wal_hipriv_amsdu_tx_on(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_frag_threshold
- 功能描述  : 设置分片门限配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_frag_threshold(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -5955,21 +4829,7 @@ OAL_STATIC oal_uint32  wal_hipriv_frag_threshold(oal_net_device_stru *pst_net_de
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_wmm_switch
- 功能描述  : 测试命令，打开/关闭WMM
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_wmm_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -6014,22 +4874,7 @@ OAL_STATIC oal_uint32  wal_hipriv_wmm_switch(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_hide_ssid
- 功能描述  : 测试命令，打开/关闭隐藏ssid
- 输入参数  : pst_net_dev:net dev
-             pc_param:隐藏ssid开关
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_hide_ssid(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -6075,21 +4920,7 @@ OAL_STATIC oal_uint32  wal_hipriv_hide_ssid(oal_net_device_stru *pst_net_dev, oa
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ampdu_tx_on
- 功能描述  : 开启或关闭ampdu发送功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ampdu_tx_on(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6135,21 +4966,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ampdu_tx_on(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ampdu_tx_on
- 功能描述  : 开启或关闭ampdu发送功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年8月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_txbf_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6195,21 +5012,7 @@ OAL_STATIC oal_uint32  wal_hipriv_txbf_switch(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_reset_device
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月6日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_reset_device(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6244,21 +5047,7 @@ OAL_STATIC oal_uint32  wal_hipriv_reset_device(oal_net_device_stru *pst_cfg_net_
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_reset_operate
- 功能描述  : 设置复位开关等
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月28日
-    作    者   : zhangyu 00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_reset_operate(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6299,21 +5088,7 @@ OAL_STATIC oal_uint32  wal_hipriv_reset_operate(oal_net_device_stru *pst_cfg_net
 }
 
 #ifdef _PRE_WLAN_FEATURE_UAPSD
-/*****************************************************************************
- 函 数 名  : wal_hipriv_uapsd_debug
- 功能描述  : uapsd维测命令
- 输入参数  : WLAN_CFGID_UAPSD_DEBUG
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年9月6日
-    作    者   : zourong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_uapsd_debug(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6356,21 +5131,7 @@ OAL_STATIC oal_uint32  wal_hipriv_uapsd_debug(oal_net_device_stru *pst_cfg_net_d
 
 #ifdef _PRE_WLAN_DFT_STAT
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_phy_stat_en
- 功能描述  : 设置phy统计使能节点的编号
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月13日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_phy_stat_en(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6431,21 +5192,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_phy_stat_en(oal_net_device_stru *pst_cfg_n
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dbb_env_param
- 功能描述  : 上报或者停止上报空口环境类的维测参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月15日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dbb_env_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6490,21 +5237,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dbb_env_param(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 #endif //#ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_usr_queue_stat
- 功能描述  : 上报或者清零用户队列统计信息，包括tid队列，节能队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月18日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_usr_queue_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6560,21 +5293,7 @@ OAL_STATIC oal_uint32  wal_hipriv_usr_queue_stat(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_report_vap_stat
- 功能描述  : 上报或者停止上报vap吞吐统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月19日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_report_vap_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6620,21 +5339,7 @@ OAL_STATIC oal_uint32  wal_hipriv_report_vap_stat(oal_net_device_stru *pst_net_d
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_report_all_stat
- 功能描述  : 上报或者清零所有维测统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月20日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_report_all_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6669,21 +5374,7 @@ OAL_STATIC oal_uint32  wal_hipriv_report_all_stat(oal_net_device_stru *pst_net_d
 #endif //#ifdef _PRE_DEBUG_MODE
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ampdu_aggr_num
- 功能描述  : 设置聚合最大个数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月29日
-    作    者   : h00212953
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ampdu_aggr_num(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru       st_write_msg;
@@ -6752,22 +5443,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ampdu_aggr_num(oal_net_device_stru *pst_ne
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_stbc_ldpc_cap
- 功能描述  : 设置AP的STBC能力
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月14日
-    作    者   : W00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_stbc_cap(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6834,21 +5510,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_stbc_cap(oal_net_device_stru *pst_cfg_net_
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ldpc_cap
- 功能描述  : 设置AP的LDPC能力
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月14日
-    作    者   : W00269675
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ldpc_cap(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6914,21 +5576,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ldpc_cap(oal_net_device_stru *pst_cfg_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_rx_dscr
- 功能描述  : dump接收描述符队列
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月2日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_dump_rx_dscr(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -6971,21 +5619,7 @@ oal_uint32  wal_hipriv_dump_rx_dscr(oal_net_device_stru *pst_cfg_net_dev, oal_in
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_tx_dscr
- 功能描述  : dump发送描述符
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月4日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_tx_dscr(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -7028,21 +5662,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_tx_dscr(oal_net_device_stru *pst_cfg_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_memory
- 功能描述  : dump内存
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月4日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_memory(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -7102,21 +5722,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_memory(oal_net_device_stru *pst_cfg_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_tx_dscr_addr
- 功能描述  : 打印所有发送描述符地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月10日
-    作    者   : y00196452
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_show_tx_dscr_addr(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
 #ifdef _PRE_DEBUG_MODE
@@ -7181,21 +5787,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_tx_dscr_addr(oal_net_device_stru *pst_cfg
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_ba_bitmap
- 功能描述  : 打印发送ba的bitmap
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月21日
-    作    者   : t00231215
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_ba_bitmap(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -7255,107 +5847,6 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_ba_bitmap(oal_net_device_stru *pst_net_de
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_packet_xmit
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-
- 修改历史      :
-  1.日    期   : 2013年9月6日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-OAL_STATIC oal_uint32  wal_hipriv_packet_xmit(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
-{
-    wal_msg_write_stru              st_write_msg;
-    oal_uint32                      ul_off_set;
-    oal_int8                        ac_name[WAL_HIPRIV_CMD_NAME_MAX_LEN] = {0};
-    oal_uint32                      ul_ret;
-    oal_int32                       l_ret;
-    mac_cfg_mpdu_ampdu_tx_param_stru *pst_aggr_tx_on_param;
-    oal_uint8                       uc_packet_num;
-    oal_uint8                       uc_tid;
-    oal_uint16                      uc_packet_len;
-    oal_uint8                       auc_ra_addr[WLAN_MAC_ADDR_LEN] = {0};
-
-    ul_ret = wal_get_cmd_one_arg(pc_param, ac_name, &ul_off_set);
-    if (OAL_SUCC != ul_ret)
-    {
-         OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_hipriv_packet_xmit::wal_get_cmd_one_arg return err_code [%d]!}\r\n", ul_ret);
-         return ul_ret;
-    }
-    uc_tid = (oal_uint8)oal_atoi(ac_name);
-    if(uc_tid >= WLAN_TID_MAX_NUM)
-    {
-         return OAL_FAIL;
-    }
-    pc_param = pc_param + ul_off_set;
-
-    ul_ret = wal_get_cmd_one_arg(pc_param, ac_name, &ul_off_set);
-    if (OAL_SUCC != ul_ret)
-    {
-         OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_hipriv_packet_xmit::wal_get_cmd_one_arg return err_code [%d]!}\r\n", ul_ret);
-         return ul_ret;
-    }
-    pc_param = pc_param + ul_off_set;
-    uc_packet_num = (oal_uint8)oal_atoi(ac_name);
-
-    ul_ret = wal_get_cmd_one_arg(pc_param, ac_name, &ul_off_set);
-    if (OAL_SUCC != ul_ret)
-    {
-         OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_hipriv_packet_xmit::wal_get_cmd_one_arg return err_code [%d]!}\r\n", ul_ret);
-         return ul_ret;
-    }
-    uc_packet_len = (oal_uint16)oal_atoi(ac_name);
-    if(uc_packet_len < 30)
-    {
-        return OAL_FAIL;
-    }
-    pc_param += ul_off_set;
-
-    /* 获取MAC地址字符串 */
-    ul_ret = wal_get_cmd_one_arg(pc_param, ac_name, &ul_off_set);
-    if (OAL_SUCC != ul_ret)
-    {
-        OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_hipriv_packet_xmit::get mac err_code [%d]!}\r\n", ul_ret);
-        return ul_ret;
-    }
-    /* 地址字符串转地址数组 */
-    oal_strtoaddr(ac_name, auc_ra_addr);
-    pc_param += ul_off_set;
-
-    /***************************************************************************
-                             抛事件到wal层处理
-    ***************************************************************************/
-    WAL_WRITE_MSG_HDR_INIT(&st_write_msg, WLAN_CFGID_PACKET_XMIT, OAL_SIZEOF(mac_cfg_mpdu_ampdu_tx_param_stru));
-
-    /* 设置配置命令参数 */
-    pst_aggr_tx_on_param = (mac_cfg_mpdu_ampdu_tx_param_stru *)(st_write_msg.auc_value);
-    pst_aggr_tx_on_param->uc_packet_num = uc_packet_num;
-    pst_aggr_tx_on_param->uc_tid        = uc_tid;
-    pst_aggr_tx_on_param->us_packet_len = uc_packet_len;
-    oal_set_mac_addr(pst_aggr_tx_on_param->auc_ra_mac, auc_ra_addr);
-
-    l_ret = wal_send_cfg_event(pst_net_dev,
-                               WAL_MSG_TYPE_WRITE,
-                               WAL_MSG_WRITE_MSG_HDR_LENGTH + OAL_SIZEOF(mac_cfg_mpdu_ampdu_tx_param_stru),
-                               (oal_uint8 *)&st_write_msg,
-                               OAL_FALSE,
-                               OAL_PTR_NULL);
-
-    if (OAL_UNLIKELY(OAL_SUCC != l_ret))
-    {
-        OAM_WARNING_LOG1(0, OAM_SF_ANY, "{wal_hipriv_packet_xmit::return err code [%d]!}\r\n", l_ret);
-        return (oal_uint32)l_ret;
-    }
-
-    return OAL_SUCC;
-}
 OAL_STATIC oal_uint32  wal_hipriv_alg(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;  //FIXME : st_write_msg can only carry bytes less than 48
@@ -7417,21 +5908,7 @@ OAL_STATIC oal_uint32  wal_hipriv_alg(oal_net_device_stru *pst_net_dev, oal_int8
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_stat_info
- 功能描述  : 获取所有维测统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月18日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_show_stat_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)||defined(_PRE_PRODUCT_ID_HI110X_HOST)
@@ -7442,21 +5919,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_stat_info(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_vap_pkt_stat
- 功能描述  : 获取某一个vap的收发包统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月10日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_show_vap_pkt_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -7484,24 +5947,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_vap_pkt_stat(oal_net_device_stru *pst_net
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_cca_opt_log
- 功能描述  : cca_opt算法日志参数配置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
-        (1)统计的配置命令: hipriv.sh "vap0 alg_tpc_log tpc_stat_log 11:22:33:44:55:66  2 500"
-           该命令针对某一个USER
-
- 修改历史      :
-  1.日    期   : 2015年8月31日
-    作    者   : liuming 00222214
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_cca_opt_log(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 
 {
@@ -7584,21 +6030,7 @@ OAL_STATIC oal_uint32  wal_hipriv_cca_opt_log(oal_net_device_stru *pst_net_dev, 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_clear_stat_info
- 功能描述  : 将所有的统计信息清零
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月18日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_clear_stat_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)||defined(_PRE_PRODUCT_ID_HI110X_HOST)
@@ -7607,21 +6039,7 @@ OAL_STATIC oal_uint32  wal_hipriv_clear_stat_info(oal_net_device_stru *pst_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_user_stat_info
- 功能描述  : 上报某一个user的统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月24日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_user_stat_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)||defined(_PRE_PRODUCT_ID_HI110X_HOST)
@@ -7651,21 +6069,7 @@ OAL_STATIC oal_uint32  wal_hipriv_user_stat_info(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_irq_info
- 功能描述  : 打印各类中断次数信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月8日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_timer_start(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -7714,21 +6118,7 @@ OAL_STATIC oal_uint32  wal_hipriv_timer_start(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_irq_info
- 功能描述  : 打印各类中断次数信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年10月8日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_show_profiling(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 #ifdef _PRE_PROFILING_MODE
@@ -7783,21 +6173,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_profiling(oal_net_device_stru *pst_net_de
 }
 
 #ifdef _PRE_WLAN_DFT_STAT
-/*****************************************************************************
- 函 数 名  : wal_hipriv_clear_vap_stat_info
- 功能描述  : 将VAP的统计信息清零
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年4月23日
-    作    者   : heyinjun
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_clear_vap_stat_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint8                   uc_vap_id;
@@ -7816,21 +6192,7 @@ OAL_STATIC oal_uint32  wal_hipriv_clear_vap_stat_info(oal_net_device_stru *pst_n
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_DFR
-/*****************************************************************************
- 函 数 名  : wal_hipriv_test_dfr_start
- 功能描述  : 测试打桩触发dfr功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年10月11日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_test_dfr_start(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                       ul_cfg_rst;
@@ -7873,24 +6235,7 @@ OAL_STATIC oal_uint32 wal_hipriv_test_dfr_start(oal_net_device_stru *pst_net_dev
 
 #endif //_PRE_WLAN_FEATURE_DFR
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ar_log
- 功能描述  : autorate算法日志参数配置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
-        配置算法的配置命令: hipriv "vap0 alg_ar_log ar_stat_log 11:22:33:44:55:66  2 500"
-        该命令针对某一个USER
-
- 修改历史      :
-  1.日    期   : 2013年10月25日
-    作    者   : j00196483
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ar_log(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                      st_write_msg;
@@ -8012,21 +6357,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ar_log(oal_net_device_stru *pst_net_dev, oal_i
     return OAL_SUCC;
 
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_txbf_log
- 功能描述  : txbf算法日志参数配置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
-        配置算法的配置命令: hipriv "vap0 alg_txbf_log txmode_log_record 11:22:33:44:55:66 2000"
-        该命令针对某一个USER
- 修改历史      :
-  1.日    期   : 2014年12月25日
-    作    者   : x00226265
-    修改内容   : 新生成函数
-*****************************************************************************/
+
 OAL_STATIC oal_uint32  wal_hipriv_txbf_log(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                      st_write_msg;
@@ -8136,27 +6467,7 @@ OAL_STATIC oal_uint32  wal_hipriv_txbf_log(oal_net_device_stru *pst_net_dev, oal
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_ar_test
- 功能描述  : autorate算法测试配置命令:
-             hipriv "vap0 alg_ar_test cycle_rate 11:22:33:44:55:66 1"
-             该命令针对某一个USER
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
-        配置算法的配置命令: hipriv "vap0 alg_ar_test cycle_rate 11:22:33:44:55:66 1"
-        该命令针对某一个USER
-
- 修改历史      :
-  1.日    期   : 2013年11月14日
-    作    者   : liwenjun 68207
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_ar_test(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                      st_write_msg;
@@ -8241,21 +6552,7 @@ OAL_STATIC oal_uint32  wal_hipriv_ar_test(oal_net_device_stru *pst_net_dev, oal_
 }
 
 #ifdef _PRE_WLAN_FEATURE_EDCA_OPT_AP
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_edca_opt_weight_sta
- 功能描述  : 调整sta的edca参数权重，权重取值为0-3,3表示完全根据beacon进行调整，0表示采用配值的edca参数(此时竞争能力最强)
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_weight_sta(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -8325,21 +6622,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_weight_sta(oal_net_device_stru *p
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_edca_opt_switch_ap
- 功能描述  : 指定打开或者关闭ap的edca优化功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_switch_ap(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -8407,21 +6690,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_switch_ap(oal_net_device_stru *ps
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_edca_opt_cycle_ap
- 功能描述  : 调整edca参数调整的周期
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_cycle_ap(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -8483,21 +6752,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_edca_opt_cycle_ap(oal_net_device_stru *pst
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_default_key
- 功能描述  : 设置默认key
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
-            sh hipriv.sh "vap0 set_default_key x(key_index) 0|1(en_unicast) 0|1(multicast)"
- 修改历史      :
-  1.日    期   : 2015年1月15日
-    作    者   : z00273164
-    修改内容   : 新生成函数
 
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_set_default_key(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     mac_setdefaultkey_param_stru  st_payload_params  = {0};
@@ -8570,21 +6825,7 @@ OAL_STATIC oal_uint32 wal_hipriv_set_default_key(oal_net_device_stru *pst_net_de
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_test_add_key
- 功能描述  : 芯片测试接口：add key
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_test_add_key(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -8734,22 +6975,7 @@ OAL_STATIC oal_uint32 wal_hipriv_test_add_key(oal_net_device_stru *pst_net_dev, 
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_mib
- 功能描述  :  设置VAP mib
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月27日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_mib(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -8808,22 +7034,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_mib(oal_net_device_stru *pst_net_dev, oal_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_mib
- 功能描述  : 获取VAP mib
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月27日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_mib(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -8868,22 +7079,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_mib(oal_net_device_stru *pst_net_dev, oal_
     return OAL_SUCC;
 }
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_thruput_bypass
- 功能描述  : 设置thruput_bypass维测点
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月15日
-    作    者   : s00304087
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_thruput_bypass(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -8943,22 +7139,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_thruput_bypass(oal_net_device_stru *pst_ne
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_thruput_bypass
- 功能描述  : 设置thruput_bypass维测点
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月15日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_AUTO_FREQ
 OAL_STATIC oal_uint32  wal_hipriv_set_auto_freq(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
@@ -9021,22 +7202,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_auto_freq(oal_net_device_stru *pst_net_dev
 
 #ifdef _PRE_WLAN_DFT_STAT
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_performance_log_switch
- 功能描述  : 设置性能打印控制开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月15日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_performance_log_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -9098,22 +7264,7 @@ OAL_STATIC oal_uint32  wal_hipriv_performance_log_switch(oal_net_device_stru *ps
 #endif //#ifdef _PRE_DEBUG_MODE
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_auto_protection
- 功能描述  : 设置保护模式开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月27日
-    作    者   : c00260463
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_auto_protection(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9159,21 +7310,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_auto_protection(oal_net_device_stru *pst_n
 }
 
 #ifdef _PRE_WLAN_FEATURE_WAPI
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_wapi_info
- 功能描述  : 显示wapi的调试信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月8日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WAPI_DEBUG
 OAL_STATIC oal_uint32  wal_hipriv_show_wapi_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
@@ -9250,22 +7387,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_wapi_info(oal_net_device_stru *pst_net_de
 #endif /* #ifdef _PRE_WLAN_FEATURE_WAPI */
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_2040_coext
- 功能描述  : 发送20/40共存管理帧
- 输入参数  : pst_net_dev:
-             pc_param:
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月25日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_2040_coext(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int8                        ac_name[WAL_HIPRIV_CMD_NAME_MAX_LEN];
@@ -9317,21 +7439,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_2040_coext(oal_net_device_stru *pst_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_2040_coext_info
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月10日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_2040_coext_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9372,22 +7480,7 @@ OAL_STATIC oal_uint32  wal_hipriv_2040_coext_info(oal_net_device_stru *pst_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_version
- 功能描述  : 获取版本
- 输入参数  : pst_net_dev:
-             pc_param:
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月25日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_version(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9422,22 +7515,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_version(oal_net_device_stru *pst_net_dev, 
 }
 
 #ifdef _PRE_WLAN_FEATURE_OPMODE_NOTIFY
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_opmode_notify
- 功能描述  : 设置工作模式通知能力
- 输入参数  : pst_net_dev: net device指针
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年6月12日
-    作    者   : zhangyu
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_opmode_notify(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9482,21 +7560,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_opmode_notify(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_user_nssbw
- 功能描述  : 设置添加用户的配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月5日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_user_nssbw(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9552,22 +7616,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_user_nssbw(oal_net_device_stru *pst_net_de
 
 #endif
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_vap_nss
- 功能描述  : 设置VAP的空间流个数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年6月27日
-     作    者   : z00241943
-     修改内容   : 新生成函数
-
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_vap_nss(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9615,21 +7664,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_vap_nss(oal_net_device_stru *pst_net_dev, 
 
 #ifdef _PRE_WLAN_FEATURE_CUSTOM_SECURITY
 
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_blacklist_add(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9672,21 +7707,7 @@ OAL_STATIC oal_uint32  wal_hipriv_blacklist_add(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_blacklist_del(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -9729,232 +7750,64 @@ OAL_STATIC oal_uint32  wal_hipriv_blacklist_del(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_blacklist_mode(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_BLACKLIST_MODE);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_blacklist_show(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_BLACKLIST_SHOW);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_abl_on(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_AUTOBLACKLIST_ON);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_abl_aging(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_AUTOBLACKLIST_AGING);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_abl_threshold(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_AUTOBLACKLIST_THRESHOLD);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_abl_reset(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_AUTOBLACKLIST_RESET);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_isolation_mode(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_ISOLATION_MODE);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_isolation_type(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_ISOLATION_TYPE);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_isolation_fwd(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_ISOLATION_FORWARD);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_isolation_clear(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_ISOLATION_CLEAR);
 }
-/*****************************************************************************
- 函 数 名  :
- 功能描述  :
- 输入参数  :
- 输出参数  :
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-   1.日    期   : 2014年7月29日
-     作    者   : chenchongbao
-     修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_isolation_show(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     return wal_hipriv_send_cfg_uint32_data(pst_net_dev,pc_param,WLAN_CFGID_ISOLATION_SHOW);
 }
 #endif  /* _PRE_WLAN_FEATURE_CUSTOM_SECURITY */
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_vap_classify_en
- 功能描述  : 是否使能基于vap的流分类功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_vap_classify_en(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -9994,21 +7847,7 @@ OAL_STATIC oal_uint32  wal_hipriv_vap_classify_en(oal_net_device_stru *pst_net_d
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_vap_classify_tid
- 功能描述  : 设置vap的流等级
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_vap_classify_tid(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -10048,22 +7887,7 @@ OAL_STATIC oal_uint32  wal_hipriv_vap_classify_tid(oal_net_device_stru *pst_net_
 }
 
 #ifdef _PRE_WLAN_FEATURE_STA_PM
-/*****************************************************************************
- 函 数 名  : wal_hipriv_sta_psm_param
- 功能描述  : 私有命令,sta psm的listen interval / tbtt offset
- 输入参数  : pst_cfg_net_dev: net_device
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月16日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_sta_psm_param(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -10146,23 +7970,8 @@ OAL_STATIC oal_uint32  wal_hipriv_sta_psm_param(oal_net_device_stru *pst_cfg_net
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_psm_open
- 功能描述  : 私有命令,sta psm的listen interval / tbtt offset
- 输入参数  : pst_cfg_net_dev: net_device
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月3日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
-OAL_STATIC oal_uint32  wal_hipriv_sta_pm_on(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
+oal_uint32  wal_hipriv_sta_pm_on(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
     oal_uint32                          ul_off_set;
@@ -10191,7 +8000,7 @@ OAL_STATIC oal_uint32  wal_hipriv_sta_pm_on(oal_net_device_stru *pst_cfg_net_dev
     pst_sta_pm_open = (mac_cfg_ps_open_stru *)(st_write_msg.auc_value);
     /* MAC_STA_PM_SWITCH_ON / MAC_STA_PM_SWITCH_OFF */
     pst_sta_pm_open->uc_pm_enable      = uc_sta_pm_open;
-    pst_sta_pm_open->uc_pm_ctrl_type   = MAC_STA_PM_CTRL_TYPE_HOST;
+    pst_sta_pm_open->uc_pm_ctrl_type   = MAC_STA_PM_CTRL_TYPE_CMD;
 
     l_ret = wal_send_cfg_event(pst_cfg_net_dev,
                                WAL_MSG_TYPE_WRITE,
@@ -10212,22 +8021,7 @@ OAL_STATIC oal_uint32  wal_hipriv_sta_pm_on(oal_net_device_stru *pst_cfg_net_dev
 
 #ifdef _PRE_WLAN_FEATURE_P2P
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_p2p_test
- 功能描述  : P2P 测试命令
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月21日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_p2p_test(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                  ul_off_set;
@@ -10334,22 +8128,7 @@ OAL_STATIC oal_uint32  wal_hipriv_p2p_test(oal_net_device_stru *pst_net_dev, oal
 #endif  /* _PRE_WLAN_FEATURE_P2P */
 
 #ifdef _PRE_WLAN_TCP_OPT
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_tcp_ack_stream_info
- 功能描述  : 查询TCP ACK过滤统计值
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_tcp_ack_stream_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -10377,22 +8156,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_tcp_ack_stream_info(oal_net_device_stru *p
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_tcp_tx_ack_opt_enable
- 功能描述  :  设置发送TCP ACK优化使能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_tcp_tx_ack_opt_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -10437,22 +8201,7 @@ OAL_STATIC oal_uint32  wal_hipriv_tcp_tx_ack_opt_enable(oal_net_device_stru *pst
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_tcp_rx_ack_opt_enable
- 功能描述  :  设置接收TCP ACK优化使能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_tcp_rx_ack_opt_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -10495,22 +8244,7 @@ OAL_STATIC oal_uint32  wal_hipriv_tcp_rx_ack_opt_enable(oal_net_device_stru *pst
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_tcp_tx_ack_limit
- 功能描述  :  设置发送TCP ACK优化使能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_tcp_tx_ack_limit(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -10552,22 +8286,7 @@ OAL_STATIC oal_uint32  wal_hipriv_tcp_tx_ack_limit(oal_net_device_stru *pst_net_
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_tcp_rx_ack_limit
- 功能描述  :  设置接收TCP ACK优化使能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月19日
-    作    者   : z00185449
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_tcp_rx_ack_limit(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -10612,21 +8331,7 @@ OAL_STATIC oal_uint32  wal_hipriv_tcp_rx_ack_limit(oal_net_device_stru *pst_net_
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_20_40_80_COEXIST
-/*****************************************************************************
- 函 数 名  : wal_hipriv_enable_2040bss
- 功能描述  : 配置20/40 bss检测是否使能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月31日
-    作    者   : w00249967
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_enable_2040bss(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -10673,21 +8378,7 @@ OAL_STATIC oal_uint32  wal_hipriv_enable_2040bss(oal_net_device_stru *pst_net_de
 #endif /* _PRE_WLAN_FEATURE_20_40_80_COEXIST */
 
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_txrx_chain
- 功能描述  : 设置收发通道
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月16日
-    作    者   : w00269675
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_txrx_chain(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -10734,21 +8425,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_txrx_chain(oal_net_device_stru *pst_net_de
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_TX_CLASSIFY_LAN_TO_WLAN
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_tx_classify_switch
- 功能描述  : 指定打开或者关闭业务识别功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年11月23日
-    作    者   : wanghao(w00357635)
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_tx_classify_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru  st_write_msg;
@@ -10802,22 +8479,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_tx_classify_switch(oal_net_device_stru *ps
 }
 #endif  /* _PRE_WLAN_FEATURE_TX_CLASSIFY_LAN_TO_WLAN */
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_wifi_enable
- 功能描述  : 私有命令，使能/去使能wifi
- 输入参数  : pst_cfg_net_dev: net_device
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月10日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_WLAN_FEATURE_PM
 OAL_STATIC oal_uint32  wal_hipriv_wifi_enable(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
@@ -10875,22 +8537,7 @@ OAL_STATIC oal_uint32  wal_hipriv_wifi_enable(oal_net_device_stru *pst_cfg_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pm_info
- 功能描述  : 私有命令，PM状态机信息维测输出
- 输入参数  : pst_cfg_net_dev: net_device
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月10日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 
 OAL_STATIC oal_uint32  wal_hipriv_pm_info(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
@@ -10919,22 +8566,7 @@ OAL_STATIC oal_uint32  wal_hipriv_pm_info(oal_net_device_stru *pst_cfg_net_dev, 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pm_enable
- 功能描述  : 私有命令，PM功能关闭开启
- 输入参数  : pst_cfg_net_dev: net_device
-             pc_param: 参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2012年12月10日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_pm_enable(oal_net_device_stru *pst_cfg_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -10992,21 +8624,7 @@ OAL_STATIC oal_uint32  wal_hipriv_pm_enable(oal_net_device_stru *pst_cfg_net_dev
 #endif
 
 #ifdef _PRE_WLAN_CHIP_TEST
-/*****************************************************************************
- 函 数 名  : wal_hipriv_beacon_offload_test
- 功能描述  : 手动配置host sleep, 仅用于测试
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年3月3日
-    作    者   : l00311403
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_beacon_offload_test(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int8                            ac_name[WAL_HIPRIV_CMD_NAME_MAX_LEN] = {0};
@@ -11054,22 +8672,7 @@ OAL_STATIC oal_uint32  wal_hipriv_beacon_offload_test(oal_net_device_stru *pst_n
 }
 
 #if (_PRE_PRODUCT_ID == _PRE_PRODUCT_ID_HI1151)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pci_reg_write
- 功能描述  : 写pci寄存器值(hipriv "Hisilicon0 pciregwrite 0/1(哪个芯片) addr(16进制) val(16进制)")
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月21日
-    作    者   : daihu 00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_pci_reg_write(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_bus_chip_stru   *pst_bus_chip = OAL_PTR_NULL;
@@ -11135,22 +8738,7 @@ oal_uint32  wal_hipriv_pci_reg_write(oal_net_device_stru *pst_net_dev, oal_int8 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_pci_reg_read
- 功能描述  : 读pci寄存器值(hipriv "Hisilicon0 pciregread 0/1(哪个芯片) addr(16进制)")
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月21日
-    作    者   : daihu 00262548
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_pci_reg_read(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_bus_chip_stru   *pst_bus_chip = OAL_PTR_NULL;
@@ -11205,24 +8793,7 @@ oal_uint32  wal_hipriv_pci_reg_read(oal_net_device_stru *pst_net_dev, oal_int8 *
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_5115_reg_write
- 功能描述  : 写5115侧的sys/pcie寄存器
-             命令:sh hipriv.sh "Hisilicon0 regw5115 sys|pcie 0/1(如果是pcie的话要增加哪个芯片) <addr>(寄存器地址) <val>(写入的4字节值)"
-             sys不区分芯片，只有一颗5115或者5610芯片，因此输入0和1都一样
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月4日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_5115_reg_write(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_bus_chip_stru   *pst_bus_chip = OAL_PTR_NULL;
@@ -11361,24 +8932,7 @@ oal_uint32  wal_hipriv_5115_reg_write(oal_net_device_stru *pst_net_dev, oal_int8
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_5115_reg_read
- 功能描述  : 读5115侧的sys/pcie寄存器
-             命令:sh hipriv.sh "Hisilicon0 regw5115 sys|pcie 0/1(如果是pcie的话要增加哪个芯片) <addr>(寄存器地址) <val>(写入的4字节值)"
-             sys不区分芯片，只有一颗5115或者5610芯片，因此输入0和1都一样
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月4日
-    作    者   : mayuan
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_5115_reg_read(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_bus_chip_stru   *pst_bus_chip = OAL_PTR_NULL;
@@ -11512,21 +9066,7 @@ oal_uint32  wal_hipriv_5115_reg_read(oal_net_device_stru *pst_net_dev, oal_int8 
 #ifdef _PRE_WLAN_FEATURE_DFR
 
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dfr_enable
- 功能描述  : 是否使能dfr开关
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年3月9日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dfr_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -11572,21 +9112,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dfr_enable(oal_net_device_stru *pst_net_dev, o
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_trig_pcie_reset
- 功能描述  : 触发pcie复位
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月30日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_trig_pcie_reset(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -11614,21 +9140,7 @@ OAL_STATIC oal_uint32  wal_hipriv_trig_pcie_reset(oal_net_device_stru *pst_net_d
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_trig_loss_tx_comp
- 功能描述  : 触发pcie复位丢失发送完成中断
- 输入参数  : pst_net_dev: net_device
-             pc_param   : 命令行输入参数
- 输出参数  : 无
- 返 回 值  : 错误码
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月30日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_trig_loss_tx_comp(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -11677,22 +9189,7 @@ OAL_STATIC oal_uint32  wal_hipriv_trig_loss_tx_comp(oal_net_device_stru *pst_net
 #endif
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_max_user_num_each_device
- 功能描述  :  设置各设备关联用户个数
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月20日
-    作    者   : wwx293929
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_max_user_num_each_device(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     mac_vap_stru             *pst_mac_vap;
@@ -11736,21 +9233,7 @@ OAL_STATIC oal_uint32 wal_hipriv_max_user_num_each_device(oal_net_device_stru *p
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_WEB_CFG_FIXED_RATE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_mode_ucast_data_dscr_param
- 功能描述  : 针对指定协议模式设置单播数据帧描述符参数
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月1日
-    作    者   : l00330043
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_mode_ucast_data_dscr_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -11850,21 +9333,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_mode_ucast_data_dscr_param(oal_net_device_
 #endif
 
 #ifdef _PRE_DEBUG_MODE_USER_TRACK
-/*****************************************************************************
- 函 数 名  : wal_hipriv_report_thrput_stat
- 功能描述  : 上报或者停止上报影响user实时吞吐的参数统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月19日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_report_thrput_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -11921,22 +9390,7 @@ OAL_STATIC oal_uint32  wal_hipriv_report_thrput_stat(oal_net_device_stru *pst_ne
 #endif
 
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rxch
- 功能描述  : 设置接收通道
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月14日
-    作    者   : pwx287475
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_set_rxch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int8                         c_ch_idx = 0;
@@ -12010,21 +9464,7 @@ OAL_STATIC oal_uint32 wal_hipriv_set_rxch(oal_net_device_stru *pst_net_dev, oal_
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dync_txpower
- 功能描述  : 动态功率校准开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015/9/14
-    作    者   : pwx287475
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dync_txpower(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -12086,21 +9526,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dync_txpower(oal_net_device_stru *pst_net_dev,
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_report_ampdu_stat
- 功能描述  : 上报或者清零用户某一个tid下ampdu业务流程统计
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月26日
-    作    者   : z00237171
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_report_ampdu_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -12169,22 +9595,7 @@ OAL_STATIC oal_uint32  wal_hipriv_report_ampdu_stat(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_tx_comp_cnt
- 功能描述  : 统计发送完成中断的个数;
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月18日,星期三
-    作    者   : x00189397
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_tx_comp_cnt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32      ul_ret          = OAL_SUCC;
@@ -12240,22 +9651,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_tx_comp_cnt(oal_net_device_stru *pst_net_d
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_debug_switch
- 功能描述  :  设置维测调试类型开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月19日,星期三
-    作    者   : y00201072
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_debug_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                          ul_off_set = 0;
@@ -12309,22 +9705,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_debug_switch(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_rx_filter_val
- 功能描述  : 读取帧过滤配置信息
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日,星期四
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_rx_filter_val(oal_int8                **pc_param,
                                                 hmac_cfg_rx_filter_stru *pst_rx_filter_val)
 {
@@ -12382,22 +9763,7 @@ OAL_STATIC oal_uint32  wal_hipriv_rx_filter_val(oal_int8                **pc_par
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rx_filter_val
- 功能描述  : 设置某一状态下帧过滤配置值
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日,星期四
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_rx_filter_val(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                          ul_ret;
@@ -12454,22 +9820,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_rx_filter_val(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_rx_filter_val
- 功能描述  : 设置某一状态下帧过滤配置值
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日,星期四
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_rx_filter_val(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                          ul_ret;
@@ -12510,22 +9861,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_rx_filter_val(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rx_filter_val
- 功能描述  : 设置某一状态下帧过滤配置值
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日,星期四
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_rx_filter_en(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -12570,22 +9906,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_rx_filter_en(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rx_filter_val
- 功能描述  : 设置某一状态下帧过滤配置值
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日,星期四
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_rx_filter_en(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -12619,21 +9940,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_rx_filter_en(oal_net_device_stru *pst_net_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_scan_test
- 功能描述  : 扫描测试命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年11月29日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_scan_test(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -12689,21 +9996,7 @@ OAL_STATIC oal_uint32  wal_hipriv_scan_test(oal_net_device_stru *pst_net_dev, oa
 #endif
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_freq_adjust
- 功能描述  : 频偏调整配置命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年10月29日
-    作    者   : h00212953
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_freq_adjust(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -12758,21 +10051,7 @@ OAL_STATIC oal_uint32  wal_hipriv_freq_adjust(oal_net_device_stru *pst_net_dev, 
 #endif
 
 #ifdef _PRE_SUPPORT_ACS
-/*****************************************************************************
- 函 数 名  : wal_hipriv_acs
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年4月22日
-    作    者   : gaolin
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_acs(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru    st_write_msg;
@@ -12816,21 +10095,7 @@ OAL_STATIC oal_uint32  wal_hipriv_acs(oal_net_device_stru *pst_net_dev, oal_int8
 #endif
 
 #ifdef _PRE_WLAN_PERFORM_STAT
-/*****************************************************************************
- 函 数 名  : wal_hipriv_stat_tid_thrpt
- 功能描述  : 统计指定tid的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_stat_tid_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -12918,21 +10183,7 @@ OAL_STATIC oal_uint32  wal_hipriv_stat_tid_thrpt(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_stat_user_thrpt
- 功能描述  : 统计指定用户的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_stat_user_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13008,21 +10259,7 @@ OAL_STATIC oal_uint32  wal_hipriv_stat_user_thrpt(oal_net_device_stru *pst_net_d
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_stat_vap_thrpt
- 功能描述  : 统计指定用户的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_stat_vap_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13085,21 +10322,7 @@ OAL_STATIC oal_uint32  wal_hipriv_stat_vap_thrpt(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_stat_tid_per
- 功能描述  : 统计指定tid的per
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_stat_tid_per(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13187,21 +10410,7 @@ OAL_STATIC oal_uint32  wal_hipriv_stat_tid_per(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_stat_tid_delay
- 功能描述  : 统计指定tid的delay
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_stat_tid_delay(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13290,21 +10499,7 @@ OAL_STATIC oal_uint32  wal_hipriv_stat_tid_delay(oal_net_device_stru *pst_net_de
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_display_tid_thrpt
- 功能描述  : 统计指定tid的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_display_tid_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13370,21 +10565,7 @@ OAL_STATIC oal_uint32  wal_hipriv_display_tid_thrpt(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_display_user_thrpt
- 功能描述  : 统计指定用户的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_display_user_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13437,21 +10618,7 @@ OAL_STATIC oal_uint32  wal_hipriv_display_user_thrpt(oal_net_device_stru *pst_ne
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_display_vap_thrpt
- 功能描述  : 统计指定用户的吞吐量
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_display_vap_thrpt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13491,21 +10658,7 @@ OAL_STATIC oal_uint32  wal_hipriv_display_vap_thrpt(oal_net_device_stru *pst_net
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_display_tid_per
- 功能描述  : 统计指定tid的per
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_display_tid_per(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13571,21 +10724,7 @@ OAL_STATIC oal_uint32  wal_hipriv_display_tid_per(oal_net_device_stru *pst_net_d
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_display_tid_delay
- 功能描述  : 统计指定tid的delay
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月14日
-    作    者   : xiechunhui
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_display_tid_delay(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13653,22 +10792,7 @@ OAL_STATIC oal_uint32  wal_hipriv_display_tid_delay(oal_net_device_stru *pst_net
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_DAQ
-/*****************************************************************************
- 函 数 名  : wal_hipriv_data_acq
- 功能描述  :  设置维测调试类型开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月19日,星期三
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_data_acq(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13713,22 +10837,7 @@ OAL_STATIC oal_uint32  wal_hipriv_data_acq(oal_net_device_stru *pst_net_dev, oal
 #endif
 
 #ifdef _PRE_WLAN_CHIP_TEST
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_soc_mode
- 功能描述  : 测试命令，设置SOC的低功耗功能开启或关闭
-       hipriv "Hisilicon0 lpm_soc_mode 0|1|2|3|4(总线gating|PCIE RD BY PASS|mem precharge|PCIE L0-S|PCIE L1-0) 0|1(disable|enable)"
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_soc_mode(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13785,21 +10894,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_soc_mode(oal_net_device_stru *pst_net_dev,
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_chip_state
- 功能描述  : 测试命令，控制芯片睡眠或唤醒芯片
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_chip_state(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13844,21 +10939,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_chip_state(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_psm_param
- 功能描述  : 节能参数寄存器配置
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_psm_param(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -13920,21 +11001,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_psm_param(oal_net_device_stru *pst_net_dev
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_smps_mode
- 功能描述  : 测试命令，配置SMPS节能模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_smps_mode(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -13978,21 +11045,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_smps_mode(oal_net_device_stru *pst_net_dev
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_smps_stub
- 功能描述  : 测试命令，打桩设置AP侧发包时的速率
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_smps_stub(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14041,21 +11094,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_smps_stub(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_txopps_set
- 功能描述  : 测试命令，配置TXOP PS节能模式
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_txopps_set(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -14112,21 +11151,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_txopps_set(oal_net_device_stru *pst_net_de
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_txopps_tx_stub
- 功能描述  : 测试TXOP PS节能模式的打桩条件，设置发送第n个报文时，以错误的地址或者错误的Partial AID发包
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_txopps_tx_stub(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -14175,21 +11200,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_txopps_tx_stub(oal_net_device_stru *pst_ne
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_tx_data
- 功能描述  : 指定发包。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_tx_data(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -14244,21 +11255,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_tx_data(oal_net_device_stru *pst_net_dev, 
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_lpm_tx_probe_request
- 功能描述  : 指定发包。
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月15日
-    作    者   : z52447
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_lpm_tx_probe_request(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -14304,21 +11301,7 @@ OAL_STATIC oal_uint32  wal_hipriv_lpm_tx_probe_request(oal_net_device_stru *pst_
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_remove_user_lut
- 功能描述  : 删除回复用户lut表
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月24日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32  wal_hipriv_remove_user_lut(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -14392,21 +11375,7 @@ oal_uint32  wal_hipriv_remove_user_lut(oal_net_device_stru *pst_net_dev, oal_int
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_frame
- 功能描述  : 指定帧类型，指定RA,指定BSSID，发送控制帧或者管理帧
- 输入参数  : dev, param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月21日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_frame(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -14477,21 +11446,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_frame(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_rx_pn
- 功能描述  : 设置RX_PN_LUT_CONFIG寄存器
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_rx_pn(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14563,21 +11518,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_rx_pn(oal_net_device_stru *pst_net_dev, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_soft_retry
- 功能描述  : 设置Software Retry描述符
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_soft_retry(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14636,21 +11577,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_soft_retry(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_open_addr4
- 功能描述  : 包头进入4地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_open_addr4(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14696,21 +11623,7 @@ OAL_STATIC oal_uint32  wal_hipriv_open_addr4(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_open_wmm_test
- 功能描述  : 测试命令，打开/关闭WMM
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_open_wmm_test(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14756,21 +11669,7 @@ OAL_STATIC oal_uint32  wal_hipriv_open_wmm_test(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_chip_test_open
- 功能描述  : 打开芯片验证开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年1月27日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_chip_test_open(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14816,21 +11715,7 @@ OAL_STATIC oal_uint32  wal_hipriv_chip_test_open(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_coex
- 功能描述  : 设置共存开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年3月4日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_coex(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -14891,21 +11776,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_coex(oal_net_device_stru *pst_net_dev, oal
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_dfx
- 功能描述  : 设置DFX特性开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月3日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_dfx(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -14959,22 +11830,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_dfx(oal_net_device_stru *pst_net_dev, oal_
     return OAL_SUCC;
 }
 #if (_PRE_WLAN_FEATURE_PMF != _PRE_PMF_NOT_SUPPORT)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_test_enable_pmf
- 功能描述  : chip test 强制使能pmf
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
-
- 修改历史      :
-  1.日    期   : 2015年1月13日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_enable_pmf(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
 
@@ -15021,21 +11877,7 @@ OAL_STATIC oal_uint32 wal_hipriv_enable_pmf(oal_net_device_stru *pst_net_dev, oa
 }
 #endif
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_test_send_action
- 功能描述  : 配置命令发送action帧
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : z00273164
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC  oal_uint32 wal_hipriv_test_send_action(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -15090,21 +11932,7 @@ OAL_STATIC  oal_uint32 wal_hipriv_test_send_action(oal_net_device_stru *pst_net_
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_pspoll
- 功能描述  : sta发ps-poll
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_pspoll(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -15131,21 +11959,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_pspoll(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_nulldata
- 功能描述  : sta发nulldata
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年6月27日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_nulldata(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru           st_write_msg;
@@ -15208,21 +12022,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_nulldata(oal_net_device_stru *pst_net_dev
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_mgmt_stat
- 功能描述  : 打印管理帧统计信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2013年12月10日
-    作    者   : zhangheng
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_clear_all_stat(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -15249,22 +12049,7 @@ OAL_STATIC oal_uint32  wal_hipriv_clear_all_stat(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_parse_ops_param
- 功能描述  : 解析字符串中CT WINDOW 参数
- 输入参数  : oal_int8 *pc_param
-             mac_cfg_p2p_ops_param_stru *pst_p2p_ops_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32   wal_parse_ops_param(oal_int8 *pc_param, mac_cfg_p2p_ops_param_stru *pst_p2p_ops_param)
 {
     oal_uint32                  ul_ret;
@@ -15320,22 +12105,7 @@ OAL_STATIC oal_uint32   wal_parse_ops_param(oal_int8 *pc_param, mac_cfg_p2p_ops_
 
 
 #ifdef  _PRE_WLAN_FEATURE_P2P
-/*****************************************************************************
- 函 数 名  : wal_parse_noa_param
- 功能描述  : 解析字符串中NOA 参数
- 输入参数  : oal_int8 *pc_param
-             mac_cfg_p2p_noa_param_stru *pst_p2p_noa_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32   wal_parse_noa_param(oal_int8 *pc_param, mac_cfg_p2p_noa_param_stru *pst_p2p_noa_param)
 {
     oal_int8                    ac_name[WAL_HIPRIV_CMD_NAME_MAX_LEN];
@@ -15400,22 +12170,7 @@ OAL_STATIC oal_uint32   wal_parse_noa_param(oal_int8 *pc_param, mac_cfg_p2p_noa_
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_p2p_ps
- 功能描述  : 芯片验证，设置P2P 节能寄存器
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年1月14日
-    作    者   : duankaiyong 00194999
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_p2p_ps(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -15533,21 +12288,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_p2p_ps(oal_net_device_stru *pst_net_dev, o
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_PROXYSTA
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_oma
- 功能描述  : 设置Proxy STA的oma地址
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年4月23日
-    作    者   : y00184180
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_oma(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -15597,23 +12338,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_oma(oal_net_device_stru *pst_net_dev, oal_
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_proxysta_switch
- 功能描述  : 设置proxysta模块使能开关，1开启，0关闭
- 输入参数  : oal_net_device_stru *pst_net_dev,
-             oal_int8 *pc_param,
- 输出参数  : 无
- 返 回 值  : OAL_SUCC, 设置开关成功
-             Others,   设置失败
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月15日
-    作    者   : l00279018
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_proxysta_switch(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -15670,21 +12395,7 @@ OAL_STATIC oal_uint32  wal_hipriv_proxysta_switch(oal_net_device_stru *pst_net_d
 #endif
 
 #ifdef _PRE_WLAN_DFT_REG
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_reg
- 功能描述  : 设置需要查看的寄存器类型 参数为phy/mac/soc/abb/rf +
- 输入参数  : pst_net_dev， pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_reg(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -15758,21 +12469,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_reg(oal_net_device_stru *pst_net_dev, oal
                         uc_flag);
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_reg_evt
- 功能描述  : 设置需要查看的寄存器类型 参数为tbtt/rx/tx/prd + cnt
- 输入参数  : pst_net_dev， pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_reg_evt(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -15872,21 +12569,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_reg_evt(oal_net_device_stru *pst_net_dev,
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_reg_addr
- 功能描述  : 根据寄存器的地址设置寄存器的开关
- 输入参数  : pst_net_dev， pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_reg_addr(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_off_set;
@@ -15977,21 +12660,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_reg_addr(oal_net_device_stru *pst_net_dev
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_dump_reg_info
- 功能描述  : 查看寄存器读取调试信息
- 输入参数  : pst_net_dev， pc_param
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年5月23日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_dump_reg_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oam_reg_info();
@@ -16000,21 +12669,7 @@ OAL_STATIC oal_uint32  wal_hipriv_dump_reg_info(oal_net_device_stru *pst_net_dev
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_MCAST
-/*****************************************************************************
- 函 数 名  : wal_hipriv_m2u_snoop_on
- 功能描述  : 开启或关闭组播转单播功能
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月11日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_m2u_snoop_on(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16071,21 +12726,7 @@ OAL_STATIC oal_uint32  wal_hipriv_m2u_snoop_on(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_m2u_add_deny_table
- 功能描述  : 增加组播
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月11日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_m2u_add_deny_table(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16132,21 +12773,7 @@ OAL_STATIC oal_uint32  wal_hipriv_m2u_add_deny_table(oal_net_device_stru *pst_ne
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_m2u_cfg_deny_table
- 功能描述  : 清空组播组黑名单
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月28日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_m2u_cfg_deny_table(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16204,21 +12831,7 @@ OAL_STATIC oal_uint32  wal_hipriv_m2u_cfg_deny_table(oal_net_device_stru *pst_ne
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_m2u_show_snoop_table
- 功能描述  : show snoop table
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月28日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_m2u_show_snoop_table(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16263,21 +12876,7 @@ OAL_STATIC oal_uint32  wal_hipriv_m2u_show_snoop_table(oal_net_device_stru *pst_
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_igmp_packet_xmit
- 功能描述  :
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年7月31日
-    作    者   : l00280485
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_igmp_packet_xmit(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -16359,21 +12958,7 @@ OAL_STATIC oal_uint32  wal_hipriv_igmp_packet_xmit(oal_net_device_stru *pst_net_
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_PROXY_ARP
-/*****************************************************************************
- 函 数 名  : wal_hipriv_proxyarp_on
- 功能描述  : 开启或关闭proxyarp特性
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月8日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_proxyarp_on(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16417,21 +13002,7 @@ OAL_STATIC oal_uint32  wal_hipriv_proxyarp_on(oal_net_device_stru *pst_net_dev, 
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_proxyarp_info
- 功能描述  : 打印proxyarp调试信息
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月8日
-    作    者   : z00260280
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 #ifdef _PRE_DEBUG_MODE
 OAL_STATIC oal_uint32  wal_hipriv_proxyarp_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
@@ -16464,22 +13035,7 @@ OAL_STATIC oal_uint32  wal_hipriv_proxyarp_info(oal_net_device_stru *pst_net_dev
 
 #ifdef _PRE_WLAN_FEATURE_SMPS
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_smps_info
- 功能描述  :  设置维测调试类型开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年2月19日,星期三
-    作    者   : z00241943
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_smps_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -16516,22 +13072,7 @@ OAL_STATIC oal_uint32  wal_hipriv_get_smps_info(oal_net_device_stru *pst_net_dev
 #endif
 
 #ifdef _PRE_WLAN_PROFLING_MIPS
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_mips
- 功能描述  :
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月12日
-    作    者   : w00316376
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_mips(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_ret;
@@ -16583,22 +13124,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_mips(oal_net_device_stru *pst_net_dev, oal
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_mips
- 功能描述  :
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年2月12日
-    作    者   : w00316376
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_show_mips(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                      ul_ret;
@@ -16639,21 +13165,7 @@ OAL_STATIC oal_uint32  wal_hipriv_show_mips(oal_net_device_stru *pst_net_dev, oa
 #endif
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_resume_rx_intr_fifo
- 功能描述  : 使能rx intr fifo命令
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月21日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_resume_rx_intr_fifo(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru                  st_write_msg;
@@ -16701,21 +13213,7 @@ OAL_STATIC oal_uint32  wal_hipriv_resume_rx_intr_fifo(oal_net_device_stru *pst_n
 #endif
 
 #if (_PRE_MULTI_CORE_MODE_OFFLOAD_DMAC != _PRE_MULTI_CORE_MODE)
-/*****************************************************************************
- 函 数 名  : wal_hipriv_set_ampdu_mmss
- 功能描述  : 设置AMPDU的mmss字段
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月20日
-    作    者   : huxiaotong
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_set_ampdu_mmss(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru       st_write_msg;
@@ -16769,22 +13267,7 @@ OAL_STATIC oal_uint32  wal_hipriv_set_ampdu_mmss(oal_net_device_stru *pst_net_de
 
 #ifdef _PRE_WLAN_FEATURE_ARP_OFFLOAD
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_arp_offload_enable
- 功能描述  : 用命令打开/关闭ARP offload功能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年5月21日
-    作    者   : w00316376
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_hipriv_arp_offload_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                     ul_ret;
@@ -16825,22 +13308,7 @@ oal_uint32 wal_hipriv_arp_offload_enable(oal_net_device_stru *pst_net_dev, oal_i
 }
 #endif //#ifdef _PRE_DEBUG_MODE
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_show_arpoffload_info
- 功能描述  : 显示Device侧记录的IP地址
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年8月10日
-    作    者   : w00316376
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 oal_uint32 wal_hipriv_show_arpoffload_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -16900,22 +13368,7 @@ oal_uint32 wal_hipriv_show_arpoffload_info(oal_net_device_stru *pst_net_dev, oal
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_ROAM
-/*****************************************************************************
- 函 数 名  : wal_hipriv_roam_enable
- 功能描述  : 用命令打开/关闭漫游功能
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_roam_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                 ul_ret;
@@ -16954,22 +13407,7 @@ OAL_STATIC oal_uint32 wal_hipriv_roam_enable(oal_net_device_stru *pst_net_dev, o
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_roam_org
- 功能描述  : 配置漫游频段
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_roam_org(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                 ul_ret;
@@ -17008,22 +13446,7 @@ OAL_STATIC oal_uint32 wal_hipriv_roam_org(oal_net_device_stru *pst_net_dev, oal_
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_roam_band
- 功能描述  : 配置漫游频段
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_roam_band(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_uint32                 ul_ret;
@@ -17062,22 +13485,7 @@ OAL_STATIC oal_uint32 wal_hipriv_roam_band(oal_net_device_stru *pst_net_dev, oal
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_roam_start
- 功能描述  : 用命令开始漫游
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_roam_start(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int32                  l_ret;
@@ -17129,22 +13537,7 @@ OAL_STATIC oal_uint32 wal_hipriv_roam_start(oal_net_device_stru *pst_net_dev, oa
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_roam_info
- 功能描述  : 用命令开始漫游
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年6月11日
-    作    者   : g00260350
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32 wal_hipriv_roam_info(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     oal_int32                  l_ret;
@@ -17177,22 +13570,7 @@ OAL_STATIC oal_uint32 wal_hipriv_roam_info(oal_net_device_stru *pst_net_dev, oal
 #endif //_PRE_WLAN_FEATURE_ROAM
 
 #ifdef _PRE_WLAN_FEATURE_HILINK_DEBUG
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_set_mode
- 功能描述  : 设置快速切换fbt模式
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月16日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_set_mode(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17245,22 +13623,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_set_mode(oal_net_device_stru *pst_net_dev,
     return OAL_SUCC;
 
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_list_clear
- 功能描述  : 清除扫描列表
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月16日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_list_clear(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -17287,22 +13650,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_list_clear(oal_net_device_stru *pst_n
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_specified_sta
- 功能描述  : 侦听指定用户
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月17日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_specified_sta(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -17346,22 +13694,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_specified_sta(oal_net_device_stru *ps
 
     return OAL_SUCC;
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_start_scan
- 功能描述  : 触发侦听
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月17日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_start_scan(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -17389,22 +13722,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_start_scan(oal_net_device_stru *pst_net_de
     return OAL_SUCC;
 
 }
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_print_scan_list
- 功能描述  : 打印侦听列表
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月17日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_print_scan_list(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -17432,22 +13750,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_print_scan_list(oal_net_device_stru *pst_n
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_enable
- 功能描述  : 设置快速切换侦听模式开关
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月22日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_enable(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17502,22 +13805,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_enable(oal_net_device_stru *pst_net_d
 }
 
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_interval
- 功能描述  : 设置快速切换侦听时长
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月22日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_interval(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17576,22 +13864,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_interval(oal_net_device_stru *pst_net
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_channel
- 功能描述  : 设置快速切换侦听信道
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月22日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_channel(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17650,22 +13923,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_channel(oal_net_device_stru *pst_net_
 
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_fbt_scan_report_period
- 功能描述  : 设置快速切换侦听上报周期
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2015年12月22日
-    作    者   : w00355005
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_report_period(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17727,21 +13985,7 @@ OAL_STATIC oal_uint32  wal_hipriv_fbt_scan_report_period(oal_net_device_stru *ps
 #endif
 
 #ifdef _PRE_WLAN_FEATURE_EQUIPMENT_TEST
-/*****************************************************************************
- 函 数 名  : wal_hipriv_chip_check
- 功能描述  : 芯片自检开关
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : f00290085
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_chip_check(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru          st_write_msg;
@@ -17802,21 +14046,7 @@ OAL_STATIC oal_uint32  wal_hipriv_chip_check(oal_net_device_stru *pst_net_dev, o
     return OAL_SUCC;
 }
 
-/*****************************************************************************
- 函 数 名  : wal_hipriv_send_cw_signal
- 功能描述  : 发送单音信号
- 输入参数  : 无
- 输出参数  : 无
- 返 回 值  :
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2016年1月6日
-    作    者   : l00222214
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_send_cw_signal(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru               st_write_msg;
@@ -17887,22 +14117,7 @@ OAL_STATIC oal_uint32  wal_hipriv_send_cw_signal(oal_net_device_stru *pst_net_de
 #endif
 
 #ifdef _PRE_DEBUG_MODE
-/*****************************************************************************
- 函 数 名  : wal_hipriv_get_all_reg_value
- 功能描述  : wal_hipriv_get_all_reg_value
- 输入参数  : oal_net_device_stru *pst_net_dev
-             oal_int8 *pc_param
- 输出参数  : 无
- 返 回 值  : OAL_STATIC oal_uint32
- 调用函数  :
- 被调函数  :
 
- 修改历史      :
-  1.日    期   : 2014年8月1日
-    作    者   : z00285102
-    修改内容   : 新生成函数
-
-*****************************************************************************/
 OAL_STATIC oal_uint32  wal_hipriv_get_all_reg_value(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
 {
     wal_msg_write_stru              st_write_msg;
@@ -17937,6 +14152,31 @@ OAL_STATIC oal_uint32  wal_hipriv_get_all_reg_value(oal_net_device_stru *pst_net
 }
 
 #endif
+
+
+extern oal_uint8    g_sk_pacing_shift;
+OAL_STATIC oal_uint32 wal_hipriv_sk_pacing_shift(oal_net_device_stru *pst_net_dev, oal_int8 *pc_param)
+{
+    oal_uint32                 ul_ret;
+    oal_uint32                 ul_off_set;
+    oal_int8                   ac_name[WAL_HIPRIV_CMD_NAME_MAX_LEN];
+
+    ul_ret = wal_get_cmd_one_arg(pc_param, ac_name, &ul_off_set);
+
+    if (OAL_SUCC == ul_ret)
+    {
+        g_sk_pacing_shift  = (oal_uint8)oal_atoi(ac_name);
+    }
+    else
+    {
+        OAM_WARNING_LOG1(0, OAM_SF_ROAM, "{wal_hipriv_sk_pacing_shift::input parameter error[%d]}", ul_ret);
+        return ul_ret;
+    }
+
+    OAM_WARNING_LOG1(0, OAM_SF_ROAM, "{wal_hipriv_sk_pacing_shift::set sk pacing shift [%d]}", g_sk_pacing_shift);
+    return OAL_SUCC;
+}
+
 
 OAL_CONST wal_hipriv_cmd_entry_stru  g_ast_hipriv_cmd_debug[] =
 {
@@ -18068,7 +14308,6 @@ OAL_CONST wal_hipriv_cmd_entry_stru  g_ast_hipriv_cmd_debug[] =
 #ifdef _PRE_DEBUG_MODE
     {"send_bar",                wal_hipriv_send_bar},               /* 指定tid发送bar hipriv "vap0 send_bar A6C758662817(mac地址) tid_num" */
 #endif //#ifdef _PRE_DEBUG_MODE
-    {"packet_xmit",             wal_hipriv_packet_xmit},            /* 向目标STA/AP发送数据帧: hipriv "vap0 packet_xmit (tid_no) (报文个数) (报文长度) (RA MAC)" */
 #ifdef _PRE_DEBUG_MODE
     {"dump_ba_bitmap",          wal_hipriv_dump_ba_bitmap},         /* 打印发送ba的bitmap hipriv "vap0 dump_ba_bitmap (tid_no) (RA)" */
 #endif //#ifdef _PRE_DEBUG_MODE
@@ -18438,6 +14677,7 @@ OAL_CONST wal_hipriv_cmd_entry_stru  g_ast_hipriv_cmd_debug[] =
     {"chip_check",      wal_hipriv_chip_check},                  /* 芯片自检 */
     {"cfg_cw_signal",   wal_hipriv_send_cw_signal},               /* 发送单音信号:         hipriv "wlan0 cfg_cw_signal   <value>" */
 #endif
+    {"sk_pacing_shift", wal_hipriv_sk_pacing_shift},            /* 设置sk_pacing_shift  hipriv "wlan0 sk_pacing_shift <value>" */
 };
 
 oal_uint32 wal_hipriv_get_debug_cmd_size(oal_void)

@@ -45,29 +45,16 @@ main-objs := $(addprefix main/,$(main-objs))
 
 pm-objs :=  plat_firmware.o plat_pm.o  plat_pm_wlan.o plat_cali.o plat_efuse.o
 
-ifeq ($(CONFIG_HISI_GPS_REF_CLK),y)
-ifeq ($(CONFIG_ARCH_HI6250),y)
-pm-objs += gps_plat_hi6250.o
+ifeq ($(CONFIG_HI110X_GPS_REFCLK),y)
+ifeq ($(CONFIG_HI110X_GPS_REFCLK_SRC_1),y)
+pm-objs += gps_refclk_src_1.o
 endif
-ifeq ($(CONFIG_ARCH_HI3650),y)
-pm-objs += gps_plat_hi3650.o
+ifeq ($(CONFIG_HI110X_GPS_REFCLK_SRC_2),y)
+pm-objs += gps_refclk_src_2.o
 endif
+ifeq ($(CONFIG_HI110X_GPS_REFCLK_SRC_3),y)
+pm-objs += gps_refclk_src_3.o
 endif
-
-ifeq ($(CONFIG_CONNECTIVITY_HI110X_HI6250),y)
-pm-objs += gps_plat_hi6250.o
-endif
-ifeq ($(CONFIG_CONNECTIVITY_HI110X_HI3650),y)
-pm-objs += gps_plat_hi3650.o
-endif
-ifeq ($(CONFIG_CONNECTIVITY_HI110X_HI3660),y)
-pm-objs += gps_plat_hi3660.o
-endif
-ifeq ($(CONFIG_CONNECTIVITY_HI110X_KIRIN970),y)
-pm-objs += gps_plat_hi3660.o
-endif
-ifeq ($(CONFIG_CONNECTIVITY_HI110X_KIRIN660),y)
-pm-objs += gps_plat_hi3660.o
 endif
 
 pm-objs := $(addprefix pm/,$(pm-objs))
@@ -164,7 +151,9 @@ HI110X_VER_COMMIT_TIME = $(shell cd $(HI1102_DRIVER_SRC_PATH);git log -1 --prett
 
 HI110X_VERSION="\"commitId:$(HI110X_VER_COMMIT_ID), commitTime:$(HI110X_VER_COMMIT_TIME)\""
 
+ifeq ($(KERNEL_MODULES_BUILD_VERSION), y)
 KBUILD_CFLAGS += -DHI110X_DRV_VERSION=$(HI110X_VERSION)
+endif
 endif
 $(warning HI110X_VER_COMMIT_ID: $(HI110X_VER_COMMIT_ID))
 $(warning HI110X_VER_COMMIT_TIME: $(HI110X_VER_COMMIT_TIME))
