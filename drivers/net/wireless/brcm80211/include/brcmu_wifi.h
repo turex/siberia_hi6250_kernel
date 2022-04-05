@@ -237,6 +237,8 @@ static inline bool ac_bitmap_tst(u8 bitmap, int prec)
 #define WPA2_AUTH_RESERVED4	0x0400
 #define WPA2_AUTH_RESERVED5	0x0800
 
+#define WPA3_AUTH_SAE_PSK	0x40000	/* SAE with 4-way handshake */
+
 /* pmkid */
 #define	MAXPMKID		16
 

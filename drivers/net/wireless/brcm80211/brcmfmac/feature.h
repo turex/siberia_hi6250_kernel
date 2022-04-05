@@ -24,6 +24,7 @@
  * PNO: preferred network offload.
  * WOWL: Wake-On-WLAN.
  * P2P: peer-to-peer
+ * SAE: simultaneous authentication of equals
  */
 #define BRCMF_FEAT_LIST \
 	BRCMF_FEAT_DEF(MBSS) \
@@ -31,7 +32,8 @@
 	BRCMF_FEAT_DEF(PNO) \
 	BRCMF_FEAT_DEF(WOWL) \
 	BRCMF_FEAT_DEF(P2P) \
-	BRCMF_FEAT_DEF(FWSUP)
+	BRCMF_FEAT_DEF(FWSUP) \
+	BRCMF_FEAT_DEF(SAE)
 /*
  * Quirks:
  *

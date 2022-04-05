@@ -48,6 +48,8 @@
 #define BRCMF_WSEC_MAX_PSK_LEN		32
 #define	BRCMF_WSEC_PASSPHRASE		BIT(0)
 
+#define BRCMF_WSEC_MAX_SAE_PASSWORD_LEN 128
+
 /* scan type definitions */
 #define BRCMF_SCANTYPE_DEFAULT		0xFF
 #define BRCMF_SCANTYPE_ACTIVE		0
@@ -446,6 +448,17 @@ struct brcmf_wsec_pmk_le {
 	__le16  key_len;
 	__le16  flags;
 	u8 key[2 * BRCMF_WSEC_MAX_PSK_LEN + 1];
+};
+
+/**
+ * struct brcmf_wsec_sae_pwd_le - firmware SAE password material.
+ *
+ * @key_len: number of octets in key materials.
+ * @key: SAE password material.
+ */
+struct brcmf_wsec_sae_pwd_le {
+	__le16 key_len;
+	u8 key[BRCMF_WSEC_MAX_SAE_PASSWORD_LEN];
 };
 
 
