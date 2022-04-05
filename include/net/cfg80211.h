@@ -589,6 +589,9 @@ enum survey_info_flags {
  * @time_rx: amount of time the radio spent receiving data
  * @time_tx: amount of time the radio spent transmitting data
  * @time_scan: amount of time the radio spent for scanning
+ * @sae_pwd: password for SAE authentication (for devices supporting SAE
++  offload)
++  @sae_pwd_len: length of SAE password (for devices supporting SAE offload)
  *
  * Used by dump_survey() to report back per-channel survey information.
  *
@@ -635,6 +638,8 @@ struct cfg80211_crypto_settings {
 	bool control_port;
 	__be16 control_port_ethertype;
 	bool control_port_no_encrypt;
+	const u8 *sae_pwd;
+	u16 sae_pwd_len;
 };
 
 /**

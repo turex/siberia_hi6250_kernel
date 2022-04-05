@@ -437,6 +437,8 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
 	[NL80211_ATTR_NETNS_FD] = { .type = NLA_U32 },
 	[NL80211_ATTR_SCHED_SCAN_DELAY] = { .type = NLA_U32 },
 	[NL80211_ATTR_REG_INDOOR] = { .type = NLA_FLAG },
+	[NL80211_ATTR_SAE_PASSWORD] = { .type = NLA_BINARY,
+					.len = SAE_PASSWORD_MAX_LEN },
 };
 
 /* policy for the key attributes */
@@ -3335,6 +3337,8 @@ static bool nl80211_valid_auth_type(struct cfg80211_registered_device *rdev,
 	switch (cmd) {
 	case NL80211_CMD_AUTHENTICATE:
 		if (!(rdev->wiphy.features & NL80211_FEATURE_SAE) &&
+			!wiphy_ext_feature_isset(&rdev->wiphy,
++					     NL80211_EXT_FEATURE_SAE_OFFLOAD) &&
 		    auth_type == NL80211_AUTHTYPE_SAE)
 			return false;
 		return true;
@@ -7260,6 +7264,16 @@ static int nl80211_crypto_settings(struct cfg80211_registered_device *rdev,
 			return -EINVAL;
 
 		memcpy(settings->akm_suites, data, len);
+	}
+
+	if (info->attrs[NL80211_ATTR_SAE_PASSWORD]) {
+		if (!wiphy_ext_feature_isset(&rdev->wiphy,
+					     NL80211_EXT_FEATURE_SAE_OFFLOAD))
+			return -EINVAL;
+		settings->sae_pwd =
+			nla_data(info->attrs[NL80211_ATTR_SAE_PASSWORD]);
+		settings->sae_pwd_len =
+			nla_len(info->attrs[NL80211_ATTR_SAE_PASSWORD]);
 	}
 
 	return 0;

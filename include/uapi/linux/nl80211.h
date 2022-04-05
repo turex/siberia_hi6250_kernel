@@ -171,8 +171,23 @@
  * Multiple such rules can be created.
  */
 
+ /**
+ * DOC: SAE authentication offload
+ *
+ * By setting @NL80211_EXT_FEATURE_SAE_OFFLOAD flag drivers can indicate they
+ * support offloading SAE authentication for WPA3-Personal networks. In
+ * %NL80211_CMD_CONNECT the password for SAE should be specified using
+ * %NL80211_ATTR_SAE_PASSWORD.
+ */
+
+/**
+
 /**
  * enum nl80211_commands - supported nl80211 commands
+ *
+ * @NL80211_ATTR_SAE_PASSWORD: attribute for passing SAE password material. It
+ *	is used with %NL80211_CMD_CONNECT to provide password for offloading
+ *	SAE authentication for WPA3-Personal networks.
  *
  * @NL80211_CMD_UNSPEC: unspecified command to catch errors
  *
@@ -2170,6 +2185,8 @@ enum nl80211_attrs {
 	NL80211_ATTR_MAX_SCAN_PLAN_INTERVAL,
 	NL80211_ATTR_MAX_SCAN_PLAN_ITERATIONS,
 	NL80211_ATTR_SCHED_SCAN_PLANS,
+
+	NL80211_ATTR_SAE_PASSWORD,
 
 	/* add attributes here, update the policy in nl80211.c */
 
@@ -4375,6 +4392,9 @@ enum nl80211_ap_sme_features {
  *	random MAC address for every scan iteration during "net detect", i.e.
  *	scan in unassociated WoWLAN, the %NL80211_SCAN_FLAG_RANDOM_ADDR may
  *	be set for scheduled scan and the MAC address mask/value will be used.
+ *
+ * @NL80211_EXT_FEATURE_SAE_OFFLOAD: Device wants to do SAE authentication in
+ *	station mode (SAE password is passed as part of the connect command).
  */
 enum nl80211_feature_flags {
 	NL80211_FEATURE_SK_TX_STATUS			= 1 << 0,
@@ -4423,7 +4443,8 @@ enum nl80211_ext_feature_index {
 
 	/* add new features before the definition below */
 	NUM_NL80211_EXT_FEATURES,
-	MAX_NL80211_EXT_FEATURES = NUM_NL80211_EXT_FEATURES - 1
+	MAX_NL80211_EXT_FEATURES = NUM_NL80211_EXT_FEATURES - 1,
+	NL80211_EXT_FEATURE_SAE_OFFLOAD
 };
 
 /**
