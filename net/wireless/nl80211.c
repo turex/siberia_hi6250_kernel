@@ -7064,7 +7064,8 @@ static bool nl80211_valid_wpa_versions(u32 wpa_versions)
 /*WAPI*/
 				NL80211_WAPI_VERSION_1 |	/*lint !e655*/
 #endif
-				  NL80211_WPA_VERSION_2));
+				  NL80211_WPA_VERSION_2 |
+				  NL80211_WPA_VERSION_3));
 }
 
 static int nl80211_authenticate(struct sk_buff *skb, struct genl_info *info)
