@@ -121,6 +121,11 @@ struct brcmf_cfg80211_security {
 	u32 wpa_auth;
 };
 
+enum brcmf_profile_fwsup {
+	BRCMF_PROFILE_FWSUP_NONE,
+	BRCMF_PROFILE_FWSUP_PSK
+};
+
 /**
  * struct brcmf_cfg80211_profile - profile information.
  *
@@ -134,6 +139,7 @@ struct brcmf_cfg80211_profile {
 	u8 bssid[ETH_ALEN];
 	struct brcmf_cfg80211_security sec;
 	struct brcmf_wsec_key key[BRCMF_MAX_DEFAULT_KEYS];
+	enum brcmf_profile_fwsup use_fwsup;
 };
 
 /**
@@ -141,16 +147,20 @@ struct brcmf_cfg80211_profile {
  *
  * @BRCMF_VIF_STATUS_READY: ready for operation.
  * @BRCMF_VIF_STATUS_CONNECTING: connect/join in progress.
- * @BRCMF_VIF_STATUS_CONNECTED: connected/joined succesfully.
+ * @BRCMF_VIF_STATUS_CONNECTED: connected/joined successfully.
  * @BRCMF_VIF_STATUS_DISCONNECTING: disconnect/disable in progress.
  * @BRCMF_VIF_STATUS_AP_CREATED: AP operation started.
+ * @BRCMF_VIF_STATUS_EAP_SUCCUSS: EAPOL handshake successful.
+ * @BRCMF_VIF_STATUS_ASSOC_SUCCESS: successful SET_SSID received.
  */
 enum brcmf_vif_status {
 	BRCMF_VIF_STATUS_READY,
 	BRCMF_VIF_STATUS_CONNECTING,
 	BRCMF_VIF_STATUS_CONNECTED,
 	BRCMF_VIF_STATUS_DISCONNECTING,
-	BRCMF_VIF_STATUS_AP_CREATED
+	BRCMF_VIF_STATUS_AP_CREATED,
+	BRCMF_VIF_STATUS_EAP_SUCCESS,
+	BRCMF_VIF_STATUS_ASSOC_SUCCESS,
 };
 
 /**
