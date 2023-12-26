@@ -5,6 +5,8 @@
 
 #include "teek_client_type.h"
 
+#define TC_DEBUG
+
 #ifdef SECURITY_AUTH_ENHANCE
 #define SCRAMBLING_KEY_LEN    4
 #define TOKEN_BUFFER_LEN    42   /* token(32byte) + timestamp(8byte) + kernal_api(1byte) + sync(1byte)*/

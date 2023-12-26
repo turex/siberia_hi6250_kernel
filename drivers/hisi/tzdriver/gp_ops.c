@@ -975,6 +975,7 @@ int tc_client_call(TC_NS_ClientContext *client_context,
 	bool is_token_work = false;
 	struct mb_cmd_pack *mb_pack;
 	bool operation_init = false;
+	char my_pkname[256];
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
 	kuid_t kuid;
@@ -993,7 +994,7 @@ int tc_client_call(TC_NS_ClientContext *client_context,
 		tloge("client_context is null");
 		return -EINVAL;
 	}
-
+	
 	if (client_context->cmd_id == GLOBAL_CMD_ID_OPEN_SESSION)
 		CFC_FUNC_ENTRY(tc_client_call);
 
@@ -1009,6 +1010,10 @@ int tc_client_call(TC_NS_ClientContext *client_context,
 		return -ENOMEM;
 	}
 
+	memset(my_pkname,0,256);
+	memcpy(my_pkname,dev_file->pkg_name,dev_file->pkg_name_len);
+	tlogi("pkg_name is : %s",my_pkname);
+	
 	tlogd("Calling command %08x\n", client_context->cmd_id);
 
 	if (client_context->paramTypes != 0) {

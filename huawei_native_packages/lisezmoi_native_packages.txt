@@ -1,0 +1,26 @@
+Voici une explication du fonctionnement du tee dans un environnement Huawei
+
+Le TEEOS est un environnement sécurisé qui permet d'exectuer des ordres..
+Pour y accéder vous devez ouvrir une session Il existe plusieurs mode d'authentification, la méthode IDENTITY utilise un fichier appelé native_packages.xml qui contiennent les hash SHA256 (32 octets) des processus qui essayent de s'authentifier a l'environnement TEEOS. Le fichier sous EMUI5 n'est pas codé, par contre il l'est sous EMUI8 et sous EMUI9.1. Ce fichier n'est pas un XML mais un binaire
+
+Il y a une vérification de ce hash au moment de l'ouverture de session. Pour récupérer les vrais hash vous devez donc mettre une trace qui les affichent dans un kernel que vous installez dans une ROM d'origine Huawei
+
+Ensuite vous pouvez utiliser vos propres processus (gatekeeper, fingerprint, keystore etc..) recompilés en passant juste les hash qui correspondent a ceux que l'on a dans les fichier native_packages.xml
+
+
+Hash pour EMUI8
+[   53.050231] [pid:944,cpu5,android.hardwar](944, android.hardwar)tee_calc_task_hash: name = android.hardwar
+[   53.050262] [pid:944,cpu5,android.hardwar](944, android.hardwar)tee_calc_task_hash: code_size = 3460, start_code = 410699239424, end_code = 410699242884
+[   53.050354] [pid:944,cpu5,android.hardwar]dump_hash(944, android.hardwar): Hack - Dump SHA256 hash for /vendor/bin/hw/android.hardware.gatekeeper@1.0-service
+[   53.050354] [pid:944,cpu5,android.hardwar]dump_hash(944, android.hardwar): {0x7C, 0xC0, 0xDD, 0x2F, 0x56, 0xE4, 0x81, 0x25, 
+[   53.050354] [pid:944,cpu5,android.hardwar]dump_hash(944, android.hardwar): 0xD4, 0xCB, 0x65, 0x44, 0x0F, 0xC2, 0xA5, 0x17, 
+[   53.050354] [pid:944,cpu5,android.hardwar]dump_hash(944, android.hardwar): 0x83, 0xC0, 0x30, 0x9F, 0xF2, 0xF6, 0x8E, 0x60,  
+[   53.050354] [pid:944,cpu5,android.hardwar]dump_hash(944, android.hardwar): 0xDB, 0x3B, 0xFA, 0x70, 0x4C, 0x06, 0xFA, 0xFD}
+
+[   55.763793] [pid:1133,cpu6,vendor.huawei.h](1133, vendor.huawei.h)tee_calc_task_hash: name = vendor.huawei.h
+[   55.763793] [pid:1133,cpu6,vendor.huawei.h](1133, vendor.huawei.h)tee_calc_task_hash: code_size = 31212, start_code = 432034324480, end_code = 432034355692
+[   55.764221] [pid:1133,cpu6,vendor.huawei.h]dump_hash(1133, vendor.huawei.h): Hack - Dump SHA256 hash for /vendor/bin/hw/vendor.huawei.hardware.biometrics.fingerprint@2.1-service
+[   55.764221] [pid:1133,cpu6,vendor.huawei.h]dump_hash(1133, vendor.huawei.h): {0xE3, 0x04, 0x49, 0x46, 0xA7, 0x65, 0x56, 0xD5, 
+[   55.764221] [pid:1133,cpu6,vendor.huawei.h]dump_hash(1133, vendor.huawei.h): 0xB9, 0xD8, 0x95, 0x75, 0x73, 0xC1, 0x53, 0xE8, 
+[   55.764221] [pid:1133,cpu6,vendor.huawei.h]dump_hash(1133, vendor.huawei.h): 0x50, 0x73, 0x30, 0xBD, 0xA9, 0x6A, 0x34, 0x9C,  
+[   55.764251] [pid:1133,cpu6,vendor.huawei.h]dump_hash(1133, vendor.huawei.h): 0xA0, 0xF8, 0xDA, 0xAC, 0x4D, 0xB0, 0x9C, 0xA4}  
