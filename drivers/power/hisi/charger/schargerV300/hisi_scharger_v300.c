@@ -24,7 +24,7 @@
 #include <linux/hisi/usb/hisi_usb.h>
 #include <linux/power/hisi/hisi_bci_battery.h>
 #include <linux/power/hisi/coul/hisi_coul_drv.h>
-#include <hisi_scharger_v300.h>
+#include "hisi_scharger_v300.h"
 #include <linux/raid/pq.h>
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <huawei_platform/devdetect/hw_dev_dec.h>

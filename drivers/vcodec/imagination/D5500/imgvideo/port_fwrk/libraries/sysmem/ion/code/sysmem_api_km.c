@@ -59,7 +59,9 @@
  * IMG_KERNEL_ION_HEADER can be <linux/ion.h>, which expands to <1/ion.h>
  */
 #undef linux
-#include IMG_KERNEL_ION_HEADER
+//#include IMG_KERNEL_ION_HEADER
+#include "../../../../../../../../../../drivers/staging/android/ion/ion.h"
+
 #include <linux/scatterlist.h>
 #include <linux/dma-mapping.h>
 

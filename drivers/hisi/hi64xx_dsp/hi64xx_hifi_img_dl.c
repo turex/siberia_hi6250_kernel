@@ -36,8 +36,8 @@
 #include <dsm/dsm_pub.h>
 #include <linux/hisi/rdr_pub.h>
 
-#include <hi64xx_algo_interface.h>
-#include <hi64xx_hifi_interface.h>
+#include "hi64xx_algo_interface.h"
+#include "hi64xx_hifi_interface.h"
 #include <linux/hisi/hi64xx/hi64xx_dsp_regs.h>
 
 #include "hi64xx_hifi_debug.h"

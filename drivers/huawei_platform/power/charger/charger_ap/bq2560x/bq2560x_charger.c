@@ -41,7 +41,7 @@
 #include <linux/raid/pq.h>
 #include <huawei_platform/power/huawei_charger.h>
 #include <linux/power/hisi/hisi_bci_battery.h>
-#include <bq2560x_charger.h>
+#include "bq2560x_charger.h"
 
 #define HWLOG_TAG bq2560x_charger
 HWLOG_REGIST();

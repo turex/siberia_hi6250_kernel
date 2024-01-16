@@ -26,7 +26,7 @@
 #include <linux/mutex.h>
 #include <linux/kthread.h>
 
-#include <hisi_ddr_secprotect.h>
+#include "hisi_ddr_secprotect.h"
 #include <global_ddr_map.h>
 #include <linux/hisi/rdr_pub.h>
 #include <linux/hisi/util.h>
